@@ -1,4 +1,4 @@
-# Pasos para instalar Anaconda, Jupyter Notebook y Spyder (IDE de python), R y R studio (IDE de R), Julia y Git-Hub Desktop
+# Pasos para instalar Anaconda, Jupyter Notebook y Spyder (IDE de python), R y R studio (IDE de R)
 
 
 ## <a name="Anaconda"></a> Instalación de Anconda
