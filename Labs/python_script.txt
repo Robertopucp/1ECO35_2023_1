@@ -1,0 +1,7 @@
+Aqui colocaré mi código de python o r según corresponda 
+
+import seaborn as sns
+import geopandas as gpd
+import econmodels
+
+print("¡Hola, Mundo!")
