@@ -595,17 +595,17 @@ print(Matrix.T)
 #Inverse
 np.linalg.inv(Matrix)
 
+# Plot ###########################################3
+
 import matplotlib.pyplot as plt
 
 #Numeros aleatorios
-xi = np.random.normal(1,.5)  # random variable with mean 1 y standar error .5
 
-
-X = np.random.normal(1,.5, 10000)  #mil observations
+X = np.random.normal(1,.5, 10000)  #1000 observations with mean 1 y standar error .5
 
 Xbar = X.mean()
 
-Sigma2 = sum((Xbar-X)**2)/X.shape[0]
+Sigma2 = sum((Xbar-X)**2)/len(X)
 
 Sigma = np.sqrt(Sigma2)
 

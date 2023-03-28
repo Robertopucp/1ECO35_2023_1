@@ -472,7 +472,6 @@ I <- diag(8)
 print(I)
 
 
-
 " 3. 8 List"
 
 dis2 <- list('ATE', 'BARRANCO','BREÑA', 'CALLAO', 'CARABAYLLO','CHACLACAYO','CHORRILLOS','CIENEGUILLA'
@@ -505,6 +504,19 @@ cat("Suma:", sum(unlist(num)),'\n', "Minimo:", min(unlist(num)), '\n', "Maximo:"
 
 list1 <- list(100:130, "R", list(TRUE, FALSE))
 
+
+# Plot histogram 
+
+X <- rnorm(1000, mean=1, sd=0.5)
+
+Xbar <- mean(X)
+
+Sigma2 <- sum((Xbar-X)^2)/length(X)
+
+Sigma = sqrt(Sigma2)
+
+hist(X, breaks = 100)
+
 #-------------------------------------------------------------#
 
 ## OLS ----
@@ -530,7 +542,7 @@ head(X)
 #inv(X) or solve (X)
 
 beta <- solve(t(X) %*% X) %*% (t(X) %*% Y)
-beta
+print(beta)
 
 
 
