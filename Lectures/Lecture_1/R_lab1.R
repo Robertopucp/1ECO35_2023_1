@@ -505,7 +505,7 @@ cat("Suma:", sum(unlist(num)),'\n', "Minimo:", min(unlist(num)), '\n', "Maximo:"
 list1 <- list(100:130, "R", list(TRUE, FALSE))
 
 
-# Plot histogram 
+### Plot histogram ----
 
 X <- rnorm(1000, mean=1, sd=0.5)
 
@@ -544,5 +544,8 @@ head(X)
 beta <- solve(t(X) %*% X) %*% (t(X) %*% Y)
 print(beta)
 
+#References
+
+browseURL("https://r4ds.had.co.nz/")
 
 
