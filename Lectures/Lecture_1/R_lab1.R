@@ -10,12 +10,12 @@ graphics.off()
 
 # clean console
 
-cat("\014")
+cat("\014")  # Ctrl + Shift + c
 
 
 # Libraries ####
-#install.packages("dplyr")
-#install.packages("stringr")
+install.packages("dplyr")
+install.packages("stringr")
 
 library(dplyr) # librarfor cleaning datasets 
 library(stringr)
@@ -35,6 +35,7 @@ print("Hola Mundo")
 #Correr la lineas de codugo Ctrl + enter
 # Codigo a texto Ctrl + Shift + c"
 
+
 a1 <- 3.1416
 print(a1)
 typeof(a1)
@@ -43,7 +44,7 @@ is.numeric(a1)
 
 # float to int 
 
-a2 <- as.integer(a1)
+a2 <- as.integer(a1)   # int(a1)
 typeof(a2)
 class(a2)
 
@@ -69,15 +70,23 @@ y <- log(x) ; y
 z <- round(y, 2) ; z
 w <- abs(z) ; w
 
+# operador %>%  ( %>% ) ( |> )
+
+
 150 %>% sqrt() %>% log() %>% round(2) %>% abs()
+
 sqrt(150) %>% log() %>% round(2) %>% abs()
+
 sqrt(150) %>% log %>% round(2) %>% abs %>% as.integer()
+
+
 
 #----------------------------------------------------------------------------#
 
 ## String ----
 
 c1 <- "My first python code"
+
 print(c1)
 typeof(c1)
 class(c1)
@@ -97,7 +106,7 @@ print(a)
 
 # paste
 
-a <- paste(c1,'semester 2022-1', sep = " : ") 
+a <- paste(c1,'semester 2022-1', sep = " / ") 
 print(a)
 
 
@@ -105,6 +114,8 @@ d <- 2022
 paste0(c1,' : semester ',d, '-1')
 
 # cat just contatenate characters to print
+
+# c1[0:5]
 
 #first character
 
@@ -136,7 +147,7 @@ text_2 = 'It\'s a string with a single quote'
 string_1 = 'hello world'
 string_2 = '10'
 
-# Upper 
+# Upper ( usando la libreria stringr )
 
 str_to_upper(string_1)
 
@@ -150,7 +161,7 @@ str_to_title(string_1)
 
 # count
 
-str_length(string_1)
+str_length(string_1)  # espacio como caracter
 
 # Splitting
 
@@ -547,5 +558,11 @@ print(beta)
 #References
 
 browseURL("https://r4ds.had.co.nz/")
+
+
+# Aplicacion --------------------------------------------------
+## aplicacion 1 ----
+### tipo 1 ######################################
+
 
 
