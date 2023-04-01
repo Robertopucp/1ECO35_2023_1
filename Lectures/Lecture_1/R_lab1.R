@@ -13,9 +13,9 @@ graphics.off()
 cat("\014")
 
 
-# Libraries ####
-#install.packages("dplyr")
-#install.packages("stringr")
+###Libraries ####
+install.packages("dplyr")
+install.packages("stringr")
 
 library(dplyr) # librarfor cleaning datasets 
 library(stringr)
@@ -548,4 +548,5 @@ print(beta)
 
 browseURL("https://r4ds.had.co.nz/")
 
+##allugkie#######
 
