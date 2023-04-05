@@ -194,37 +194,6 @@ strsplit(str_trim(
     )
     ), " ")
 
-#----------------------------------------------------------------------#
-
-### Factors ####
-
-# add gender factor
-
-genero <- c("Masculino", "Femenino", "Femenino", "Masculino")
-class(genero)
-
-genero <- as.factor(genero)
-class(genero)
-
-is.factor(genero)
-
-# easy way
-genero <- as.factor(c("Masculino", "Femenino", "Femenino", "Masculino"))
-class(genero)
-
-# Add labels
-
-genero2 <- factor(genero,levels = c("Masculino", "Femenino"),
-                  labels =c("M", "F") )
-genero2
-
-
-# Añadir el nivel socio-eco
-nivel <- factor(c("A", "C", "B", "C"), 
-                order = T, 
-                levels = c("A", "B", "C","D"))
-nivel
-class(nivel)
 
 #----------------------------------------------------------------------------#
 
