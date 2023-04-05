@@ -163,11 +163,16 @@ str_split(string_1, "w")
 str0 <- 'I love-Python and not R'
 
 #Separar Strings
-str1 <- strsplit(str0, ' ')
+str1 <- strsplit(str0, ' ') #str1 (es una lista) contiene separadamente de este texto
 print(str1)
-
 str2 <- strsplit(str0, split="[- ]")
 print(str2)
+
+str4 <- strsplit (str0, "and")
+print(str4)
+str4[[2]]="Allison"
+print(str4)
+
 
 # Join elements of a list into a linear regression formula  
 
@@ -193,7 +198,48 @@ strsplit(str_trim(
     gsub("[(|)|,]", "",string_4)
     )
     ), " ")
+<<<<<<< Updated upstream
 
+=======
+strspli(
+str_trim(
+str_to_upper(
+  gsub(¨[(|)|,]¨.¨¨,string_4)
+)
+)
+,¨¨)
+#----------------------------------------------------------------------#
+
+### Factors ####
+
+# add gender factor
+
+genero <- c("Masculino", "Femenino", "Femenino", "Masculino")
+class(genero)
+
+genero <- as.factor(genero)
+class(genero)
+
+is.factor(genero)
+
+# easy way
+genero <- as.factor(c("Masculino", "Femenino", "Femenino", "Masculino"))
+class(genero)
+
+# Add labels
+
+genero2 <- factor(genero,levels = c("Masculino", "Femenino"),
+                  labels =c("M", "F") )
+genero2
+
+
+# AÃ±adir el nivel socio-eco
+nivel <- factor(c("A", "C", "B", "C"), 
+                order = T, 
+                levels = c("A", "B", "C","D"))
+nivel
+class(nivel)
+>>>>>>> Stashed changes
 
 #----------------------------------------------------------------------------#
 
@@ -201,7 +247,7 @@ strsplit(str_trim(
 
 # 2.0 Logical variables
 
-a == a
+'a' =='a'
 
 1 == 1
 
@@ -270,14 +316,13 @@ F | F   # or
 
 " 3.1 c() Atomic vector: simple vector data"
 
-a <- c(1,2,3,4,"PerÃº")
+a <- c(1,2,3,4,"Perú")
 print(a)
 class(a)
 class(a[1])
 
 c2 <- c("Red", "Green", "Purple")
 print(c2)
-
 # append
 
 a <- c(1,2,3,4)
@@ -303,6 +348,7 @@ print(sd(a))
 # sample random numbers
 
 print(sample(1:100, size = 10))
+vector<-sample(1:100,size=10)
 
 vector <- rep(sample(1:100, size = 10), 3)
 
@@ -317,6 +363,7 @@ cat("Primeros 5 elementos:\n",vector[1:5])
 cat("index 2 to 20:\n",vector[2:20])
 cat("index 2 to on:\n",vector[2:length(vector)])
 cat("some indexing:\n",vector[c(2,5,17)])
+data[,c("var1","var2")]
 
 #--------------------------------------------------------#
 
@@ -443,7 +490,7 @@ print(I)
 
 " 3. 8 List"
 
-dis2 <- list('ATE', 'BARRANCO','BREÃ‘A', 'CALLAO', 'CARABAYLLO','CHACLACAYO','CHORRILLOS','CIENEGUILLA'
+dis2 <- list('ATE', 'BARRANCO','BREÃñA', 'CALLAO', 'CARABAYLLO','CHACLACAYO','CHORRILLOS','CIENEGUILLA'
              ,'COMAS','EL_AGUSTINO','INDEPENDENCIA')
 dis2[[1]] # get element
 
