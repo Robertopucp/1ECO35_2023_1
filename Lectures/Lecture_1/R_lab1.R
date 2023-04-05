@@ -163,11 +163,16 @@ str_split(string_1, "w")
 str0 <- 'I love-Python and not R'
 
 #Separar Strings
-str1 <- strsplit(str0, ' ')
+str1 <- strsplit(str0, ' ') #str1 (es una lista) contiene separadamente de este texto
 print(str1)
-
 str2 <- strsplit(str0, split="[- ]")
 print(str2)
+
+str4 <- strsplit (str0, "and")
+print(str4)
+str4[[2]]="Allison"
+print(str4)
+
 
 # Join elements of a list into a linear regression formula  
 
@@ -194,14 +199,13 @@ strsplit(str_trim(
     )
     ), " ")
 
-
 #----------------------------------------------------------------------------#
 
 ## Booleans (true , false) ----
 
 # 2.0 Logical variables
 
-a == a
+'a' =='a'
 
 1 == 1
 
@@ -244,10 +248,10 @@ x
 
 z <- x**2
 z
-x == z  # ¿Comparando o asignando? 1)
-x =  z  # ¿Comparando o asignando? 2)
-x == z  # ¿Comparando o asignando? 3)
-x != z  # ¿Comparando o asignando? 4)
+x == z  # Â¿Comparando o asignando? 1)
+x =  z  # Â¿Comparando o asignando? 2)
+x == z  # Â¿Comparando o asignando? 3)
+x != z  # Â¿Comparando o asignando? 4)
 x > y 
 
 # Logic operators 
@@ -277,7 +281,6 @@ class(a[1])
 
 c2 <- c("Red", "Green", "Purple")
 print(c2)
-
 # append
 
 a <- c(1,2,3,4)
@@ -303,6 +306,7 @@ print(sd(a))
 # sample random numbers
 
 print(sample(1:100, size = 10))
+vector<-sample(1:100,size=10)
 
 vector <- rep(sample(1:100, size = 10), 3)
 
@@ -317,6 +321,7 @@ cat("Primeros 5 elementos:\n",vector[1:5])
 cat("index 2 to 20:\n",vector[2:20])
 cat("index 2 to on:\n",vector[2:length(vector)])
 cat("some indexing:\n",vector[c(2,5,17)])
+data[,c("var1","var2")]
 
 #--------------------------------------------------------#
 
@@ -366,7 +371,7 @@ indices$training
 
 attributes(indices) # atributos 
 
-# attribute : información de cualquier objeto en R
+# attribute : informaciÃ³n de cualquier objeto en R
 
 " 3.5 Array and Matrix: genera vectores multidimensionales R^n "
 
@@ -443,7 +448,7 @@ print(I)
 
 " 3. 8 List"
 
-dis2 <- list('ATE', 'BARRANCO','BREÑA', 'CALLAO', 'CARABAYLLO','CHACLACAYO','CHORRILLOS','CIENEGUILLA'
+dis2 <- list('ATE', 'BARRANCO','BREÃñA', 'CALLAO', 'CARABAYLLO','CHACLACAYO','CHORRILLOS','CIENEGUILLA'
              ,'COMAS','EL_AGUSTINO','INDEPENDENCIA')
 dis2[[1]] # get element
 
