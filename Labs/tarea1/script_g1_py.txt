@@ -1,8 +1,0 @@
-import geemap 
-
-library(lmtest)
-
-import numpy as np 
-
-
-# este codigo usa el reges \w para detertar palabras 
