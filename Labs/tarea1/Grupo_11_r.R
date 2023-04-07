@@ -19,6 +19,13 @@ cat("\014")
 ## Pregunta 1: Paste #### 
 # Use paste o paste0 para crear la siguiente variable de texto: "Facultad de Ciencias Sociales \ 2023"
 
+c1 <- "Facultad de ciencias sociales" # Creamos el String "Facultad de ciencias sociales"
+
+a <- paste0(c1,' 2023 ') #Unsamos el comando paste0 para unir c1 con 2023 
+
+print(a) # Imprimos el comando creado
+
+
 ## Pregunta 2: Operador pip %>% ####
 ##Use el operador %>% para tomar el valor absoluto de -3.1416 , luego elevar al cuadrado, tomar logaritmo y convertir a número entero.
 
