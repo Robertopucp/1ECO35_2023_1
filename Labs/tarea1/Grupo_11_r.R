@@ -14,6 +14,10 @@ graphics.off()
 ##Borrando la consola ####
 cat("\014")
 
+## Llamando a los directorios necesarios
+library(dplyr)
+library(stringr)
+
 # Desarrollo de las preguntas ####
 
 ## Pregunta 1: Paste #### 
@@ -28,4 +32,17 @@ print(a) # Imprimos el comando creado
 
 ## Pregunta 2: Operador pip %>% ####
 ##Use el operador %>% para tomar el valor absoluto de -3.1416 , luego elevar al cuadrado, tomar logaritmo y convertir a número entero.
+
+## Existen dos formas de hacerlo
+
+#Primera forma
+x <- abs(-3.1416) ; x
+y <- x^2 ; y
+z <- log(y) ; z
+w <- as.integer(z) ; w
+
+
+#Segunda forma 
+
+abs(-3.1416) %>% squared() %>% log() %>% as.integer()
 
