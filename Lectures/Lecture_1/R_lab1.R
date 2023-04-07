@@ -198,48 +198,6 @@ strsplit(str_trim(
     gsub("[(|)|,]", "",string_4)
     )
     ), " ")
-<<<<<<< Updated upstream
-
-=======
-strspli(
-str_trim(
-str_to_upper(
-  gsub(�[(|)|,]�.��,string_4)
-)
-)
-,��)
-#----------------------------------------------------------------------#
-
-### Factors ####
-
-# add gender factor
-
-genero <- c("Masculino", "Femenino", "Femenino", "Masculino")
-class(genero)
-
-genero <- as.factor(genero)
-class(genero)
-
-is.factor(genero)
-
-# easy way
-genero <- as.factor(c("Masculino", "Femenino", "Femenino", "Masculino"))
-class(genero)
-
-# Add labels
-
-genero2 <- factor(genero,levels = c("Masculino", "Femenino"),
-                  labels =c("M", "F") )
-genero2
-
-
-# Añadir el nivel socio-eco
-nivel <- factor(c("A", "C", "B", "C"), 
-                order = T, 
-                levels = c("A", "B", "C","D"))
-nivel
-class(nivel)
->>>>>>> Stashed changes
 
 #----------------------------------------------------------------------------#
 
@@ -290,10 +248,10 @@ x
 
 z <- x**2
 z
-x == z  # ¿Comparando o asignando? 1)
-x =  z  # ¿Comparando o asignando? 2)
-x == z  # ¿Comparando o asignando? 3)
-x != z  # ¿Comparando o asignando? 4)
+x == z  # Â¿Comparando o asignando? 1)
+x =  z  # Â¿Comparando o asignando? 2)
+x == z  # Â¿Comparando o asignando? 3)
+x != z  # Â¿Comparando o asignando? 4)
 x > y 
 
 # Logic operators 
@@ -316,7 +274,7 @@ F | F   # or
 
 " 3.1 c() Atomic vector: simple vector data"
 
-a <- c(1,2,3,4,"Per�")
+a <- c(1,2,3,4,"Perú")
 print(a)
 class(a)
 class(a[1])
@@ -413,7 +371,7 @@ indices$training
 
 attributes(indices) # atributos 
 
-# attribute : información de cualquier objeto en R
+# attribute : informaciÃ³n de cualquier objeto en R
 
 " 3.5 Array and Matrix: genera vectores multidimensionales R^n "
 
@@ -490,7 +448,7 @@ print(I)
 
 " 3. 8 List"
 
-dis2 <- list('ATE', 'BARRANCO','BRE��A', 'CALLAO', 'CARABAYLLO','CHACLACAYO','CHORRILLOS','CIENEGUILLA'
+dis2 <- list('ATE', 'BARRANCO','BREÃñA', 'CALLAO', 'CARABAYLLO','CHACLACAYO','CHORRILLOS','CIENEGUILLA'
              ,'COMAS','EL_AGUSTINO','INDEPENDENCIA')
 dis2[[1]] # get element
 
