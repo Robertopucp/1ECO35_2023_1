@@ -1,5 +1,15 @@
 #Tarea ####
 
+#
+#
+#
+
+
+#
+
+
+#
+
 #Paste ####
 anio<-2023
 cadena1<-"Facultad de Ciencias Sociales"
