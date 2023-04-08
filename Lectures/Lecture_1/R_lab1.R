@@ -10,7 +10,7 @@ graphics.off()
 
 # clean console
 
-cat("\014")
+cat("\014") #Ctrl + shift + c
 
 
 # Libraries ####
@@ -42,6 +42,7 @@ class(a1)
 is.numeric(a1)
 
 # float to int 
+# as.interger es número entero
 
 a2 <- as.integer(a1)
 typeof(a2)
@@ -70,7 +71,9 @@ z <- round(y, 2) ; z
 w <- abs(z) ; w
 
 150 %>% sqrt() %>% log() %>% round(2) %>% abs()
+
 sqrt(150) %>% log() %>% round(2) %>% abs()
+
 sqrt(150) %>% log %>% round(2) %>% abs %>% as.integer()
 
 #----------------------------------------------------------------------------#
