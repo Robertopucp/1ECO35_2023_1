@@ -1,6 +1,15 @@
 #Grupo2- Tarea1 ----
 
 
+rm(list = ls()) #Se limpia las variables del environment
+graphics.off() #Cierra graficos
+cat("\014") #Se limpia la consola
+
+#Se importan las Librerias
+library(stringr)
+library(dplyr)
+library(magrittr)
+
 #Paste ----
 
 anio<-2023   # se crea la variable para el año 2023
