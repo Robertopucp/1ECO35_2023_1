@@ -89,13 +89,14 @@ c3 <- c1 + c2 # error
 
 # paste let us to join strings 
 
-# paste0
+
+# paste0: este comando permite unir textos sin espacios
 
 a <- paste0(c1,' : semester 2022-1') #paste0 une sin espacios 
 
 print(a)
 
-# paste
+# paste: permite unir textos usando un símbolo en particular
 
 a <- paste(c1,'semester 2022-1', sep = " : ") 
 print(a)
@@ -103,16 +104,21 @@ print(a)
 
 d <- 2022
 paste0(c1,' : semester ',d, '-1')
+#acá se está uniendo los textos
+
 
 # cat just contatenate characters to print
 
 #first character
 
-cat('Fisrt letter is :', substr(c1, 1,1)  )
+cat('Fisrt letter is :', substr(c1, 1,1)  )   # substr se utiliza para sustraer un texto
+# Por ejm, aquí, substr(c1,1,1) indica que se substraiga 1 elemento de la palabra indicada 
+# a partir del 1er elemento
 
 #first word
 
 cat('Fisrt word is :', substr(c1, 1,5)  )
+# Acá se indica que se substraiga los 5 primeros elementos a partir de la posición 1
 
 # \t: tab(), \n: enter
 
@@ -136,21 +142,21 @@ text_2 = 'It\'s a string with a single quote'
 string_1 = 'hello world'
 string_2 = '10'
 
-# Upper 
+# Upper  (usando la librería stringr, se debe activar la librería para poder usarlo)
 
-str_to_upper(string_1)
+str_to_upper(string_1)  # para convertir a mayúscula
 
 # Lower 
 
 str_to_lower(string_1)
 
-# Tittle
+# Tittle              # para convertir a minúscula
 
 str_to_title(string_1)
 
-# count
+# count               
 
-str_length(string_1)
+str_length(string_1)  # para contar los caracteres, el espacio se cuenta como caracter
 
 # Splitting
 
