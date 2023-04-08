@@ -62,7 +62,7 @@ print(round(4.51))
 
 print(4^2)
 
-# operator pip %>% (Control + shift + M)
+#operator pip %>% (Control + shift + M)
 
 x <- sqrt(150) ; x   # ; print()
 y <- log(x) ; y
@@ -72,6 +72,8 @@ w <- abs(z) ; w
 150 %>% sqrt() %>% log() %>% round(2) %>% abs()
 sqrt(150) %>% log() %>% round(2) %>% abs()
 sqrt(150) %>% log %>% round(2) %>% abs %>% as.integer()
+
+
 
 #----------------------------------------------------------------------------#
 
