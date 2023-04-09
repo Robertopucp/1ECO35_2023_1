@@ -14,12 +14,11 @@ library(magrittr)
 
 anio<-2023   # se crea la variable para el año 2023
 cadena1<-"Facultad de Ciencias Sociales"  # se crea la variable que contenga el texto indicado
-imprimir <- paste(cadena1,anio, sep = " / ")  
+imprimir <- paste(cadena1,anio, sep = " \\ ")  
 # con paste se unirá los textos de las variables cadena1 y anio, además se está indicando que
 # se separe estos textos con este símbolo " / " 
 
-print(imprimir)  # con print, en la consola se indicará el resultado del paste ejecutado 
-
+cat(imprimir) # con cat, en la consola se indicará el resultado del paste ejecutado. Se usa cat para que aparezca el \
 
 #Operador pip ----
 
