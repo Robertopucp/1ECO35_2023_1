@@ -13,7 +13,8 @@ graphics.off()
 cat("\014")
 
 
-# Libraries ####
+# Libraries #### 
+(SIEMPRE ACTIVAR LAS LIBRERÍAS)
 #install.packages("dplyr")
 #install.packages("stringr")
 
