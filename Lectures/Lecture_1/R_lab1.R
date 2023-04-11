@@ -14,13 +14,13 @@ cat("\014")
 
 
 # Libraries #### 
-(SIEMPRE ACTIVAR LAS LIBRERÍAS)
+
 #install.packages("dplyr")
 #install.packages("stringr")
 
 library(dplyr) 
 library(stringr)
-?stringr
+
 #-----------------------------------------------------------------#
 
 
@@ -357,7 +357,7 @@ seq(100)
 
 1:100 # easy way
 
-# 50 elementos frim interval [100,1000]
+# 50 elementos from interval [100,1000]
 
 seqex <- seq(100,1000, length.out = 50)
 
@@ -495,7 +495,7 @@ Xbar <- mean(X)
 
 Sigma2 <- sum((Xbar-X)^2)/length(X)
 
-Sigma = sqrt(Sigma2)
+Sigma <- sqrt(Sigma2)
 
 hist(X, breaks = 100)
 
