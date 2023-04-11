@@ -4,7 +4,7 @@
 
 #install.packages("dplyr")
 # install.packages("readxl")
-install.packages("pacman")
+# install.packages("pacman")
 
 # clean environment variables
 
@@ -56,6 +56,15 @@ if (mean(y) > 0) {
   
 print(dummy)  
 
+
+# short ifelse
+
+dummy <- ifelse(mean(y) > 0, 1, 0)
+
+dummy <- if (mean(y) > 0) 1 else 0
+
+print(dummy)
+
 ## Nested If statement -----
 
 # v <- 2
@@ -92,6 +101,25 @@ if  ( is.numeric(v) ){
 # -------------------------------------------------------#
 
 
+# while without ending, the condition is always met
+
+i <- 0
+while(i < 10) {
+  print(i + 1)
+}
+
+
+# while requires a counter (i = i + 1)
+
+i <- 0
+while(i < 10) {
+  i = i + 1
+  print(i)
+}
+
+
+
+
 #  saving
 S <- 1000
 
@@ -109,26 +137,10 @@ while (year < n){
   cat( "periodo ", year, ": ", S,"\n")
 }
 
-## While + If statement ----
-
-w <- 10
-
-while (w > 7  & w <= 15){
-  coin <- round( runif(1) )
-  print(coin)
-  if (coin == 1) {
-    w <- w + 2
-  } else {
-    w <- w - 10
-  }
-  
-}
-
-
 
 ## For ----
 
-ages<-  c(21, 23, 25, 24, 20)
+ages<-  1:10000
 
 for (age in ages) {
   
@@ -136,13 +148,34 @@ for (age in ages) {
   
 }
 
+# a vector 
+
+y <- c()
+
+for(i in 1:length(ages)) {
+  y[i] <- log(ages[i])
+}
+
+# Measure loop time
+
+start_time <- Sys.time()
+for(i in 1:length(ages)) {
+  y[i] <- log(ages[i])
+  print(i)
+}
+print(Sys.time() - start_time)    # slow
+
+start_time <- Sys.time()
+y <- log(ages)
+print(Sys.time() - start_time)    # fast
+
+
 
 ## For and Next ----
 
 for (i in 1:50) {
   if(i %in% 15:20) { # Ignora los primeros 20 elementos
     next  
-    print(i  + 1000)
   }
  cat("Ejecutanto",i,"\n")
 }
@@ -151,14 +184,13 @@ for (i in 1:50) {
 ## For and Next, break ----
 
 
-for (j in 1:100){
-  print(j)
-  
-  if(j > 20){
-     break
+for (i in 1:50) {
+  if(i %in% 15:20) { # Ignora los primeros 20 elementos
+    break
   }
-  
+  cat("Ejecutanto",i,"\n")
 }
+
 
 
 ## While + break ----
@@ -171,11 +203,10 @@ while (TRUE){
     break
   } else {
     w = w + 10
-    print(point)
+    print(coin)
   }
   
 }
-
 
 
 # Function -----
@@ -186,7 +217,7 @@ while (TRUE){
 
 calculator <- function(x,y,z)
 {
-  result = x*y*z
+  result = x*y + z
   return(result)
 }
 
@@ -194,6 +225,31 @@ calculator( 158, 38, 10 )
 
 calculator( 158, 38)
 
+# Different arguments location
+
+
+calculator( z = 158, x = 38, y = 10 )
+
+
+
+# Overall, function gives the last line code
+
+calculator <- function(x,y,z)
+{
+  suma_all = x + y+ z
+  
+  x*y*z
+
+}
+
+calculator( 158, 38, 10 )
+
+# alternative function 
+
+calculator <- function(x,y,z) x*y*z
+
+calculator( 110, 13, 2 )
+  
 ## return multiple ----
 
 calculator_square <- function(x,y){
@@ -204,11 +260,31 @@ calculator_square <- function(x,y){
   return(list(x2,y2,paste0("La multiplicación del cuadrado es:", result)) )
 }
 
+
 # list para multiples resultados en una función de R
 
 calculator_square(3, 4)[1]
 calculator_square(3, 4)[[1]] # para obtener el elemento simple
 
+
+# Return named outputs in a list
+
+calculator_square <- function(x,y){
+  x2 <- x * x
+  y2 <- y * y
+  
+  result <- x2 * y2  
+  return(list(x_2 = x2,
+              y_2 = y2,
+              text = paste0("La multiplicación del cuadrado es:", result)) )
+}
+
+calculator_square(3, 4)
+
+
+calculator_square(3, 4)$x_2
+
+calculator_square(3, 4)$text
 
 ## IF statement and return ----
 
@@ -234,8 +310,32 @@ calculator_square_2(300, 4)
 ## Alpha between two assets ----
 
 
-porfolio <- read.csv("../../data/Portafolio.csv", encoding = "UTF-8")
+portfolio <- read.csv("../../data/Portafolio.csv", encoding = "UTF-8")
 
-def 
+alpha <- function(data){
+  
+  X <- data$X
+  y <- data$Y
+  
+  alpha_cal <- (var(y)-cov(X,y))/(var(y) + var(X) -2*cov(X,y))
+  
+  return(alpha_cal)
+  
+}
+
+
+alpha(portfolio)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
