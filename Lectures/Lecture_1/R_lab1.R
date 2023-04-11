@@ -14,13 +14,13 @@ cat("\014")
 
 
 # Libraries #### 
-(SIEMPRE ACTIVAR LAS LIBRERÍAS)
+
 #install.packages("dplyr")
 #install.packages("stringr")
 
 library(dplyr) 
 library(stringr)
-?stringr
+
 #-----------------------------------------------------------------#
 
 

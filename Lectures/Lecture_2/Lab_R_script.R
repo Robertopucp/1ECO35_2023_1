@@ -2,6 +2,45 @@
 # Curso: Laboratorio de R y Python 
 # @author: Roberto Mendoza 
 
+#install.packages("dplyr")
+# install.packages("readxl")
+install.packages("pacman")
+
+# clean environment variables
+
+rm(list = ls())
+
+# clean plots
+graphics.off()
+
+# clean console
+
+cat("\014")
+
+library(readxl)
+library(dplyr) 
+library(rstudioapi) # set working directory to file location 
+
+# alternativa para subir librerias
+
+library(pacman)  # Package Manager
+p_load(dplyr, readxl, rstudioapi)
+
+# Change directory where actual script is located
+
+getwd()
+
+## alternative 1
+
+user <- Sys.getenv("USERNAME")  # username
+print(user)
+setwd( paste0("C:/Users/",user,"/Documents/GitHub/1ECO35_2023_1/Lectures/Lecture_2") ) # set directorio
+getwd()
+
+## alternative 2
+
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+getwd()
 
 # -------------------------------------------------------#
 
@@ -192,7 +231,11 @@ if (200 >= result) {
 calculator_square_2(300, 4)
 
 
+## Alpha between two assets ----
 
 
+porfolio <- read.csv("../../data/Portafolio.csv", encoding = "UTF-8")
+
+def 
 
 
