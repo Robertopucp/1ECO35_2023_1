@@ -20,6 +20,7 @@ import numpy as np
 import math
 import pandas as pd  # cargamos pandas (modulo que nos permitirá manipular bases de datos)
 from tqdm import tqdm
+import os
 
 y = np.random.randint(-10, 10, 50)   # valores entre -10 y 10. Extraer 50 numeros. 
 
@@ -235,6 +236,15 @@ calculator_base_5( 7 )
 
 
 # Ejemplo en finanzas -------------------
+
+os.getcwd()
+
+user = os.getlogin()   # Username
+print(user)
+
+# Set directorio
+
+os.chdir(f"C:/Users/{user}/Documents/GitHub/1ECO35_2023_1/Lectures/Lecture_3") # Set directorio
 
 portfolio = pd.read_csv(r'../../data/Portafolio.csv')
 
