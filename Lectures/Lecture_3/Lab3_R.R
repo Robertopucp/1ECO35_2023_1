@@ -40,6 +40,13 @@ getwd()
 
 "Lapply and Sapply"
 
+genero <- c('F', 'M', 'M', 'F', 'M')
+sapply(genero, function(x)  {if (x == 'M') 0 else 1})
+
+NSE <- c('A', 'A', 'C', 'B', 'C')
+sapply(NSE, function(x)  {if (x == 'A') 3 else if (x == 'B') 2 else 1})
+
+
 vector <- seq(100)
 
 lapply(vector, function(square) {square^2-mean(vector)}) # resultado en formato lista

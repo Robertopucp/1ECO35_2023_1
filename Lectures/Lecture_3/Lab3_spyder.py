@@ -12,17 +12,43 @@ import re # Regex
 
 
 
-#%% Loop replacement
+#%% Funciones lambda
 
+# Función tradicional #
+
+def interes(C, T, R):
+  i = C*T*R
+  return i
+
+interes(5000, 24, 0.02)
+
+# forma parsimoniosa de generar funciones
+
+interes2 = lambda C, T, R : C*T*R
+
+interes2(5000, 24, 0.02)
+
+# Más ejemplos 
+
+# map, es una función que a cada elemento de un conjunto de datos aplica la función que le indiquemos
+
+genero = ['F', 'M', 'M', 'F', 'M']
+list( map( lambda x: 0 if x == 'M' else 1, genero )  )
+
+
+NSE = ['A', 'A', 'C', 'B', 'C']
+
+list( map( lambda x: 3 if x == 'A' else (2 if x == 'B' else 1), NSE )  )
+
+# Más ejemplos #
 
 vector = np.arange(100)
 
-map( lambda x: np.sqrt(x) , vector) 
+map( lambda x: np.sqrt(x) - np.mean(vector), vector ) 
 
-list( map( lambda x: np.sqrt(x) , vector)   )    
+list( map( lambda x: np.sqrt(x) - np.mean(vector), vector)   )    
 
-
-np.sqrt(vector)
+np.sqrt(vector) - np.mean(vector)
 
 
 '''
@@ -42,38 +68,23 @@ def cube(x):
 
 list( map( lambda x: cube(x) , vector)   )  
 
+
+'''
+Función 2, de estandarización
+'''
+
 def sdv(x,mean,sd):
     
     out = (x-mean)/sd
     
     return out 
 
-'''
-Función 2, de estandarización
-'''
-
-map( lambda x, v1 = np.mean(vector), v2 = np.std(vector): sdv(x,v1, v2) , vector)
 
 list( map( lambda x, v1 = np.mean(vector), v2 = np.std(vector): sdv(x,v1, v2) , vector)  )  
 
+# función explicita en la función lambda
 
-vector1 = (vector - np.mean(vector))/np.std(vector)
-
-
-'''
-Función 3, extrae lo numeros de un texto
-
-La función extrae los numeros de texto
-
-'''
-
-texto_vector = np.array(["Municipio San Luis: 12450","Municipio La victoria: 1450",
-                         "Municipio La Molina: 3550","Municipio Ate: 506"])
-
-
-list( map( lambda x: re.sub('\D',"", x) , texto_vector)   )
-
-# \D: significa todo menos a los dígitos
+list( map( lambda x: (x - np.mean(vector))/np.std(vector), vector)  )  
 
 '''
 Función 3, If statement
@@ -94,17 +105,32 @@ def function2(x):
 
 list( map( lambda x: function2(x) , vector)   )
 
+
+'''
+Función 4, extrae lo numeros de un texto
+
+La función extrae los numeros de texto
+
+'''
+
+texto_vector = np.array(["Municipio San Luis: 12450","Municipio La victoria: 1450",
+                         "Municipio La Molina: 3550","Municipio Ate: 506"])
+
+
+list( map( lambda x: re.sub('\D',"", x) , texto_vector)   )
+
+# \D: significa todo menos a los dígitos
+
+
 # re.sub( patron de texto, sustitución, texto)
 
 ''' Loop replacement in Matrix '''
 
-import numpy as np
-
 np.random.seed(15632)
-x1 = np.random.rand(500) # uniform distribution  [0,1]
-x2 = np.random.rand(500) # uniform distribution [0,1]
-x3 = np.random.rand(500) # uniform distribution [0,1]
-x4 = np.random.rand(500) # uniform distribution [0,1]
+x1 = np.random.normal(0,1,500) # normal distribution
+x2 = np.random.normal(0,1,500) # normal distribution 
+x3 = np.random.normal(0,1,500) # normal distribution
+x4 = np.random.normal(0,1,500) # normal distribution
 
 
 X = np.column_stack((np.ones(500),x1,x2,x3,x4))
@@ -137,19 +163,14 @@ len( np.mean(X, axis=1) )
 np.std(X, axis=1)
 
 
+'''
+
+Dos formas de estandarizar una matriz 
 
 '''
 
-Tres formas de estandarizar una matriz 
-
-'''
-   
+ 
 XNormed = (X - np.mean(X, axis=0))/np.std(X, axis=0)
-
-X_std = np.apply_along_axis(lambda x, prom = 3, desv = 100: (x-prom)/desv,0, X)
-  
-    
-X_std_1 = np.apply_along_axis(lambda x: (x-x.mean())/x.std(),0, X)
 
             
 def standarize(x):
@@ -157,61 +178,10 @@ def standarize(x):
           
        return out
    
-X_std_2 = np.apply_along_axis(standarize,0, X)
+X_std_2 = np.apply_along_axis(standarize, 0, X)
     
 # axis = 0, se aplicará la función a los elementos de cada columna
 
-'''
-
-Apply to DataFrame
-
-'''
-  
-  
-# list of name, degree, score
-var1 = np.random.rand(50000)
-var2 = np.arange(0,50000)
-var3 =  np.random.rand(50000)
-  
-# dictionary of lists 
-dict = {'v1': var1, 'v2': var2, 'v3': var3} 
-    
-df = pd.DataFrame(dict)
-
-df.apply(np.sum, axis = 0)  # columna por columna 
-df.apply(np.sum, axis = 1)  # fila por fila
-
-# Se genera el cuadrado de la variable v2
-
-df['nueva_var'] = df['v2'].apply(lambda x : x**2)
-
-# Cuadradro a los elementos de cada columna
-
-
-df.apply(lambda x : x**2, axis = 0)
-
-
-# Estandarización de los elementos de cada columna
-
-'''
-Lambda y la inclusión de la función
-'''
-
-df.apply(lambda row: (row - np.mean(row))/np.std(row), axis =0)
-
-'''
-Lambda y la función construida por separado
-'''
-
-def standarize(x):
-    out = (x - np.mean(x))/np.std(x)
-    
-    return out
-
-df.apply(standarize, axis = 0)
-
-
-df.apply(lambda row: standarize(row), axis =0)
 
 #%% Handle dataset 
 
@@ -258,10 +228,6 @@ def demean(x):
     return dif 
 
 X = X.apply( demean, axis = 0 )  # axis :0 se aplica la función por columna
-
-X.to_stata("../data/clean_data.dta", write_index = False)
-
-# write_index = False , permite que la base gaurdada no genera una columna para el indexing
 
 
 #%% *args 
