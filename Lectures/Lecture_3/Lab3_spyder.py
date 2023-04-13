@@ -9,6 +9,16 @@ import numpy as np
 import pandas as pd
 from pandas import DataFrame, Series
 import re # Regex
+import pyreadr  # Load R dataset
+import os # for usernanme y set direcotrio
+
+# Change directory 
+
+user = os.getlogin()   # Username
+
+# Set directorio
+
+os.chdir(f"C:/Users/{user}/Documents/GitHub/1ECO35_2023_1/Lectures/Lecture_3") # Set directorio
 
 
 
@@ -194,16 +204,8 @@ X_std_2 = np.apply_along_axis(standarize, 0, X)
  For a detailed description of the variables we refer to the help page.
  '''
  
-import pyreadr  # Load R dataset
-import os # for usernanme y set direcotrio
 
-user = os.getlogin()   # Username
-
-# Set directorio
-
-os.chdir(f"C:/Users/{user}/Documents/GitHub/1ECO35_2022_2/Lab4") # Set directorio
-
-cps2012_env = pyreadr.read_r("../data/cps2012.Rdata") # output formato diccionario
+cps2012_env = pyreadr.read_r("../../data/cps2012.Rdata") # output formato diccionario
 
 
 cps2012_env  # es un diccionario. En la llave "data" está la base de datos 
@@ -228,6 +230,48 @@ def demean(x):
     return dif 
 
 X = X.apply( demean, axis = 0 )  # axis :0 se aplica la función por columna
+
+# Swgundo ejemplo de base de datos 
+
+datos = pd.read_csv("../../data/BDD_compras_consumidores.csv", sep = ";")
+
+datos['Channel'].value_counts()
+datos['Region'].value_counts()
+
+datos.info()
+
+datos['Channel'] = datos['Channel'].astype("category")
+datos['Region'] = datos['Region'].astype("category")
+
+datos.info()
+
+
+# Apply #
+
+datos.iloc[:,2:9].apply(lambda x: sum(x), axis = 0)  # axis = 0 , operación a nivel columna 
+
+# ventas total por cada observación
+
+datos['ventas'] = datos.iloc[:,2:9].apply(lambda x: sum(x), axis = 1) # axis = 0 , operación a nivel fila
+
+# promedio por tipo de producto
+
+datos.iloc[:,2:9].apply(lambda x: np.mean(x), axis = 0)
+
+# minimo valor de la venta por tipo de producto 
+
+datos.iloc[:,2:9].apply(lambda x: np.min(x), axis = 0)
+
+# máximo valor de la venta por tipo de producto 
+
+datos.iloc[:,2:9].apply(lambda x: np.max(x), axis = 0)
+
+# cambio de moneda
+
+datos2 = datos.iloc[:,2:9].apply(lambda x: x/3.9, axis = 0)
+
+datos3 = pd.concat([datos.iloc[:,:2],datos2], axis = 1) # se uen a nivel columna o de forma horizontal
+
 
 
 #%% *args 

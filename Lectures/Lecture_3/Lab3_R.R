@@ -241,7 +241,7 @@ table(datos$Region)
 
 
 #--------------------------#
-#### Apply #####
+#### Apply Base de datos #####
 #--------------------------#
 
 # Apply. Aplica una función a un dataframe
