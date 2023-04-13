@@ -1,210 +1,294 @@
-# install.packages("dplyr") # filter data
-#install.packages("readxl") # excel, csv
-# install.packages("tidyr")
+################  laboratorio 2 ############################
+## Curso: Laboratorio de R y Python ###########################
+## @author: Roberto Mendoza 
 
-'Solo es necesario cargar una vez los paquetes, luego simplemente debemos llamarlo:'
+# clean environment variables
 
-library(dplyr) # librería de limpieza de datos
-library(tidyr)# librería de limpieza de datos
-library(readxl) # lobreria para subir archivos excel, csv
+rm(list = ls())
+
+# clean plots
+graphics.off()
+
+# clean console
+
+cat("\014")
+
+#install.packages("stringr")
+
+# Library ####
+
+library(pacman)  # permite llamar a varias librerias de manera simultánea
+
+p_load(dplyr, readxl, rstudioapi, stringr)
+
+# dplyr: para manejo de base de datos
+# readxl: lectura de archivo excel, csv
+# stringi: manejo de texto
+# rstudioapi: se aplicará para definir la ruta de trabajo
+
 getwd()
-user <- Sys.getenv("USERNAME")  # username
 
+# Set working directory (directorio de trabajo : ruta en la computadora)
 
-print(user)
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
+getwd()
 
-setwd( paste0("C:/Users/",user,"/Documents/GitHub/1ECO35_2022_2/Lab3") ) # set directorio
+#-----------------------#
+#### Lappy & Sapply #####
+#-----------------------#
 
-netflix <- read.csv("../data/netflix_titles.csv", encoding = "UTF-8") # encoding : Leer caracteres especiales
+"Lapply and Sapply"
 
-# ../ salir de una carpeta, ../../  será salir dos veces de la carpeta
+vector <- seq(100)
 
-netflix <- read.csv("../data/netflix_titles.csv", encoding = "UTF-8", na.strings=c("",NA)) 
+lapply(vector, function(square) {square^2-mean(vector)}) # resultado en formato lista
+sapply(vector, function(square) {square^2-mean(vector)}) # vector canonico simple 
 
-# na.strings=c("",NA) reemplaza vacios por missing 
+# A cada elemento del vector se eleva al cuadrado y se resta la media del vector
 
-# NA, NULL missing en R
+# Forma directa
 
-# Filas y columnas
-dim(netflix) 
+vector^2-mean(vector)
 
-# Clase de estructura de objeto
 
-class(netflix)
+"Función 1"
 
-# Mostrar la variable release_year
+lapply(vector, function(x){
+  out = x*(1/3) - 0.5*x
+  return(out)
+} ) # resultado en formato lista
 
-print(release_year)
 
-print(netflix$release_year) # será necesario llamar la variable desde la base de datos
+sapply(vector, function(x){
+  out = x*(1/3) - 0.5*x
+  return(out)
+} ) # resultado en formato vector
 
-# Permite convertir cada columna como objeto
 
-attach(netflix) 
+"Función 2, de estandarización de los elementos de un vector"
 
-print(release_year)
 
-# -------------------------------------------------------
+lapply(vector, function(i)  ( i -  mean(vector) ) / sd(vector) )
 
-# Información de cada variable
 
-str(netflix)
+# Asignando el nombre de la función: standarize
 
-# 
+standarize <- function(i, mean, sd){
+  ( i -  mean ) / sd
+}
 
-lapply(netflix, class) # lapply(x, FUN):: list()
 
-str(lapply)
+lapply(vector,standarize,  mean = mean(vector), sd = sd(vector))
+sapply(vector,standarize,  mean = mean(vector), sd = sd(vector))
 
-sapply(netflix, class) # sapply(x, FUN):: vector, Datrame, 
 
-summary(netflix) # estadisticas desciptivas de las variables
+# lapply(x, FUN, ...) ... significa argumentos adicionales para la función
 
-## Verificando ID
 
-unique(show_id)
+"Función 3"
 
-length(unique(show_id))
-
-duplicated(show_id)
-
-sum(duplicated(show_id) ) # cantidad de duplicados
-
-### ***Exploring a DataFrame***:
-
-class( netflix["director"] ) # Dataframe
-netflix["director"]
-
-class( netflix[director,] )
-
-class( netflix$director ) # lista o vector
-
-#-----------------------------------------------------------------------
-
-## revisando missing values
-
-" En R, tenemos dos formas de missing, en general, NA y Null "
-unique(director) 
-unique(director)[1]
-
-any( is.na(netflix["director"]) ) # TRUE: al menos un missing value
-
-any(is.null(netflix["director"])) 
-
-any(is.na(netflix$director))
-
-any(is.na(director))  # al menos una observación es Missing
-
-## cantidad de missing 
-
-sum(is.na(director))
-
-## Manipulando missing values
-
-netflix %>% drop_na() 
-
-netflix2  <- netflix %>% drop_na()  # borras todas las filas con missig values
-
-netflix2 <- netflix %>% drop_na(director)
-
-# borras observaciones con missing values de la columna director
-
-netflix <- netflix %>% replace_na(list(director = "Sin director"))
-
-"En R debe asignarse el objeto alterado a uno nuevo. En este caso a Netflix2"
-#----------------------------------------------------------------------------
-
-### ***Subsetting columns***
-
-netflix2 <- netflix[,c('director','release_year','show_id')] # seleccionar columnas
-View(netflix2)
-
-View( netflix[1:100,c('director','release_year')] ) # filtrar columnas y filas 
-
-View( netflix[c(1,10,100),c('director','release_year')] )
-
-View( netflix[c(1,10,100),c(1,5)] ) # usando posiciones
-
-
-View( netflix[1:100, c(1:5,10)] ) # usando posiciones
-
-names(netflix)
-
-names(netflix)[2]
-
-#----------------------------------------------------------------------------
-
-# Crear una nueva variable
-
-netflix['number'] = runif(n = dim(netflix)[1], min = 1, max = 10)
-netflix$number2 = runif(n = dim(netflix)[1], min = 1, max = 10)
-
-### ***Sorting and Subsetting***
-
-netflix['new'] = netflix['release_year'] + netflix['number'] 
-
-netflix['new2'] = netflix$release_year + netflix$number
-
-# ordering de manera ascendente por default
-
-netflix <- netflix[order(netflix$release_year),]
-
-netflix <- netflix[order(- netflix$release_year),] # descendente
-
-#attach(netflix) 
-
-netflix <- netflix[order(netflix$release_year, netflix$number2),]
-
-netflix <- netflix[order(netflix$release_year, - netflix$number2),]
+lapply(vector, function(i){
+  if (i < 50){
+    
+    out = 1
+    
+  } else {
+    
+    out = NA
+    
+  }
+  return(out)
   
-#----------------------------------------------------------------------------
-
-### ***Subsetting rows***
-
-netflix2 <- netflix[which(netflix$release_year < 2011 & netflix$number > 5), ]
-View(netflix2)
-
-netflix %>% filter( release_year < 2011 & netflix$number > 5  )  # using Tdyr library
+})
 
 
-### ***Subsetting based on text data***
+sapply(vector, function(i){
+  if (i < 50) out = 1  else  out = NA
 
-netflix2 <- netflix[which(netflix$country == "Peru"), ]
-View(netflix2)
+  return(out)
+}
+)
+  
 
-netflix2 <- netflix[which(netflix$country == "Mexico"), ]
-View(netflix2)
+# Regular expresion aplicado a un vector de string #
 
+vector_tx <- c("Tiene 9 años","Dice tener 24 ", "35 years",
+               "Acabod e cumplir 40", "El año paso tuvo 20")
 
-netflix2 <- netflix %>% filter( (country == "Brazil") | ( netflix$country == "Peru") ) 
-View(netflix2)
+extract_numb <- function(x){
+  
+ return(str_extract(x,"[0-9]+") )
+  
+}
 
-# American movies
+sapply(vector_tx, extract_numb)
 
-netflix2 <- netflix %>% filter( (type == "Movie") & ( country == "United States") 
-                                & (release_year > 2019) ) 
-
-# %in%
-
-"
-If you want to filter by multiple values of a categorical variable,
-the easiest way is to use the %in% method "
-
-
-data_frame <- netflix[netflix$country %in% c("Peru","Chile"),]
-
-data_frame <- netflix[! netflix$country %in% c("Peru","Chile"),]  # ! negación en R
-
-data_frame <- netflix %>% rename(Titulo = title,
-                                 Duration_movie = duration) 
+lapply(vector_tx, extract_numb)
 
 
-data_frame <- netflix[, ! names(netflix) %in% c('show_id', 'director')] # Drop variables
+#-------------------------------#
+# Loop replacement BBDD ####
+#-------------------------------#
 
-# Export dataset
+# Matrix #
 
-write.csv(base, '../data/new_base.csv')
+set.seed(756)
 
-write.csv(base, '../data/new_base.xlsx')
+x1 <- rnorm(50) # distribución uniforme entre 0 y 1
+x2 <- rnorm(50)
+x3 <- rnorm(50)
+x4 <- rnorm(50)
+
+X <- cbind(x1,x2,x3,x4)
+
+# matrix(1,500) vector columna de unos (500 observaciones)
+
+apply(X, 2, mean)  # MARGIN == 2 para columnas (columns)
+apply(X, 1, mean)  # MARGIN == 1 para filas (rows)
+
+apply(X, 1, sd)  # MARGIN == 1 para filas
+
+apply(X, 2, min)
+
+apply(X, 1, max)
+
+
+"Estandarizar una matriz"
+
+apply(X, 2, function(i){
+  ( i -  mean(i) ) / sd(i)
+} )
+
+apply(X, 2, function(i) ( i -  mean(i) ) / sd(i) )
+
+
+# En este caso mean(i) es la media por columna
+# mientras sd(i) es la desviación estandar por columna
+
+
+cps2012  <- get(load("../../data/cps2012.Rdata")) 
+
+# load R dataset format, extensión Rdata
+
+# Tomamos la varianza de cada columna
+
+apply(cps2012, 2, var) # tomando la varianza por columna (Margin:2)
+  
+X <- cps2012[ , which(apply(cps2012, 2, var) != 0)] 
+
+# Se exlucye las columnas constantes
+
+demean<- function (x){ x- mean(x)}
+X<- apply(X, 2, demean)
+
+
+
+#------------------------------------------------------------#
+#             Equivalent *args de Python en R (...)
+
+# args permite observar los argumentos de una función que corresponde a una liberia
+# (...) argumentos adicionales que usará la función
+
+args(read.csv)
+args(lapply)
+
+# aqui ... significa que se admite cualquier tipo de argumento
+
+caso1 <- function(...) {
+  return(sum(...))  # suma de estos argumentos desconocidos
+}
+
+caso1(2,4,5)
+
+caso1(2,4,5,12,45,3,6,9)
+
+
+caso2 <- function(...) {
+  
+  return(prod(...))
+  
+  
+}  
+
+caso2(sample(1:50, size = 5))
+
+
+# Ejemplo con base de datos
+
+datos <- read.csv("../../data/BDD_compras_consumidores.csv", sep = ";")
+
+str(datos) # muestra el tipo de variable de cada columna
+
+# Convirtiendo a variables categórica
+
+datos$Channel <- factor(datos$Channel)
+datos$Region  <- factor(datos$Region)
+
+str(datos)
+
+# Tabla de frecuencia de algunas variables 
+
+table(datos$Channel)
+table(datos$Region)
+
+
+#--------------------------#
+#### Apply #####
+#--------------------------#
+
+# Apply. Aplica una función a un dataframe
+
+# Total de ventas
+
+apply(datos[, 3:8], 1, sum)  # 1 es por filas
+
+datos$Ventas <- apply(datos[, 3:8], 1, sum) # creando nueva columna de ventas
+
+apply(datos[,3:8], 2, sum)    
+# 2 es por columnas (total de ventas por tipo de producto)
+apply(datos[,3:8], 2, mean)
+# 2 es por columnas (promedio de ventas por tipo de producto)
+
+
+
+# Con apply(), además de sumar, podemos hacer otras operaciones 
+# que vienen cargadas por defecto en R.
+
+getGroupMembers("Summary")
+
+apply(datos[,3:8], 2, min)
+apply(datos[,3:8], 2, max)
+apply(datos[,3:8], 2, range) # range devuelve el máximo y minimo 
+
+
+# Aplicando una función
+
+# conversión de las ventas a dólares
+
+datos2 <- apply(datos[, 3:8], 2, function(x) x/3.9) 
+datos3 <- cbind(datos[, 1:2], datos2)  # uniendo bases de columa en columnas
+
+#---------------#
+#### Tapply ####
+#---------------#
+
+# tapply(variable numérica, variable categórica, estadístico)
+
+# tapply operaciones por categorías
+
+tapply(datos$Ventas, datos$Region, mean) 
+# promedio ventas por region
+
+tapply(datos$Ventas, datos$Channel, mean) 
+# promedio de ventas por canal (tipo comercio)
+
+
+# Reference -----
+
+# Base de datos 
+
+browseURL("https://archive.ics.uci.edu/ml/datasets/Wholesale+customers")
+
+
 
