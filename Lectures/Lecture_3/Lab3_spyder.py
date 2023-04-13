@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Loop replacemnet and Class
+Loop replacemnet
 
 @author: Roberto
 """
