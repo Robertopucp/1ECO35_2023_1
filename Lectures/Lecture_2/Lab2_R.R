@@ -191,8 +191,10 @@ for(i in 1:1000) {
   
 }
 
-
+#------------------#
 # Measure loop time
+#------------------#
+
 
 start_time <- Sys.time()
 for(i in 1:1000) {
@@ -246,6 +248,22 @@ while (TRUE){
   
 }
 
+
+#---------------------#
+# Try and error ####
+#---------------------#
+
+a = "2"
+
+
+tryCatch(a/7,
+         
+         error = function(e)  {
+           
+           cat("Correción del tipo de variable:" , as.integer(a) / 7)
+           
+         }
+)
 
 # Function -----
 
