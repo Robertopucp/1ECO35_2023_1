@@ -506,9 +506,9 @@ hist(X, breaks = 100)
 
 ## OLS ----
 
-set.seed(756)
+set.seed(756)  # semilla aleatoria 
 
-x1 <- runif(500)
+x1 <- runif(500)  # distribución unifrome 
 x2 <- runif(500)
 x3 <- runif(500)
 x4 <- runif(500)
@@ -526,11 +526,18 @@ head(X)
 
 #inv(X) or solve (X)
 
-beta <- solve(t(X) %*% X) %*% (t(X) %*% Y)
+beta <- solve( t(X) %*% X ) %*% (t(X) %*% Y)
 print(beta)
+
+# %*% multiplicar ,matrices 
+# t(X) : transpuesta
+# solve(X)  : inversa
+
 
 #References
 
 browseURL("https://r4ds.had.co.nz/")
+
+
 
 

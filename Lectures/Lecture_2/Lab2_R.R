@@ -2,7 +2,7 @@
 # Curso: Laboratorio de R y Python 
 # @author: Roberto Mendoza 
 
-#install.packages("dplyr")
+# install.packages("dplyr")
 # install.packages("readxl")
 # install.packages("pacman")
 
@@ -26,6 +26,7 @@ library(rstudioapi) # set working directory to file location
 library(pacman)  # Package Manager
 p_load(dplyr, readxl, rstudioapi)
 
+
 # Change directory where actual script is located
 
 getwd()
@@ -34,13 +35,17 @@ getwd()
 
 user <- Sys.getenv("USERNAME")  # username
 print(user)
-setwd( paste0("C:/Users/",user,"/Documents/GitHub/1ECO35_2023_1/Lectures/Lecture_2") ) # set directorio
+setwd( paste0("C:/Users/",user,"/Documents/GitHub/1ECO35_2023_1/Lectures/Lecture_2") )
+
+# set directorio
 getwd()
 
 ## alternative 2
 
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 getwd()
+
+# setwd set working directory 
 
 # -------------------------------------------------------#
 
@@ -49,9 +54,13 @@ getwd()
 y <- runif(10,-10,10) # runif( n: cantidad de elementos, inicio , final)
 
 if (mean(y) > 0) {
+  
   dummy <- 1
+  
 } else {
+  
   dummy <- 0
+  
 }
   
 print(dummy)  
@@ -59,9 +68,15 @@ print(dummy)
 
 # short ifelse
 
-dummy <- ifelse(mean(y) > 0, 1, 0)
+dummy <- ifelse(mean(y) > 0, 1, 0)  # ifelse(condition, true, false)
+
+print(dummy)
+
+# si la sentencia se cumple , se aisgna el valor de 1. Caso contrario el cero
+
 
 dummy <- if (mean(y) > 0) 1 else 0
+
 
 print(dummy)
 
@@ -71,7 +86,7 @@ print(dummy)
 # v <- NA
 # v <- "String"
 
-v <- TRUE
+v <- "tnuto"
 
 
 if  ( is.numeric(v) ){
@@ -104,6 +119,7 @@ if  ( is.numeric(v) ){
 # while without ending, the condition is always met
 
 i <- 0
+
 while(i < 10) {
   print(i + 1)
 }
@@ -112,10 +128,23 @@ while(i < 10) {
 # while requires a counter (i = i + 1)
 
 i <- 0
+
 while(i < 10) {
-  i = i + 1
+  i = i + 1  # contador 
   print(i)
+  
 }
+
+i <- 0
+
+while(TRUE) {
+  i = i + 1  # contador 
+  print(i)
+  
+  if (i == 30) break
+
+}
+
 
 
 
@@ -130,9 +159,10 @@ n <- 10
 i <- 0.025
 
 
-year = 1
+year <- 1
+
 while (year < n){
-  S <-  S*(1+i)
+  S <-  S*(1+i) 
   year <-  year + 1
   cat( "periodo ", year, ": ", S,"\n")
 }
@@ -140,7 +170,7 @@ while (year < n){
 
 ## For ----
 
-ages<-  1:10000
+ages <-  1:10000
 
 for (age in ages) {
   
@@ -148,25 +178,33 @@ for (age in ages) {
   
 }
 
+
+
 # a vector 
 
-y <- c()
+y <- c()  #vector vacío 
 
-for(i in 1:length(ages)) {
+for(i in 1:1000) {
+  
   y[i] <- log(ages[i])
+  
+  
 }
+
 
 # Measure loop time
 
 start_time <- Sys.time()
-for(i in 1:length(ages)) {
+for(i in 1:1000) {
   y[i] <- log(ages[i])
   print(i)
 }
 print(Sys.time() - start_time)    # slow
 
+
+
 start_time <- Sys.time()
-y <- log(ages)
+y <- log(ages[1:1000])
 print(Sys.time() - start_time)    # fast
 
 
