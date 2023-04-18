@@ -2,13 +2,13 @@
 # Kevin Pareja (20196318)
 # Elian Tongombol (20196453)
 # Paola Aranda (20196052)
-# Mar√≠a Alejandra Col√°n (20190515)
+# Maria Alejandra Colan (20190515)
 
 # Consideraciones previas: #####
 ## Borrando el environment ####
 rm(list = ls())
 
-## Borrando los gr√°ficos ####
+## Borrando los graficos ####
 graphics.off()
 
 ##Borrando la consola ####
@@ -20,10 +20,27 @@ library(stringr)
 
 # Desarrollo de las preguntas ####
 
-## Pregunta 1: Funci√≥n #### 
+## Pregunta 1: Condicional 1 ####
+pago <- 400
 
-## Pregunta 2: Funci√≥n de masa corporal #### 
+if (pago < 100) {
+  cat ("Compra de", pago, "soles y pago en efectivo")
+} else if ((pago>100) & (pago<300)) {
+  cat ("Compra de", pago, "soles y pago con tarjeta de dÈbito")
+} else {
+  cat ("Compra de", (pago*0.9), "soles y pago con tarjeta de crÈdito")
+}
+  
+
+## Pregunta 2: Condicional 2 ####
 
 
-## Pregunta 3: Funci√≥n aplicando activos financieros #### 
+## Pregunta 3: Loops ####
+
+## Pregunta 4: FunciÛn para calcular el factorial de un n˙mero n! #### 
+
+## Pregunta 5: Funcion de masa corporal #### 
+
+
+## Pregunta 3: Funcion aplicando activos financieros #### 
 
