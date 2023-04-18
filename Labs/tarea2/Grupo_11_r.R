@@ -34,7 +34,20 @@ if (pago < 100) {
 
 ## Pregunta 2: Condicional 2 ####
 
+fx1 <- function(x)
+{
+  if ((x>0) & (x<100)) {
+    result = x^(1/2)
+  } else if ((x>100) & (x<300)) {
+    result = x-5
+  } else {
+    result = 50
+  }
+  return(result)
+}
 
+
+fx1( 400 )
 ## Pregunta 3: Loops ####
 
 ## Pregunta 4: Función para calcular el factorial de un número n! #### 
