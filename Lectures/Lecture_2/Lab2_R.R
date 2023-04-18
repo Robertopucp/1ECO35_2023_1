@@ -35,7 +35,7 @@ getwd()
 
 user <- Sys.getenv("USERNAME")  # username
 print(user)
-setwd( paste0("C:/Users/",user,"/Documents/GitHub/1ECO35_2023_1/Lectures/Lecture_2") )
+setwd( paste0("C:/Users/",user,"/Documents/GitHub/GITHUB/1ECO35_2023_1/Lectures/Lecture_2") )
 
 # set directorio
 getwd()
@@ -315,7 +315,7 @@ calculator_square <- function(x,y){
   result <- x2 * y2  
   return(list(x2,y2,paste0("La multiplicaciÃ³n del cuadrado es:", result)) )
 }
-
+list(1,2,3)[[1]]
 
 # list para multiples resultados en una funciÃ³n de R
 
@@ -323,6 +323,12 @@ calculator_square(3, 4)[1]
 calculator_square(3, 4)[[1]] # para obtener el elemento simple
 
 
+función_finanzas <- function(a,b,c){
+  
+  result <- a*(1+b)^c 
+  return(list(text=paste0("El monto final es:", result),text=paste0("Los intereses ganados son iguales a ",result-a)))
+}
+función_finanzas(50000,0.3,12)$monto1
 # Return named outputs in a list
 
 calculator_square <- function(x,y){
@@ -341,6 +347,8 @@ calculator_square(3, 4)
 calculator_square(3, 4)$x_2
 
 calculator_square(3, 4)$text
+
+
 
 ## IF statement and return ----
 
