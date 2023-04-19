@@ -26,9 +26,9 @@ pago <- 400
 if (pago < 100) {
   cat ("Compra de", pago, "soles y pago en efectivo")
 } else if ((pago>100) & (pago<300)) {
-  cat ("Compra de", pago, "soles y pago con tarjeta de débito")
+  cat ("Compra de", pago, "soles y pago con tarjeta de d?bito")
 } else {
-  cat ("Compra de", (pago*0.9), "soles y pago con tarjeta de crédito")
+  cat ("Compra de", (pago*0.9), "soles y pago con tarjeta de cr?dito")
 }
   
 
@@ -50,7 +50,17 @@ fx1 <- function(x)
 fx1( 400 )
 ## Pregunta 3: Loops ####
 
-## Pregunta 4: Función para calcular el factorial de un número n! #### 
+## Pregunta 4: Funci?n para calcular el factorial de un n?mero n! #### 
+
+factorial <- function(n) {
+  if(n == 0) {
+    return(1) # El factorial de 0 es 1
+  } else {
+    return(n * factorial(n-1))
+  }
+}
+#a modo de ejemplo probamos el factorial de 7:
+factorial (7)
 
 ## Pregunta 5: Funcion de masa corporal #### 
 
