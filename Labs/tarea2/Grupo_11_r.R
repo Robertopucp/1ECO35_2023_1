@@ -83,27 +83,33 @@ factorial (7)
 ## Pregunta 5: Funcion de masa corporal #### 
 
 #creamos la función del imc
-calcular_imc <- function(peso, talla) {
+calcular_imc <- function(peso, talla){
   imc <- peso / talla^2
-  cat("El IMC es:", imc, "\n")
-  #añadiendo los criterios
-  if (imc < 18.5) {
-    cat("Bajo peso\n")
-  } else if (imc >= 18.5 & imc < 25) {
-    cat("Peso normal\n")
-  } else if (imc >= 25 & imc < 30) {
-    cat("Sobrepeso\n")
-  } else {
-    cat("Obesidad\n")
+#colocamos los criterios según la tabla IMC
+  clasificacion <- "Desconocido"
+  if (imc>= 18.5 && imc <= 24.9){
+    clasificacion <- "Normal"
+  } else if(imc >= 25 && imc <= 29.9){
+    clasificacion <- "Sobrepeso"
+  } else if(imc >= 30 && imc <= 34.9){
+    clasificacion <- "Obesidad grado I"
+  } else if(imc >= 35 && imc <=39.9){
+    clasificacion <- "Obesidad grado II"
+  } else if (imc >= 40){
+    clasificacion <- "Obesidad grado III"
   }
-}
-#probamos con los datos de los estudiantes:
-#Estudiante 1
-calcular_imc(70, 1.5) 
-#Estudiante 2
-calcular_imc(85, 1.8) 
-#Estudiante 3
-calcular_imc(50, 1.6) 
+  resultado <- list(peso = peso, talla = talla, imc = imc, clasificacion = clasificacion)
+  return(resultado)
+ }
+#colocamos los datos de cada estudiante
+estudiante_1 <- calcular_imc(peso = 70, talla = 1.5)
+estudiante_2 <- calcular_imc(peso = 85, talla = 1.8)
+estudiante_3 <- calcular_imc(peso = 50, talla = 1.6)
+
+#vemos los 4 outcomes:
+estudiante_1
+estudiante_2
+estudiante_3
 
 ## Pregunta 3: Funcion aplicando activos financieros #### 
 
