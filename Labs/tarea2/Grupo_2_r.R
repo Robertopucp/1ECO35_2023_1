@@ -1,7 +1,46 @@
 #Script en R----
 ##Condicionales----
+#Primer ejercicio
 
+if (montoCompra>=0){
+  descuento<-0 #0 inicialmente solo un caso tendrá descuento y se le asignará el valor si ingresa a la condicional
+  if(montoCompra<=100){
+    tipoPago<- "en efectivo"
+  }else{
+    if(montoCompra<=300){
+      tipoPago <- "con tarjeta de débito"
+    }else{
+      tipoPago<- "con tarjeta de crédito"
+      descuento<- 0.1*montoCompra
+    }
+  }
+  cat("Compra de ",montoCompra," y pago ",tipoPago," y descuento",descuento) #Se imprime los resultados
+}
+
+
+#Segundo ejercicio
+if (x>=0){ #Se plantea la condicional que refleja la funcion matematica
+    if (x<=100){
+      y <- x^(1/2)
+    }else{
+      if(x<=300){
+        y<-x-5
+      }else{
+        y<-50
+      }
+    }
+    
+}
+  
 ##Loops----
+
+utilidades <-  c(100,152,-1,8,12,156,35,-10,100,-0.5,30,1050,7,-10)
+for (monto in utilidades) {
+  if(monto>1000) break #Se detiene si supera los 1000 millones
+  if (monto<0) next #Se evita imprimir utilidades negativas
+  cat("La utilidad neta anual es ",monto,"\n")
+}
+
 
 
 #Script solo en R----
