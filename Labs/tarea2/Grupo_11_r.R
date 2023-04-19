@@ -131,7 +131,7 @@ calculadora <- function(data){ # se aplica la funcion aplicada a una base de dat
   Y <- data$Y
   w1 <- 0.2
   w2 <- 0.8
-  #formula de Coef. de correlacion de Pearson: COV(X,Y)/(var(x)*var(y))^0.5
+  #formula de Coef. de correlacion de Pearson: formula --> COV(X,Y)/(var(x)*var(y))^0.5
   pearson <- (cov(X,Y))/((var(X)*var(Y))^0.5)
   varianza <- (var(X)*w1^2)+(var(Y)*w2^2)+(2*cov(X,Y)*w1*w2)
   
