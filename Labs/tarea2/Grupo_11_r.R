@@ -68,6 +68,7 @@ for (uneta in utilidades) {
   print(mensaje)
 }
 
+#PREGUNTAS SOLO EN R
 ## Pregunta 4: Funcion para calcular el factorial de un numero n! #### 
 
 factorial <- function(n) {
@@ -111,6 +112,30 @@ estudiante_1
 estudiante_2
 estudiante_3
 
-## Pregunta 3: Funcion aplicando activos financieros #### 
+## Pregunta 6: Funcion aplicando activos financieros #### 
 
+#obtnemos el directorio de trabajo
+getwd()
 
+user <- Sys.getenv("USERNAME")  # username estamose xtrayencdo el usuario automaticamente
+print(user)
+setwd( paste0("C:/Users/",user,"/Documents/GitHub/1ECO35_2023_1/Labs/tarea2") ) # set directorio
+
+#para leer un archivo csv
+portfolio <- read.csv("../../data/Portafolio.csv", encoding = "UTF-8")
+portfolio
+
+calculadora <- function(data){ # se aplica la funcion aplicada a una base de datos
+  
+  X <- data$X #extrayendo cada fila de datos
+  Y <- data$Y
+  w1 <- 0.2
+  w2 <- 0.8
+  #formula de Coef. de correlacion de Pearson: COV(X,Y)/(var(x)*var(y))^0.5
+  pearson <- (cov(X,Y))/((var(X)*var(Y))^0.5)
+  varianza <- (var(X)*w1^2)+(var(Y)*w2^2)+(2*cov(X,Y)*w1*w2)
+  
+  #return(list(result1= paste0("El coeficiente de correlación es:", pearson), result2= paste()("La variaza del portafolio es:", varianza)))
+  return(list(pearson,varianza))
+}
+calculadora(portfolio)
