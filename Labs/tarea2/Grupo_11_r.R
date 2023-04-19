@@ -121,7 +121,7 @@ user <- Sys.getenv("USERNAME")  # username estamose xtrayencdo el usuario automa
 print(user)
 setwd( paste0("C:/Users/",user,"/Documents/GitHub/1ECO35_2023_1/Labs/tarea2") ) # set directorio
 
-#para leer un archivo csv
+#codigo para leer un archivo csv
 portfolio <- read.csv("../../data/Portafolio.csv", encoding = "UTF-8")
 portfolio
 
@@ -135,7 +135,7 @@ calculadora <- function(data){ # se aplica la funcion aplicada a una base de dat
   pearson <- (cov(X,Y))/((var(X)*var(Y))^0.5)
   varianza <- (var(X)*w1^2)+(var(Y)*w2^2)+(2*cov(X,Y)*w1*w2)
   
-  #return(list(result1= paste0("El coeficiente de correlación es:", pearson), result2= paste()("La variaza del portafolio es:", varianza)))
+  
   return(list(pearson,varianza))
 }
 calculadora(portfolio)
