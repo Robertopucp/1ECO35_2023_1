@@ -5,12 +5,20 @@ Loop replacemnet
 @author: Roberto
 """
 
+# para correr lienas de codigo
+# 1. seleccionar lineas de codigo
+# 2. presioner tecla F9
+
 import numpy as np
 import pandas as pd
 from pandas import DataFrame, Series
 import re # Regex
 import pyreadr  # Load R dataset
 import os # for usernanme y set direcotrio
+
+# pip install pyreadr  (correr linea esta linead e codigo en la consola)
+
+# data.Rdata
 
 # Change directory 
 
@@ -19,6 +27,11 @@ user = os.getlogin()   # Username
 # Set directorio
 
 os.chdir(f"C:/Users/{user}/Documents/GitHub/1ECO35_2023_1/Lectures/Lecture_3") # Set directorio
+
+
+#%% Ejemplo de header
+
+print("Hola Mundo")
 
 
 
@@ -32,23 +45,29 @@ def interes(C, T, R):
 
 interes(5000, 24, 0.02)
 
+
 # forma parsimoniosa de generar funciones
 
 interes2 = lambda C, T, R : C*T*R
 
 interes2(5000, 24, 0.02)
 
+
 # Más ejemplos 
 
 # map, es una función que a cada elemento de un conjunto de datos aplica la función que le indiquemos
 
 genero = ['F', 'M', 'M', 'F', 'M']
+
 list( map( lambda x: 0 if x == 'M' else 1, genero )  )
+
 
 
 NSE = ['A', 'A', 'C', 'B', 'C']
 
 list( map( lambda x: 3 if x == 'A' else (2 if x == 'B' else 1), NSE )  )
+
+
 
 # Más ejemplos #
 
@@ -90,11 +109,15 @@ def sdv(x,mean,sd):
     return out 
 
 
-list( map( lambda x, v1 = np.mean(vector), v2 = np.std(vector): sdv(x,v1, v2) , vector)  )  
+list( map( lambda x, mean = np.mean(vector), sd = np.std(vector): sdv(x,mean,sd) , vector)  )  
+
 
 # función explicita en la función lambda
 
+
 list( map( lambda x: (x - np.mean(vector))/np.std(vector), vector)  )  
+
+
 
 '''
 Función 3, If statement
@@ -127,7 +150,12 @@ texto_vector = np.array(["Municipio San Luis: 12450","Municipio La victoria: 145
                          "Municipio La Molina: 3550","Municipio Ate: 506"])
 
 
-list( map( lambda x: re.sub('\D',"", x) , texto_vector)   )
+list( map( lambda x: int(re.sub('\D',"", x)) , texto_vector)   )
+
+# \D : todo menos numero
+
+# import re (regular expression)
+
 
 # \D: significa todo menos a los dígitos
 
@@ -215,11 +243,12 @@ dt = cps2012.describe()
 # Borrar variables constantes 
 
 variance_cols = cps2012.var().to_numpy() # to numpy
+
 X = cps2012.iloc[ : ,  np.where( variance_cols != 0   )[0] ]
 
 # np.where( variance_cols != 0   ) resulta la posición de lasa columnas con varianza != 0
 
-np.where( variance_cols != 0   )[0] # array
+#np.where( variance_cols != 0   )[0] # array
 
 # np.where() permite obtener la posición de columnas que cumplen la condición
 
