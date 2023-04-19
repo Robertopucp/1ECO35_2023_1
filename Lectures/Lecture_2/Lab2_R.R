@@ -35,7 +35,7 @@ getwd()
 
 user <- Sys.getenv("USERNAME")  # username
 print(user)
-setwd( paste0("C:/Users/",user,"/Documents/GitHub/GITHUB/1ECO35_2023_1/Lectures/Lecture_2") )
+setwd( paste0("C:/Users/",user,"/Documents/GitHub/1ECO35_2023_1/Lectures/Lecture_2") )
 
 # set directorio
 getwd()
@@ -214,18 +214,24 @@ print(Sys.time() - start_time)    # fast
 ## For and Next ----
 
 for (i in 1:50) {
+  
   if(i %in% 15:20) { # Ignora los primeros 20 elementos
     next  
+    
   }
+  
  cat("Ejecutanto",i,"\n")
+ 
 }
 
 
 ## For and Next, break ----
 
 
+# i %in% 15:20 la varaible toma varlores del rango 15-20
+
 for (i in 1:50) {
-  if(i %in% 15:20) { # Ignora los primeros 20 elementos
+  if(i %in% 15:20) { # Ignora los primeros 20 elementos %in% 
     break
   }
   cat("Ejecutanto",i,"\n")
@@ -255,6 +261,7 @@ while (TRUE){
 
 a = "2"
 
+a/7
 
 tryCatch(a/7,
          
@@ -265,17 +272,21 @@ tryCatch(a/7,
          }
 )
 
+
 # Function -----
+
 
 # -------------------------------------------------------#
 
 ## First function ##
 
-calculator <- function(x,y,z)
+calculator <- function(x,y,z=3)
 {
   result = x*y + z
   return(result)
 }
+
+
 
 calculator( 158, 38, 10 )
 
@@ -300,6 +311,13 @@ calculator <- function(x,y,z)
 
 calculator( 158, 38, 10 )
 
+# forma reducida
+
+calculator <- function(x,y,z) x+z+y
+
+calculator(100,1,50)
+
+
 # alternative function 
 
 calculator <- function(x,y,z) x*y*z
@@ -308,27 +326,28 @@ calculator( 110, 13, 2 )
   
 ## return multiple ----
 
+
+
 calculator_square <- function(x,y){
   x2 <- x * x
   y2 <- y * y
   
   result <- x2 * y2  
-  return(list(x2,y2,paste0("La multiplicaci贸n del cuadrado es:", result)) )
+  
+  return(list( x2,y2,paste0("La multiplicaci贸n del cuadrado es:", result) ) )
 }
+
 list(1,2,3)[[1]]
+
 
 # list para multiples resultados en una funci贸n de R
 
-calculator_square(3, 4)[1]
-calculator_square(3, 4)[[1]] # para obtener el elemento simple
+calculator_square(3, 4)
+
+calculator_square(3, 4)[3]  # me entrga el numero pero formato lista 
+calculator_square(3, 4)[[3]] # recupero el numero tal cual 
 
 
-funci髇_finanzas <- function(a,b,c){
-  
-  result <- a*(1+b)^c 
-  return(list(text=paste0("El monto final es:", result),text=paste0("Los intereses ganados son iguales a ",result-a)))
-}
-funci髇_finanzas(50000,0.3,12)$monto1
 # Return named outputs in a list
 
 calculator_square <- function(x,y){
@@ -341,12 +360,24 @@ calculator_square <- function(x,y){
               text = paste0("La multiplicaci贸n del cuadrado es:", result)) )
 }
 
+
+
 calculator_square(3, 4)
 
 
 calculator_square(3, 4)$x_2
 
 calculator_square(3, 4)$text
+
+calculator_square(3, 4)$y_2
+
+# finanzas
+
+# funci贸n 3 argumentos 1: monto, 2: tasa de interes, 3: periodos 
+
+# monto_final = monto_inicial*(1+tasa)^periodos
+
+# 2 outcomes (Monto final, Intereses ganados = Monto Final - Monto inicial)
 
 
 
@@ -373,6 +404,7 @@ calculator_square_2(300, 4)
 
 ## Alpha between two assets ----
 
+# Relative path ../ significa hacia atras 
 
 portfolio <- read.csv("../../data/Portafolio.csv", encoding = "UTF-8")
 
