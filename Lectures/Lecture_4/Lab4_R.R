@@ -180,6 +180,9 @@ View(bbdd) # visualización de la base de datos
 
 dim(bbdd) # dimensiones de la base de datos
 
+ncol(bbdd) # numero de columnas
+nrow(bbdd) # numero de filas
+
 sapply(bbdd, class)  # tipo de varaible 
 
 summary(bbdd)   # principales estadisticas descriptivas
@@ -276,6 +279,18 @@ bbdd[c(1:3, 5)]
 
 bbdd[ , c("pais", "anio", "poblacion")]
 
+# desde tercera columna hasta el final 
+
+bbdd[,3:ncol(bbdd)]
+
+# hasta la tercera columna
+
+bbdd[,1:3]
+
+bbdd[,1:3]
+
+#seleccionar ultima columna ?
+
 # selecting rows #
 
 bbdd[1:100, ] # 100 primeras observaciones
@@ -285,6 +300,8 @@ bbdd[c(1,100,50,25), ]
 bbdd[ c(100:200), c("pais", "anio", "poblacion")]
 
 indices <- split(seq(nrow(bbdd)), sort( seq(nrow(bbdd)) %% 3 ) )
+
+
 # indexing de las filas agrupado en 3 
 indices
 
