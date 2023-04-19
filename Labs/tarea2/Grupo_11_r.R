@@ -21,11 +21,18 @@ library(stringr)
 # Desarrollo de las preguntas ####
 
 ## Pregunta 1: Condicional 1 ####
+# Consideramos a "compra" como el monto a pagar
 pago <- 400
 
-if (pago < 100) {
+#Usamos el comando if para indicar que si es una cantidad menor igual a 100 soles, se paga en efectivo.
+
+#En caso contrario, se sigue la condición else if.
+
+#En cualquier otro caso, se usa la condición else.
+
+if (pago <= 100) {
   cat ("Compra de", pago, "soles y pago en efectivo")
-} else if ((pago>100) & (pago<300)) {
+} else if ((pago>100) & (pago<=300)) {
   cat ("Compra de", pago, "soles y pago con tarjeta de d?bito")
 } else {
   cat ("Compra de", (pago*0.9), "soles y pago con tarjeta de cr?dito")
@@ -34,11 +41,19 @@ if (pago < 100) {
 
 ## Pregunta 2: Condicional 2 ####
 
+#Definimos la función fx1, que afecta a la variable x. 
+
+#Usamos if para la primera condicional
+#Else if para el siguiente caso
+#Else para cualquier otro caso
+
+#Especificamos que la función nos debe dar como return a "result". 
+
 fx1 <- function(x)
 {
-  if ((x>0) & (x<100)) {
+  if ((x=>0) & (x<100)) {
     result = x^(1/2)
-  } else if ((x>100) & (x<300)) {
+  } else if ((x>=100) & (x<300)) {
     result = x-5
   } else {
     result = 50
@@ -46,8 +61,9 @@ fx1 <- function(x)
   return(result)
 }
 
-
+#Probamos la función
 fx1( 400 )
+
 ## Pregunta 3: Loops ####
 
 # Vector con las utilidades netas anuales
