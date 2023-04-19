@@ -2,9 +2,15 @@
 # Curso: Laboratorio de R y Python 
 # @author: Roberto Mendoza 
 
+<<<<<<< Updated upstream
 # install.packages("dplyr")
 # install.packages("readxl")
 # install.packages("pacman")
+=======
+#install.packages("dplyr")
+#install.packages("readxl")
+#install.packages("pacman")
+>>>>>>> Stashed changes
 
 # clean environment variables
 
@@ -35,9 +41,13 @@ getwd()
 
 user <- Sys.getenv("USERNAME")  # username
 print(user)
+<<<<<<< Updated upstream
 setwd( paste0("C:/Users/",user,"/Documents/GitHub/1ECO35_2023_1/Lectures/Lecture_2") )
 
 # set directorio
+=======
+setwd( paste0("C:\Users\Allison\Documents\ ",user," \GitHub\GITHUB\1ECO35_2023_1\Lectures\Lecture_2") ) # set directorio
+>>>>>>> Stashed changes
 getwd()
 
 ## alternative 2
@@ -80,7 +90,7 @@ dummy <- if (mean(y) > 0) 1 else 0
 
 print(dummy)
 
-## Nested If statement -----
+## Nested If statement -----muchas condiciones
 
 # v <- 2
 # v <- NA

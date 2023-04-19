@@ -18,8 +18,10 @@ user = os.getlogin()   # Username
 
 # Set directorio
 
-os.chdir(f"C:/Users/{user}/Documents/GitHub/1ECO35_2023_1/Lectures/Lecture_3") # Set directorio
+os.chdir(f"C:/Users/{user}/Documents/GitHub//GITHUB/1ECO35_2023_1/Lectures/Lecture_3") # Set directorio
 
+#%%ejemplo de header
+print("Hola mundo")
 
 
 #%% Funciones lambda
