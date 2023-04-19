@@ -18,19 +18,154 @@ options(scipen = 999)      # No scientific notation
 
 # Library ####
 
-library(pacman)  # permite llamar a varias librerias de manera simultánea
-
-p_load(dplyr, readxl, tidyverse, datos) 
-
+library(pacman) 
+# permite llamar a varias librerias de manera simultánea
 # Si la librería no está instalada, entonces lo instala y llama para su uso
 
+p_load(dplyr, readxl, tidyverse, foreign, datos) 
+
 # tidyverse es una recopilación de varias librerias (dply, ggplot, stringr, etc)
+# foreign, libreria que permite leer base de datos de diferentes extensiones
+
 
 # Change working directory
 
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 getwd()
 
+# Load datasets ----------------------
+
+
+datoscsv <- read.csv("../../data/Riesgo_morosidad.csv")
+
+# punto y coma separa los datos
+
+datoscsv <- read.csv("../../data/Riesgo_morosidad.csv", sep = ";")
+
+
+# read.csv(file, header = TRUE, sep = ",", quote = "\"",
+#          dec = ".", fill = TRUE, comment.char = "", ...
+
+str(datoscsv)
+
+# Variables categoricas
+
+datoscsv$sexo      <- factor(datoscsv$sexo, levels = c(1, 2),
+                             labels = c("Masculino", "Femenino"))
+
+
+levels(datoscsv$sexo)
+levels(datoscsv$sexo) <- c("M","F")
+
+datoscsv$fonopart  <- factor(datoscsv$fonopart, levels = c(1, 2),
+                             labels = c("No", "Si"))
+
+datoscsv$fonolab   <- factor(datoscsv$fonolab, levels = c(1, 2),
+                             labels = c("No", "Si"))
+
+datoscsv$autovaluo <- factor(datoscsv$autovaluo, levels = c(1, 2),
+                             labels = c("No", "Si"))
+
+datoscsv$esaval    <- factor(datoscsv$esaval, levels = c(1, 2),
+                             labels = c("No", "Si"))
+
+datoscsv$tieneaval <- factor(datoscsv$tieneaval, levels = c(1, 2),
+                             labels = c("No", "Si"))
+
+datoscsv$tiporenta <- factor(datoscsv$tiporenta, levels = c(2, 3),
+                             labels = c("Fijo", "Variable"))
+
+datoscsv$dpto      <- factor(datoscsv$dpto, 
+                             levels = c(1, 2, 3, 4, 5, 6),
+                             labels = c("Lima", "Trujillo", "Arequipa",
+                                        "Cusco", "Ica", "Piura"))
+
+datoscsv$morosidad <- factor(datoscsv$morosidad, levels = c(1, 2),
+                             labels = c("No Moroso", "Moroso"))
+
+str(datoscsv)
+
+# Tabla cruzada
+
+table(datoscsv$dpto, datoscsv$morosidad)
+
+#### 1.1 Datos *.TXT ####
+
+datost <- read.table("../../data/Riesgo_morosidad.dat",
+                     sep = "\t")
+                     
+
+# primera fila como nombre de las columnas 
+
+datost <- read.table("../../data/Riesgo_morosidad.dat",
+                     sep = "\t",
+                     header = TRUE)
+
+str(datost)
+
+# read.table() puede leer archivos *.csv
+
+datoscsv2 <- read.table("../../data/Riesgo_morosidad.csv",
+                        sep = ";",
+                        header = T)
+
+
+str(datoscsv2)
+
+# Uso read.delim para la lectura de datos delimitados
+# En este caso los datos estan delimitados por tab \t
+
+datosd <- read.delim("../../data/Riesgo_morosidad.dat",
+                     sep = "\t",
+                     header = TRUE)
+str(datosd)
+
+
+#### 1.2 Datos SPSS *.sav ####
+
+# read.spss de la libreria foreign 
+
+datospss <- read.spss("../../data/Riesgo_morosidad.sav",
+                      use.value.labels = F, 
+                      to.data.frame = TRUE)
+
+# permite asignar las etiquetas como datos 
+datospss <- read.spss("../../data/Riesgo_morosidad.sav",
+                      to.data.frame = TRUE)
+
+
+str(datospss)
+
+
+#### 1.3 Datos EXCEL *.XLS *.XLSX ####
+
+datos1_xls  <- read_excel("../../data/Riesgo_morosidad.xls")
+datos2_xls  <- read_xls("../../data/Riesgo_morosidad.xls")
+
+datos1_xlsx <- read_excel("../../data/Riesgo_morosidad.xlsx")
+datos2_xlsx <- read_xlsx("../../data/Riesgo_morosidad.xlsx")
+
+str(datos1_xlsx)
+str(datos1_xls)
+
+datos1_xlsx <- as.data.frame(datos1_xlsx)
+str(datos1_xlsx)
+
+
+# Lectura de caracteres especiales 
+
+netflix <- read.csv("../../data/netflix_titles.csv")
+                    
+                    
+netflix <- read.csv("../../data/netflix_titles.csv", encoding = "UTF-8")
+
+
+netflix <- read.csv("../../data/netflix_titles.csv", encoding = "UTF-8",
+                    na.strings=c("",NA)) 
+
+# na.strings=c("",NA) reemplaza vacios por missing 
+
+#--------------------------------------------#
 
 bbdd <- paises # dataset from "datos" library
 
@@ -53,9 +188,9 @@ sum(is.na(pais))  # ningun missing en la base país
 
 sapply(bbdd, function(x) sum(is.na(x))) # check missing all variables 
 
-table(bbdd$continente) # tabular
+table(bbdd$continente) # tabla
 
-table( bbdd$anio, bbdd$continente) # tabular cruzado
+table( bbdd$anio, bbdd$continente) # tabla cruzada
 
 #------------------------------------------------#
 
@@ -63,7 +198,9 @@ table( bbdd$anio, bbdd$continente) # tabular cruzado
 paises.d <- as.data.frame(bbdd) # formato data.frame
 str(paises.d)
 
-# 1.1 Filtro ----------------------
+# Limpieza base de datos -------------------
+
+### 2.1 Filtro ----------------------
 
 filter(bbdd, anio == 1957)  # > >= < <=  & | == !=
 
@@ -90,7 +227,7 @@ bbdd %>% filter(pais == "Perú", anio == 1997 | anio == 2002 | anio == 2007)
 bbdd %>% filter(pais == "Perú", anio %in% c(1997, 2002, 2007))  # Es equivalente
 
 
-# 1.2 Ordenando datos ------------------------------------------
+### 2.2 Ordenando datos ------------------------------------------
 
 #  Ordenando observaciones según la esperanza de vida
 
@@ -112,24 +249,22 @@ bbdd %>% filter(anio == 1957) %>%
 # según el PIB de manera descendente
 
 
-# 1.3 Creación de variable --------
+### 2.3 Creación de variable --------
 
-# 5.1. Usando mutate para cambiar o crear una columna
+# Usando mutate para cambiar o crear una columna
 
 # esperanza de vida en meses
 
-bbdd %>% mutate(esperanza_de_vida = 12*esperanza_de_vida)
-
-bbdd %>% mutate(esperanza_de_vida_meses = 12*esperanza_de_vida)
+bbdd %>% mutate(esperanza_de_vida_meses = 12*esperanza_de_vida,
+                pbipc_miles = pib_per_capita/1000)
 
 
 #      Ejercicio    #
 
-
 # población en millones, año 2007, países de áfrica
 
 
-# 1.4 Selección variables  ----------------------
+### 2.4 Selección variables  ----------------------
 
 bbdd[ , c(1, 3, 5)]
 bbdd[ , 1:3]
@@ -176,7 +311,7 @@ bbdd  %>% select(pais, poblacion, anio) %>%
   slice(100:150) 
 
 
-# 1.5 Rename() ------------------------
+### 2.5 Rename() ------------------------
 
 paises2 <- bbdd %>% rename(Pais = pais, Año = anio, 
                              PBI = pib_per_capita) %>%
@@ -193,7 +328,7 @@ write.csv(paises2, "../../data/Paises_renombrados.csv", row.names = F)
 
 # borrar el indexing de las filas en el archivo csv
 
-# 1.6 Drop variables -----------------
+### 2.6 Drop variables -----------------
 
 bbdd$var1 <- 1000
 bbdd$var2 <- "Indicadores"
@@ -213,7 +348,7 @@ bbdd %>% select(anio, continente, pais, everything()) %>% View()
 
 
 #----------------------------#
-# 1.7 Groupby (agrupar) -------------
+### 2.7 Groupby (agrupar) -------------
 #----------------------------#
 
 # Tendencia Central: mean(), median()
@@ -224,7 +359,7 @@ bbdd %>% select(anio, continente, pais, everything()) %>% View()
 # Lógica: any(), all()
 # aritmetica: sum()
 
-# 1.8 Resumiendo con summarise() y count() ---------------------
+### 2.8 Resumiendo con summarise() y count() ---------------------
 
 # Resumiendo la esperanza de vida
 
@@ -296,25 +431,6 @@ clean_data <- bbdd |> group_by(pais) |>
   mutate(mean_pbipc_pais = mean(pib_per_capita)) |> ungroup() |>
   group_by(continente) |> mutate(median_pob = median(poblacion)) |>
   as.data.frame()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
