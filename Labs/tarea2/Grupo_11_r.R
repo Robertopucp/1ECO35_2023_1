@@ -50,6 +50,24 @@ fx1 <- function(x)
 fx1( 400 )
 ## Pregunta 3: Loops ####
 
+# Vector con las utilidades netas anuales
+utilidades <- c(100, 152, -1 , 8, 12, 156,35, -10, 100, -0.5, 30, 1050 , 7, -10)
+
+# Creamos el bucle for
+for (uneta in utilidades) {
+  # Cuando la utilidad es negativa, saltar a la siguiente iteración
+  if (uneta < 0) {
+    next
+  }
+  # Cuando la utilidad es mayor que 1000, salir del bucle
+  if (uneta > 1000) {
+    break
+  }
+  # Mensaje con la utilidad neta anual
+  mensaje <- paste("La utilidad neta anual es", uneta, "millones")
+  print(mensaje)
+}
+
 ## Pregunta 4: Funci?n para calcular el factorial de un n?mero n! #### 
 
 factorial <- function(n) {
