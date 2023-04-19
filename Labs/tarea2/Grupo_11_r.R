@@ -82,6 +82,28 @@ factorial (7)
 
 ## Pregunta 5: Funcion de masa corporal #### 
 
+#creamos la función del imc
+calcular_imc <- function(peso, talla) {
+  imc <- peso / talla^2
+  cat("El IMC es:", imc, "\n")
+  #añadiendo los criterios
+  if (imc < 18.5) {
+    cat("Bajo peso\n")
+  } else if (imc >= 18.5 & imc < 25) {
+    cat("Peso normal\n")
+  } else if (imc >= 25 & imc < 30) {
+    cat("Sobrepeso\n")
+  } else {
+    cat("Obesidad\n")
+  }
+}
+#probamos con los datos de los estudiantes:
+#Estudiante 1
+calcular_imc(70, 1.5) 
+#Estudiante 2
+calcular_imc(85, 1.8) 
+#Estudiante 3
+calcular_imc(50, 1.6) 
 
 ## Pregunta 3: Funcion aplicando activos financieros #### 
 
