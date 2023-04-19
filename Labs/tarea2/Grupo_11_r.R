@@ -68,7 +68,7 @@ for (uneta in utilidades) {
   print(mensaje)
 }
 
-## Pregunta 4: Funci?n para calcular el factorial de un n?mero n! #### 
+## Pregunta 4: Funcion para calcular el factorial de un numero n! #### 
 
 factorial <- function(n) {
   if(n == 0) {
@@ -112,4 +112,5 @@ estudiante_2
 estudiante_3
 
 ## Pregunta 3: Funcion aplicando activos financieros #### 
+
 
