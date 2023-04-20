@@ -34,7 +34,6 @@ os.chdir(f"C:/Users/{user}/Documents/GitHub/1ECO35_2023_1/Lectures/Lecture_3") #
 print("Hola Mundo")
 
 
-
 #%% Funciones lambda
 
 # Función tradicional #
@@ -55,7 +54,7 @@ interes2(5000, 24, 0.02)
 
 # Más ejemplos 
 
-# map, es una función que a cada elemento de un conjunto de datos aplica la función que le indiquemos
+# map permite aplicar una función que a cada elemento de un conjunto de datos  (array, listas)
 
 genero = ['F', 'M', 'M', 'F', 'M']
 
@@ -162,6 +161,8 @@ list( map( lambda x: int(re.sub('\D',"", x)) , texto_vector)   )
 
 # re.sub( patron de texto, sustitución, texto)
 
+#%% apply_along_axis - Matrix
+
 ''' Loop replacement in Matrix '''
 
 np.random.seed(15632)
@@ -221,7 +222,7 @@ X_std_2 = np.apply_along_axis(standarize, 0, X)
 # axis = 0, se aplicará la función a los elementos de cada columna
 
 
-#%% Handle dataset 
+#%% Apply - Dataframe
 
 '''
  We use US census data from the year 2012 to analyse the effect of gender 
@@ -260,7 +261,11 @@ def demean(x):
 
 X = X.apply( demean, axis = 0 )  # axis :0 se aplica la función por columna
 
-# Swgundo ejemplo de base de datos 
+
+###############################################################################
+
+
+# Segundo ejemplo de base de datos 
 
 datos = pd.read_csv("../../data/BDD_compras_consumidores.csv", sep = ";")
 
@@ -362,7 +367,7 @@ def calculator( *list_vars ):
 calculator( 8, 9, 50, 40, 10, 1)
 
 
-#%%  *Kwargs
+#%%  **Kwargs
 
 
 '''
@@ -400,7 +405,7 @@ calculator( 4, 5, 6, 7, 8, function = "adicion" )
 
 calculator( 4, 5, 6, function = "media" )
 
-calculator( 4, 5, 6, 7, 8, function = "inversa" )
+# calculator( 4, 5, 6, 7, 8, function = "inversa" )
 
 calculator( np.arange(10), function = "media" )
 
