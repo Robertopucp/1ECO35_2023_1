@@ -384,7 +384,6 @@ mean(esperanza_de_vida)
 
 # la variable esperanza_de_vida no existe 
 
-
 attach(bbdd) # cada columna es una variable 
 
 mean(esperanza_de_vida)
@@ -410,9 +409,10 @@ bbdd %>% filter(between(anio, 1950, 1990)) %>%
             max_pib_per_capita = max(pib_per_capita))
 
 
-# Resumiendo por año
+# Resumiendo por año y continente
+
 bbdd %>% group_by(anio) %>% 
-  summarise(mean_esperanza_de_vida = mean(esperanza_de_vida))
+    summarise(mean_esperanza_de_vida = mean(esperanza_de_vida))
 
 bbdd %>% group_by(anio, continente) %>% 
   summarise(mean_esperanza_de_vida = mean(esperanza_de_vida)) %>%
@@ -448,6 +448,8 @@ clean_data <- bbdd |> group_by(pais) |>
   mutate(mean_pbipc_pais = mean(pib_per_capita)) |> ungroup() |>
   group_by(continente) |> mutate(median_pob = median(poblacion)) |>
   as.data.frame()
+
+# summrise del pbi percapita de los paises de las Américas, mediana, minimo y máximo
 
 
 
