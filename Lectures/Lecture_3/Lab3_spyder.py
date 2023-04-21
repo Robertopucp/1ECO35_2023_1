@@ -270,9 +270,14 @@ X = X.apply( demean, axis = 0 )  # axis :0 se aplica la función por columna
 datos = pd.read_csv("../../data/BDD_compras_consumidores.csv", sep = ";")
 
 datos['Channel'].value_counts()
+
+
 datos['Region'].value_counts()
 
+
 datos.info()
+
+
 
 datos['Channel'] = datos['Channel'].astype("category")
 datos['Region'] = datos['Region'].astype("category")
@@ -282,29 +287,35 @@ datos.info()
 
 # Apply #
 
-datos.iloc[:,2:9].apply(lambda x: sum(x), axis = 0)  # axis = 0 , operación a nivel columna 
+# Las ventas totales por tipo de producto 
+
+datos.iloc[:,2:8].apply(lambda x: sum(x), axis = 0)  # axis = 0 , operación a nivel columna 
 
 # ventas total por cada observación
 
-datos['ventas'] = datos.iloc[:,2:9].apply(lambda x: sum(x), axis = 1) # axis = 0 , operación a nivel fila
+datos['ventas'] = datos.iloc[:,2:8].apply(lambda x: sum(x), axis = 1) # axis = 0 , operación a nivel fila
+
+#datos['ventas'] = datos['milk'] + datos['fresh']+ datos['grocery']
 
 # promedio por tipo de producto
 
-datos.iloc[:,2:9].apply(lambda x: np.mean(x), axis = 0)
+datos.iloc[:,2:8].apply(lambda x: np.mean(x), axis = 0)
 
 # minimo valor de la venta por tipo de producto 
 
-datos.iloc[:,2:9].apply(lambda x: np.min(x), axis = 0)
+datos.iloc[:,2:8].apply(lambda x: np.min(x), axis = 0)
 
 # máximo valor de la venta por tipo de producto 
 
-datos.iloc[:,2:9].apply(lambda x: np.max(x), axis = 0)
+datos.iloc[:,2:8].apply(lambda x: np.max(x), axis = 0)
 
 # cambio de moneda
 
-datos2 = datos.iloc[:,2:9].apply(lambda x: x/3.9, axis = 0)
+datos2 = datos.iloc[:,2:8].apply(lambda x: x/3.9)
 
-datos3 = pd.concat([datos.iloc[:,:2],datos2], axis = 1) # se uen a nivel columna o de forma horizontal
+
+
+#datos3 = pd.concat([datos.iloc[:,:2],datos2], axis = 1) # se uen a nivel columna o de forma horizontal
 
 
 
@@ -323,6 +334,15 @@ of arguments to a function. The object *args is a tuple that contains all the ar
 "Keyword: *args, incluir una cantidad variable de argumentos"
 
 
+def calculator(x,y,w,z,a,b):
+    
+    return x+y+w+z+a+b
+
+calculator(10,15)
+
+
+
+
 def calculator( *args ):
     
     print( f"args is a {type( args )}" )
@@ -334,13 +354,15 @@ def calculator( *args ):
     
     maximo = np.max(vector)
     
-    result = np.prod(vector)
+    prod = np.prod(vector)
     
     
-    return result, minimo, maximo
+    return prod, minimo, maximo, args
 
 
-calculator( 8, 9, 50, 10, 12 ,15,20,100,120)
+calculator( 8, 9, 100, 3, 5, 51,58)
+
+
 
 '''
 *args se puede usar otro nombre siempre que se use * al inicio
@@ -393,6 +415,12 @@ def calculator( *list_vars, **kwargs):
     elif ( kwargs[ 'function' ] == "adicion" ) :
 
         result = sum(list_vars)
+        
+    elif ( kwargs['function'] == "median"):
+        
+        result = np.median(list_vars)  # *list_vars 
+    
+    
     else:
         raise ValueError( f"The function argument {kwargs[ 'function' ]} is not supported." )
         
@@ -403,11 +431,28 @@ def calculator( *list_vars, **kwargs):
 
 calculator( 4, 5, 6, 7, 8, function = "adicion" )
 
+
+
 calculator( 4, 5, 6, function = "media" )
+
+
+calculator(100,300,50, function = "adicion")
+
+
+
+calculator(100,300,50, function = "median")
+
+
+calculator(100,300,50, function = "varainza")
 
 # calculator( 4, 5, 6, 7, 8, function = "inversa" )
 
+
+
 calculator( np.arange(10), function = "media" )
+
+
+
 
 '''
 Example using dataset cps2012
@@ -433,7 +478,7 @@ def transform(Data, *select, **function) -> pd.DataFrame: #output DataFrame
 
 transform(cps2012, "lnw", "exp1","exp2", method = "estandarize")
 
-
+transform(cps2012, "lnw", "exp1","exp2", "exp3", "exp4", method = "demean")
 
 
 
