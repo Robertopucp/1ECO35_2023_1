@@ -1,4 +1,22 @@
 #Tarea 2 
+#PARTE EN R Y PYTHON
+#loops
+#creamos el vector
+utilidades_netas_anuales <- c(100, 152, -1 , 8, 12, 156, 35, -10, 100, -0.5, 30, 1050 , 7, -10)
+#utilizaremos for
+for (utilidad_neta_anual in utilidades_netas_anuales) {
+  if (utilidad_neta_anual <  0) {
+    next
+  } else if (utilidad_neta_anual >  1000) {
+    break
+  } else {
+    cat("La utilidad neta anual es", utilidad_neta_anual,"millones.\n")
+  }
+}
+
+
+
+#PARTE SOLO EN R
 
 #Función aplicada a dos activos financieros
 
