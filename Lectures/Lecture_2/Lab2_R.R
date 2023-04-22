@@ -170,7 +170,7 @@ while (year < n){
 
 ## For ----
 
-ages <-  1:10000
+ages <-  1:10
 
 for (age in ages) {
   
