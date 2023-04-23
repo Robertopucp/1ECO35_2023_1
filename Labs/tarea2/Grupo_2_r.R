@@ -1,3 +1,18 @@
+# Limpia el environment
+
+rm(list = ls())
+
+# Limpia gráficos
+graphics.off()
+
+# Limpia consolas
+
+cat("\014")
+#Abrir librerias
+library(readxl)
+library(dplyr) 
+library(rstudioapi) 
+
 #Script en R----
 ##Condicionales----
 #Primer ejercicio
