@@ -64,8 +64,7 @@ Function_3 (200)
 
 
 
-
-
+#Pregunta3
 #loops
 #creamos el vector
 utilidades_netas_anuales <- c(100, 152, -1 , 8, 12, 156, 35, -10, 100, -0.5, 30, 1050 , 7, -10)
