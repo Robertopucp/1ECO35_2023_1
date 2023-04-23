@@ -89,3 +89,31 @@ funcionMasacorporal(70,1.5)
 funcionMasacorporal(85,1.8)
 funcionMasacorporal(50,1.6)
 
+#Función de 2 activos financieros----
+
+
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+getwd()
+
+portfolio <- read.csv("../../data/Portafolio.csv", encoding = "UTF-8")
+
+## Se hace uso de la base portfolio para el desarrollo del ejercicio. La función creada se va a denominar beta
+
+beta <- function(data){
+  X <- data$X     ## Se extrae la información de la columna X
+  y <- data$Y     ## Se extrae la información de la columna Y
+  
+  coef_pearson <- cov(X,y)/((var(X)*var(y))**(1/2))
+  var_portafolio <- (0.2**2)*var(X)+(0.8**2)*var(y)+2*0.2*0.8*cov(X,y)
+  
+  return(cat("El coeficiente de pearson es ",coef_pearson, " y la varianza del portafolio es", var_portafolio))
+  
+}
+
+
+beta(portfolio)   ## De esta manera se halla el resultado 
+
+
+
+
+
