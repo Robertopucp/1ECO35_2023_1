@@ -2,7 +2,7 @@
 
 rm(list = ls())
 
-# Limpia graficos
+# Limpia gráficos
 graphics.off()
 
 # Limpia consolas
