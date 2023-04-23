@@ -1,7 +1,7 @@
 #  Workgroup 2 ####
 # Curso: Laboratorio de R y Python 
 
-##Condicionales-----
+##Condicionales------
   
   #1.
 compra <- 100
