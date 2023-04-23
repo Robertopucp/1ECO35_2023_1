@@ -99,7 +99,7 @@ if( result >18.5 & result<24.9){
   }else if(result>35 & result<39.9){
   return(cat("peso:", peso, "kilos","talla:",talla,"metros", "IMC:",result,
              "Clasificación:","Obesidad grado I"))
-  }else if(result<=29.9){
+  }else if(result<=40){
     return( print("peso:", peso, "kilos","talla:",talla,"metros", "IMC:",result,
                   "Clasificación:","Obesidad grado I"))
   }
