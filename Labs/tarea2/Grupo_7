@@ -1,0 +1,195 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "c9c86821",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# WORKGROUP 2 (PYHTON)\n",
+    "## Grupo 7: Renzo Cornejo, Dante XXXX, María Alejandra Ramos "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "aa75671c",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "## Importamos las librerias vistas en clase\n",
+    "import random\n",
+    "import numpy as np\n",
+    "import math"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "3e10409a",
+   "metadata": {
+    "scrolled": true
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Ingrese el monto de la compra:301\n",
+      "Compra de 270.90000000000003 soles y pago con tarjeta de crédito\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Ejercicio 1 \n",
+    "\n",
+    "## Colocar el valor para el cual desea calcular\n",
+    "monto_compra = float(input(\"Ingrese el monto de la compra:\"))\n",
+    "\n",
+    "## Introducimos las siguientes condiciones de acuerdo a la clasificación indicada\n",
+    "## Asimismo, indicamos la formulación de resultado de acuerdo a cada caso\n",
+    "if monto_compra<=100:\n",
+    "    print(\"Compra de\",monto_compra, \"soles y pago en efectivo\")\n",
+    "    \n",
+    "elif monto_compra>100 and monto_compra<300:\n",
+    "     print(\"Compra de\",monto_compra, \"soles y pago con tarjeta de débito\")\n",
+    "    \n",
+    "elif monto_compra>300:  \n",
+    "     print(\"Compra de\",monto_compra*0.9, \"soles y pago con tarjeta de crédito\")\n",
+    "     "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "d521203b",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Ingrese el valor de x:33\n",
+      "5.744562646538029\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Ejercicio 2\n",
+    "\n",
+    "\n",
+    "## Definimos la variable x. En este caso, mediante la función input, podemos nos preguntará\n",
+    "x = float(input(\"Ingrese el valor de x:\"))\n",
+    "\n",
+    "## Introducimos las siguientes condiciones de acuerdo a la función brindada en las indicaciones\n",
+    "## Asimismo, indicamos que se debe indicar el resultado operando de forma diferente para cada condición. \n",
+    "if x in range(1,100):\n",
+    "    print(x**(1/2))\n",
+    "    \n",
+    "if x in range(100,300):\n",
+    "    print(x-5)\n",
+    "    \n",
+    "if x > 300:\n",
+    "    print(50)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "id": "af11bcb8",
+   "metadata": {
+    "scrolled": false
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[100, 152, -1, 8, 12, 156, 35, -10, 100, -0.5, 30, 1050, 7, -10]\n",
+      "La utilidad neta anual es 100\n",
+      "La utilidad neta anual es 152\n",
+      "La utilidad neta anual es 8\n",
+      "La utilidad neta anual es 12\n",
+      "La utilidad neta anual es 156\n",
+      "La utilidad neta anual es 35\n",
+      "La utilidad neta anual es 100\n",
+      "La utilidad neta anual es 30\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Ejercicio 3 \n",
+    "\n",
+    "## Definimos la lista unas (utilidades netas anuales medidas en millones\n",
+    "## Agregamos todos las observaciones a la lista\n",
+    "unas = [100,152,-1,8,12,156,35,-10,100,-0.5,30,1050,7,-10]\n",
+    "\n",
+    "## Demostramos nuestros resultados \n",
+    "print(unas)\n",
+    "\n",
+    "## Definimos nuestro loop, donde cada iteración es una observación evaluada\n",
+    "for una in unas:\n",
+    "    \n",
+    "## La evaluación se hará de acuerdo a dos condiciones. \n",
+    "## La primera es que no sean números negativos. En cuyo caso, el monto debe no ser mostrado como parte del resultado del loop. \n",
+    "    if una < 0:\n",
+    "        continue\n",
+    "        \n",
+    "## La segunda condicion es que si la utilidad neta anual es mayor a 1000 se detenga y no procese los demás resultados\n",
+    "    if una > 1000:\n",
+    "        break\n",
+    "\n",
+    "## Finalmente, indicamos que debe mostrar cada resultado como parte de una frase\n",
+    "    print(\"La utilidad neta anual es\", una)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "f6ce76c4",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "7b1bb41b",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "43198fcf",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.10.9"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
