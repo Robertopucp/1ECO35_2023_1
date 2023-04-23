@@ -113,7 +113,7 @@ getwd()
 
 user <- Sys.getenv("USERNAME")  # Con username extraemo el usuario automaticamente
 print(user)
-setwd( paste0("C:/Users/",user,"/Documents/GitHub/GITHUB/1ECO35_2023_1/Labs/tarea2") ) # ubicacion del set directorio
+setwd( paste0("C:/Users/",user,"/Documents/GitHub/1ECO35_2023_1/Labs/tarea2") ) # ubicacion del set directorio
 
 
 portfolio <- read.csv("../../data/Portafolio.csv", encoding = "UTF-8") #codigo para leer un archivo csv
