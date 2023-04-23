@@ -2,6 +2,7 @@
 ##Condicionales----
 #Primer ejercicio
 
+montoCompra <- 150 #Valor cualquiera de montoCompra
 if (montoCompra>=0){
   descuento<-0 #0 inicialmente solo un caso tendrá descuento y se le asignará el valor si ingresa a la condicional
   if(montoCompra<=100){
@@ -17,7 +18,7 @@ if (montoCompra>=0){
   cat("Compra de ",montoCompra," y pago ",tipoPago," y descuento",descuento) #Se imprime los resultados
 }
 
-
+x<-50 #Valor cualquiera de x
 #Segundo ejercicio
 if (x>=0){ #Se plantea la condicional que refleja la funcion matematica
     if (x<=100){
@@ -31,6 +32,7 @@ if (x>=0){ #Se plantea la condicional que refleja la funcion matematica
     }
     
 }
+cat("Si x es: ", x, " entonces y es: ",y)
   
 ##Loops----
 
@@ -89,7 +91,7 @@ funcionMasacorporal(70,1.5)
 funcionMasacorporal(85,1.8)
 funcionMasacorporal(50,1.6)
 
-#Función de 2 activos financieros----
+###Función de 2 activos financieros----
 
 
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
