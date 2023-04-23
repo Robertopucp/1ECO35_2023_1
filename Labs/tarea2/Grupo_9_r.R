@@ -75,7 +75,7 @@ for (utilidad_neta_anual in utilidades_netas_anuales) {
   } else if (utilidad_neta_anual >  1000) {
     break
   } else {
-    cat("La utilidad neta anual es", utilidad_neta_anual,"millones.\n")
+    cat("La utilidad neta anual es", utilidad_neta_anual,".\n")
   }
 }
 
