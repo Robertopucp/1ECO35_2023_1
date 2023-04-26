@@ -434,7 +434,9 @@ bbdd %>% filter(between(anio, 1950, 1990)) %>%
 # Resumiendo por año y continente
 
 bbdd %>% group_by(anio) %>% 
-    summarise(mean_esperanza_de_vida = mean(esperanza_de_vida))
+    summarise(mean_esperanza_de_vida = mean(esperanza_de_vida)) %>% View
+
+
 
 bbdd %>% group_by(anio, continente) %>% 
   summarise(mean_esperanza_de_vida = mean(esperanza_de_vida)) %>%
