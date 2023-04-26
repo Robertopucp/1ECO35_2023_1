@@ -89,6 +89,11 @@ str(datoscsv)
 
 table(datoscsv$dpto, datoscsv$morosidad)
 
+table(datoscsv$morosidad, datoscsv$tiporenta)
+
+bd_europa <- bbdd %>% filter(continente == "Europa" & anio ==1987) %>% arrange(pip_per_capita)
+
+
 #### 1.1 Datos *.TXT ####
 
 datost <- read.table("../../data/Riesgo_morosidad.dat",
@@ -223,13 +228,13 @@ bbdd %>% filter(pais == "China" & anio == 2002)
 
 bbdd %>% filter(pais == "China", anio == 2002) # Es equivalente
 
-bbdd %>% filter(pais == "Chile" | pais == "Perú") %>% View
+bbdd %>% filter(pais == "Chile" | pais == "Per�") %>% View
 
-bbdd %>% filter(pais == "Perú", anio == 1997 | anio == 2002 | anio == 2007)
+bbdd %>% filter(pais == "Per�", anio == 1997 | anio == 2002 | anio == 2007)
 
-bbdd %>% filter(pais == "Perú", anio %in% c(1997, 2002, 2007))  # Es equivalente
+bbdd %>% filter(pais == "Per�", anio %in% c(1997, 2002, 2007))  # Es equivalente
 
-
+ 
 ### 2.2 Ordenando datos ------------------------------------------
 
 #  Ordenando observaciones según la esperanza de vida
@@ -244,9 +249,18 @@ bbdd %>% arrange(-esperanza_de_vida) # Equivalente al anterior
 #  Filtrando y ordenando
 
 bbdd %>% filter(anio == 1957) %>% 
-  arrange(desc(esperanza_de_vida)) 
+  arrange(desc(esperanza_de_vida))
+
+bbdd %>% filter(anio == 1987, continente == "Europa") %>% 
+  arrange(desc(pib_per_capita)) 
+
+bbdd %>% filter(anio == 1987, continente == "Europa") %>% 
+  arrange(desc(pib_per_capita)) 
 
 
+
+
+bbdd %>% filter(continente == "Europa" & anio ==1987) %>% arrange(desc(pib_per_capita))
 #      Ejercicio    #
 # Muestre la información de Europa del año 1987 ordenada 
 # según el PIB de manera descendente
@@ -264,8 +278,10 @@ bbdd %>% mutate(esperanza_de_vida_meses = 12*esperanza_de_vida,
 
 #      Ejercicio    #
 
-# población en millones, año 2007, países de áfrica
+# población en millones, año 2007, países de áfrica, ordenar en forma ascendente
 
+bbdd %>% mutate(poblaci�n_en_millones = poblacion/1000000)%>% filter(anio == 2007, continente == "�frica") %>% 
+  arrange(poblaci�n_en_millones)
 
 ### 2.4 Selección variables  ----------------------
 
@@ -330,9 +346,9 @@ bbdd  %>% select(pais, poblacion, anio) %>%
 
 ### 2.5 Rename() ------------------------
 
-paises2 <- bbdd %>% rename(Pais = pais, Año = anio, 
+paises2 <- bbdd %>% rename(Pais = pais, A�o = anio, 
                              PBI = pib_per_capita) %>%
-  select(Año, Pais, PBI)
+  select(A�o, Pais, PBI)
 
 paises2
 
