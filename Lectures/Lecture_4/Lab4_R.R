@@ -1,4 +1,4 @@
-################  laboratorio 2 ############################
+################  laboratorio 4 ############################
 ## Curso: Laboratorio de R y Python ###########################
 ## @author: Roberto Mendoza 
 
