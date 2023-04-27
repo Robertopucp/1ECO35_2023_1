@@ -187,7 +187,7 @@ sapply(bbdd, class)  # tipo de varaible
 
 summary(bbdd)   # principales estadisticas descriptivas
 
-sum(is.na(pais))  # ningun missing en la base país
+sum(is.na(bbdd))  # ningun missing en la base país
 
 sapply(bbdd, function(x) sum(is.na(x))) # check missing all variables 
 
@@ -330,7 +330,7 @@ bbdd  %>% select(pais, poblacion, anio) %>%
 
 ### 2.5 Rename() ------------------------
 
-paises2 <- bbdd %>% rename(Pais = pais, Año = anio, 
+paises2 <- bbdd %>% dplyr::rename(Pais = pais, Año = anio, 
                              PBI = pib_per_capita) %>%
   select(Año, Pais, PBI)
 
@@ -380,14 +380,6 @@ bbdd %>% select(anio, continente, pais, everything()) %>% View()
 
 # Resumiendo la esperanza de vida
 
-mean(esperanza_de_vida)
-
-# la variable esperanza_de_vida no existe 
-
-attach(bbdd) # cada columna es una variable 
-
-mean(esperanza_de_vida)
-
 bbdd %>% summarise(mean(esperanza_de_vida))   # summarize()
 
 # Añadiendo una etiqueta 
@@ -411,14 +403,14 @@ bbdd %>% filter(between(anio, 1950, 1990)) %>%
 
 # Resumiendo por año y continente
 
-bbdd %>% group_by(anio) %>% 
+bbdd %>% dplyr::group_by(anio) %>% 
     summarise(mean_esperanza_de_vida = mean(esperanza_de_vida))
 
-bbdd %>% group_by(anio, continente) %>% 
+bbdd %>% dplyr::group_by(anio, continente) %>% 
   summarise(mean_esperanza_de_vida = mean(esperanza_de_vida)) %>%
   View
 
-bbdd %>% group_by(anio, continente) %>% 
+bbdd %>% dplyr::group_by(anio, continente) %>% 
   summarise(mean_esperanza_de_vida = mean(esperanza_de_vida), 
             sd_esperanza_vida = sd(esperanza_de_vida)) %>%
   View
@@ -426,25 +418,25 @@ bbdd %>% group_by(anio, continente) %>%
 
 # Número de países por continente en 2007
 bbdd %>% filter(anio == 2007) %>% 
-  group_by(continente) %>% summarise(n())
+  dplyr::group_by(continente) %>% summarise(n())
 
 bbdd %>% filter(anio == 2007) %>% 
-  group_by(continente) %>% count()    # Es equivalente
+  dplyr::group_by(continente) %>% count()    # Es equivalente
 
 bbdd %>% filter(anio == 2007) %>% 
-  group_by(continente) %>% summarise(Número_Paises = n()) 
+  dplyr::group_by(continente) %>% summarise(Número_Paises = n()) 
 
 
 # Añadiendo el summarise a la base de datos 
 
-clean_data <- bbdd %>% group_by(pais) %>% 
+clean_data <- bbdd %>% dplyr::group_by(pais) %>% 
   mutate(mean_pbipc_pais = mean(pib_per_capita)) %>% ungroup() %>% 
   group_by(continente) %>%  mutate(median_pob = median(poblacion)) %>% 
   as.data.frame()
 
 # |> alterantiva de pip 
 
-clean_data <- bbdd |> group_by(pais) |>
+clean_data <- bbdd |> dplyr::group_by(pais) |>
   mutate(mean_pbipc_pais = mean(pib_per_capita)) |> ungroup() |>
   group_by(continente) |> mutate(median_pob = median(poblacion)) |>
   as.data.frame()
@@ -457,6 +449,7 @@ clean_data <- bbdd |> group_by(pais) |>
 
 
 browseURL("https://allisonhorst.shinyapps.io/edge-of-the-tidyverse/#section-welcome")
+
 
 
 
