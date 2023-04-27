@@ -236,7 +236,7 @@ data_ind <- enaho19  %>%
   as_survey_design(ids = conglome, 
                   strata = estrato,
                   weight = factorpob) %>% 
-                    group_by(dpto) %>% 
+                    dplyr::group_by(dpto) %>% 
                     summarise(
                     poverty_rate = survey_mean(dummy_pobre, na.rm = T)*100
                     )
@@ -301,7 +301,19 @@ prop.table(svytable(~ area + dchildwork, design = design), 1)
 
 prop.table(svytable(~ dmujer + dchildwork, design = design), 1)
 
-prop.table(svytable(~ dpto + dchildwork, design = design), 1) 
+prop.table(svytable(~ dpto + dchildwork, design = design), 1) %>%
+  as.data.frame() %>% 
+  filter(dchildwork == 1) %>% 
+  mutate(ratechildw = Freq*100) %>% 
+  ggplot(aes(y = reorder( dpto, -ratechildw) , x = ratechildw   )) +
+  geom_col() +
+  scale_fill_identity(guide = "none") +
+  theme_minimal()+
+  xlab("")+
+  ylab("Department")
+
+  
+
 
 
 # Append --------------------------------
@@ -312,25 +324,44 @@ append_enaho <- bind_rows(sumaria_18, sumaria_19, sumaria_20)
 
 append_enaho$factorpob <-  round(append_enaho$factor07*append_enaho$mieperho, 1) 
 
+append_enaho <- append_enaho %>% 
+  mutate(
+    area =  factor(case_when(
+      estrato <= 5 ~ 1,
+      estrato > 5 ~ 2  ), levels = c(1,2), labels = c("Urbano", "Rural")),
+    ingmpc = inghog1d/(mieperho*12),
+    factorpob = round(factor07*mieperho, 1)
+  )
+
 
 income_years <- append_enaho %>% 
-  mutate(ingmpc = inghog1d/(mieperho*12),
-         año = as.numeric(año)) %>%   # convertir a numérico la fecha
   as_survey_design(ids = conglome, 
                    strata = estrato,
-                   weight = factorpob) %>% 
-  group_by(año) %>% 
+                   weight = factorpob) %>%   
+  group_by(año, area) %>% 
   summarise(
-    ingmpc = survey_mean(ingmpc, na.rm = T)
+    ingmpc = survey_mean(ingmpc, na.rm = T),
+    ingmpc_sd = survey_sd(ingmpc, na.rm = T)
   )
+
   
-income_years %>% 
-  ggplot(aes(x = año, y = ingmpc)) +
-  geom_line(color = "darkgray") +
-  geom_point( color = "darkblue", size = 3) +
+income_years %>% ggplot( aes(x = año, y = ingmpc, group = area, colour = area) ) +
+  geom_line()+
+  geom_point() +
+  geom_errorbar(aes(ymin=ingmpc -ingmpc_se, ymax = ingmpc + ingmpc_se),
+                width=.04) +
   theme_bw() +
-  theme(panel.grid = element_blank())
-  
+  ggtitle("Average monthly income percapita by area")+
+  xlab("")+
+  ylab("")
+
+
+ggsave("../../output/plots/line_income.png"
+       , height = 8  # alto
+       , width = 12  # ancho
+       , dpi = 320   # resolución (calidad de la imagen)
+)
+
 
 
 # inghog1d/(mieperho*12*i00)  próxima tarea
@@ -341,6 +372,146 @@ income_years %>%
 
 # ENDES ---------------------------------------------------
 
+# Base a nivel hogar
+
+read_dta("../../data/endes/RECH0.dta")[1,2]
+
+rech0 <- read_dta("../../data/endes/RECH0.dta") %>% 
+  mutate(
+    HHID = str_trim(HHID)
+  )
+
+names(rech0) <- tolower(names(rech0))
+
+sapply(rech0,attr ,'labels')
+sapply(rech0,attr ,'label')
+sapply(rech0, class)
+
+# Mas información a nivel hogar
+
+rech23 <- read_dta("../../data/endes/RECH23.dta") %>% 
+  mutate( HHID = str_trim(HHID) )
+
+names(rech23) <- tolower(names(rech23))
+
+sapply(rech23,attr ,'labels')
+sapply(rech23,attr ,'label')
+sapply(rech23, class)
+
+# Información a nivel individuo
+
+rech1 <- read_dta("../../data/endes/RECH1.dta")
+
+
+rech1 <- read_dta("../../data/endes/RECH1.dta") %>% 
+  mutate(
+    HHID = str_trim(HHID)
+  )
+
+names(rech1) <- tolower(names(rech1))
+
+sapply(rech1,attr ,'labels')
+sapply(rech1,attr ,'label')
+
+sapply(rech1, class)
+
+# Información de desnutrición 
+
+rech6 <- read_dta("../../data/endes/RECH6.dta") %>% 
+  mutate(
+    HHID = str_trim(HHID)
+  )
+
+names(rech6) <- tolower(names(rech6))
+
+sapply(rech6, class)
+
+# Salud mental
+
+salud <- read_dta("../../data/endes/CSALUD01.dta") %>% 
+  mutate(
+    HHID = str_trim(HHID)
+  )
+
+names(salud) <- tolower(names(salud))
+
+sapply(salud, class)
+
+#----------------------- Merge ---------------------------------#
+
+endes_health_child <- rech6 %>% 
+  left_join(rech0, by = "hhid") %>% 
+  left_join(rech23, by = "hhid") %>% 
+  left_join(rech1, by = c("hhid", "hc0"="hvidx"))
+
+ 
+  # left_join(salud, by = c("hhid", "hvidx"="qsnumero"))
+
+# Trabajaremos las variables 
+
+# Dummies de anemia #
+
+# El problema no es la presencia de missing tal cual
+# Sino cuando la falta de información es representada por valores: 9, 999, 9998, 99888
+
+endes_health_child <- endes_health_child %>% 
+  mutate(
+    anemia_sev = case_when(
+      hc57 == 1 ~ 1,
+      hc57 %in% c(2,3,4) ~ 0,
+      hc57 == 9 ~ NA
+    ),
+    anemia_mildmod = case_when(
+      hc57 %in% c(1,4) ~ 0,
+      hc57 %in% c(2,3) ~ 1,
+      hc57 == 9 ~ NA
+    )
+    
+  )
+
+# Dummy por desnutrición crónica #
+# Niñas y niños que están por debajo de -3 DE de la media #
+
+endes_health_child <- endes_health_child  |>
+  mutate(
+    hc70 = replace(hc70, which(hc70 %in% c(996,9998,9999)), NA),
+    desncro = ifelse(hc70 < -300 & hv103 == 1, 1, NA),
+    desncro = replace(desncro, which(hc70 >= -300 & hc70 < 601 & hv103 == 1), 0 ),
+    peso = hv005a/1000000,
+    region = factor(hv024, 
+                    levels = c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
+                               17,18,19,20,21,22,23,24,25),
+                    labels = c("Amazonas", "Ancash", "Apurimac","Arequipa",
+                          "Ayacuho","Cajamarca","Callao","Cusco","Huancavelica",
+                          "Huanuco","Ica","Junin", "La Libertad", "Lambayeque",
+                          "Lima", "Loreto", "Madre de Dios", "Moquegua",
+                          "Pasco", "Piura" ,"Puno", "San Martín", "Tacna", "Tumbes",
+                          "Ucayali"))
+  )
+
+# hv103 : la persona pasó la noche en el hogar
+
+
+design <- svydesign(
+  data = endes_health_child,
+  ids = ~ hv001,
+  strata = ~ hv022,
+  weights = ~ peso
+)
+
+# area 1 (urbano), 2 (rural)
+
+
+prop.table(svytable(~ region + desncro, design = design), 1) %>%
+  as.data.frame() %>% 
+  filter(desncro == 1) %>% 
+  mutate(ratechildcro = Freq*100) %>% 
+  ggplot(aes(y = reorder( region , -ratechildcro ) , x = ratechildcro    )) +
+  geom_col() +
+  scale_fill_identity(guide = "none") +
+  theme_minimal()+
+  xlab("")+
+  ylab("Department")
 
 
 
@@ -351,12 +522,9 @@ income_years %>%
 
 
 
+# https://github.com/DHSProgram/DHS-Indicators-Stata
 
-
-
-
-
-
+# https://stats.oarc.ucla.edu/r/seminars/survey-data-analysis-with-r/
 
 
 
