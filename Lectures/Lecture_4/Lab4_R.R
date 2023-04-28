@@ -142,21 +142,23 @@ str(datosd)
 
 # read.spss de la libreria foreign 
 # permite asignar las etiquetas como datos 
-datospss <- read.spss("../../data/Riesgo_morosidad.sav",
-                      to.data.frame = TRUE)
+value_label <- read.spss("../../data/Riesgo_morosidad.sav"
+                      )
+
+# etiqueta de valores
+
+attributes(value_label)$label.table
+
+# load dataset as datafrmae
 
 datospss <- read.spss("../../data/Riesgo_morosidad.sav",
                       use.value.labels = F, 
                       to.data.frame = TRUE)
 
-#attr(datospss$nrodepen, "labels")
-
-#sapply(datospss, attr, 'label')
+attributes(datospss)$variable.labels  # etiqueta de variable 
 
 # encoding: detectar el tipo de numero y letras 
 
-
-str(datospss)
 
 
 #### 1.3 Datos EXCEL *.XLS *.XLSX ####
@@ -283,8 +285,6 @@ bbdd %>% filter(anio == 1957) %>%
 #      Ejercicio    #
 # Muestre la información de Europa del año 1987 
 # ordenamiento según el PIB percapita de manera descendente
-
-bd_europa 
 
 ### 2.3 Creación de variable --------
 
@@ -448,10 +448,27 @@ bbdd %>% filter(anio == 2007) %>%
 
 # Añadiendo el summarise a la base de datos 
 
+bbdd %>% dplyr::group_by(pais) %>% 
+  summarise(mean_pbipc_pais = mean(pib_per_capita)) 
+
+
+bbdd %>% dplyr::group_by(pais) %>% 
+  mutate(mean_pbipc_pais = mean(pib_per_capita),
+         dif_pbipc = pib_per_capita- mean_pbipc_pais) 
+
+
+bbdd %>% dplyr::group_by(continente, anio) %>% 
+  mutate(mean_pbipc_continente = mean(pib_per_capita),
+         dif_pbipc = pib_per_capita - mean_pbipc_continente) %>% 
+  filter(pais =="Perú") %>% View()
+
+
+
 clean_data <- bbdd %>% dplyr::group_by(pais) %>% 
   mutate(mean_pbipc_pais = mean(pib_per_capita)) %>% ungroup() %>% 
   group_by(continente) %>%  mutate(median_pob = median(poblacion)) %>% 
   as.data.frame()
+
 
 # |> alterantiva de pip 
 
