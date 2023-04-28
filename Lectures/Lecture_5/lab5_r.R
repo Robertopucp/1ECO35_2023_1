@@ -1,633 +1,611 @@
-################  laboratorio 7 ############################
+################  laboratorio 5 ############################
 ## Curso: Laboratorio de R y Python ###########################
-## @author: Roberto Mendoza
-## Clean dataset
+## @author: Roberto Mendoza 
 
-#install.packages("srvyr")  para declarar encuestas en R (similar al svyset en stata)
+# clean environment variables
 
+rm(list = ls())
 
-#install.packages("fastDummies")
+# clean plots
+graphics.off()
 
-#Librerias de limpieza de datos
+# clean console
 
-#pacman::p_load(haven,dplyr, stringr, fastDummies)
+cat("\014")
 
+# additional options
+options(scipen = 999)      # No scientific notation
 
-library(haven)  # leer archivos spss, stata, dbf, etc
-library(dplyr)  # limpieza de datos
-library(stringr)   # grep for regular expression
-library(fastDummies) # crear dummy
-library(srvyr)  # libreria para declarar el diseño muestral de una encuesta
-library(survey)
+# Library ####
 
-
-# tydiverse: ggplot , dplyr other libraries
-
-# Conglome : 1235 , vivienda: 10, hogar: 11 , codperso : 4 año 2019
-
-# Conglome : 1235 , vivienda: 10, hogar: 11, codperso : 4 año 2015
+library(pacman) 
 
 
+# permite llamar a varias librerias de manera simultánea
+# Si la librería no está instalada, entonces lo instala y llama para su uso
 
-"1.0 Set Directorio"
+p_load(readxl, tidyverse, foreign,fastDummies, haven, survey,
+       srvyr, labelled) 
 
-user <- Sys.getenv("USERNAME")  # username
+# tidyverse es una recopilación de varias librerias (dply, ggplot, stringr, etc)
+# foreign, libreria que permite leer base de datos de diferentes extensiones
+# haven tambien permite la lectura de base de datos de diferentes extensiones (i.e stata)
 
-setwd( paste0("C:/Users/",user,"/Documents/GitHub/1ECO35_2022_2/Lab7") ) # set directorio
 
+# Change working directory
 
-"2.0 Load dataset de ENAHO"
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
-enaho01 <- read_dta("../../../enaho/2020/737-Modulo01/737-Modulo01/enaho01-2020-100.dta")
+# Merge datasets ----------------------------
 
-# tibble dataset
-
-enaho01$dominio
-
-enaho01 <- data.frame(
-
-  read_dta("../../../enaho/2020/737-Modulo01/737-Modulo01/enaho01-2020-100.dta")
-
+df1 <- data.frame(
+  id = 1:5,
+  color = c("red", "blue", "green", NA, "red"),
+  size = c("small", "large", "medium", "medium", "small"),
+  type = c("A", "B", "C", NA, "A")
 )
 
-#data.frame dataset
-
-enaho01
-enaho01$dominio
-
-# Check labels
-
-# %>% Ctrl + shift + m
-
-enaho01$estrato  %>% attr('labels') # value labels
-
-
-enaho01$factor07 %>% attr('label') # var label
-
-names(enaho01)
-
-# Weight sampling
-
-enaho02 = data.frame(
-  read_dta("../../../enaho/2020/737-Modulo02/737-Modulo02/enaho01-2020-200.dta")
+df2 <- data.frame(
+  id = c(2,3,4,10,20,30),
+  value = c(1000, 2000, 3000,4000,5000,6000)
+  
 )
 
-names(enaho02)
+# Elijo mi MASTER data
 
-length( unique(enaho02$facpob07) )
-
-length( unique(enaho02$conglome) )
-
-
-length( unique(enaho01$factor07) )
-
-length( unique(enaho01$conglome) )
-
-sum(enaho02$facpob07)
-
-unique(enaho01$conglome) # La suma resulta en total de la población 2020 proyectada?
-
-"Módulo02"
-
-enaho02 = data.frame(
-  read_dta("../../../enaho/2020/737-Modulo02/737-Modulo02/enaho01-2020-200.dta")
-)
-
-enaho03 = data.frame(
-  read_dta("../../../enaho/2020/737-Modulo03/737-Modulo03/enaho01a-2020-300.dta"))
-
-enaho04 = data.frame(
-  read_dta("../../../enaho/2020/737-Modulo04/737-Modulo04/enaho01a-2020-400.dta")
-)
-
-enaho05 = data.frame(
-  read_dta("../../../enaho/2020/737-Modulo05/737-Modulo05/enaho01a-2020-500.dta")
-)
-
-enaho34 = data.frame(
-  read_dta("../../../enaho/2020/737-Modulo34/737-Modulo34/sumaria-2020.dta")
-)
-
-enaho37 = data.frame(
-  read_dta("../../../enaho/2020/737-Modulo37/737-Modulo37/enaho01-2020-700.dta")
-)
+df1 |>
+  full_join(df2, by = "id")
 
 
+df1 |>
+  inner_join(df2, by = "id")
 
 
-# Seleccionar variables
+data <- df1 |>
+  left_join(df2, by = "id")
 
 
+### Dummies -------------------------------------
 
-enaho02 <- enaho02[ , c("conglome", "vivienda", "hogar" , "codperso",
-                       "ubigeo", "dominio" ,"estrato" ,"p208a", "p209",
-                       "p207", "p203", "p201p" , "p204",  "facpob07") ]
-
-
-enaho03 <- enaho03[ , c("conglome", "vivienda", "hogar" , "codperso",
-                        "p301a", "p301b", "p301c" , "p300a","p301b","p301c")]
-
-enaho05 <- enaho05[ , c("conglome", "vivienda", "hogar" , "codperso",
-                        "i524e1", "i538e1", "p558a5" , "i513t", "i518",
-                        "p507", "p511a", "p512b", "p513a1", "p505" , "p506", "d544t", "d556t1",
-                        "d556t2" , "d557t" , "d558t" , "ocu500" , "i530a" , "i541a")]
-
-# 3.0 Merge section #
-
-# Merge identifica automaticamente los casos de merge m:1, 1:1, 1:m
+# creación de Dummies y missing #
 
 
+data$dummy <- ifelse(data$value > 1500, 1, 0)
 
-# _merge3 == 1,3
+# Cuando alguna de las variables del condicional es missing
+# la dummy toma el valor NA  ( Esto es diferente en python y stata )
 
-"Left merge"
+### Merge ENAHO ------------------------------
 
-#enaho02: master data
-# enaho01: using data
+enaho100_19 <- read_dta("../../data/enaho/enaho01-2019-100.dta")
+enaho200_19 <- read_dta("../../data/enaho/enaho01-2019-200.dta")
+enaho300_19 <- read_dta("../../data/enaho/enaho01a-2019-300.dta")
+enaho400_19 <- read_dta("../../data/enaho/enaho01a-2019-400.dta")
+enaho500_19 <- read_dta("../../data/enaho/enaho01a-2019-500.dta")
+sumaria_19 <- read_dta("../../data/enaho/sumaria-2019.dta")
+sumaria_20 <- read_dta("../../data/enaho/sumaria-2020.dta")
+sumaria_18 <- read_dta("../../data/enaho/sumaria-2018.dta")
 
-enaho_merge <- merge(enaho02, enaho01,
-                   by = c("conglome", "vivienda", "hogar"),
-                   all.x = T
-                   )
+# Elegimos nuestro Master data
 
-enaho_02_05 <- merge(enaho02, enaho05,
-                     by = c("conglome", "vivienda", "hogar","codperso"),
-                     all.x = T
+
+enaho19 <- enaho200_19 %>% 
+  full_join(enaho500_19, by = c("conglome","vivienda","hogar","codperso"))
+
+enaho19 <- enaho200_19 %>% 
+  inner_join(enaho500_19, by = c("conglome","vivienda","hogar","codperso"))
+
+enaho19 <- enaho200_19 %>% 
+  left_join(enaho500_19, by = c("conglome","vivienda","hogar","codperso"))
+
+
+enaho19 <- enaho200_19 %>% 
+  left_join(enaho300_19, by = c("conglome","vivienda","hogar","codperso")) %>% 
+  left_join(enaho400_19, by = c("conglome","vivienda","hogar","codperso")) %>% 
+  left_join(enaho500_19, by = c("conglome","vivienda","hogar","codperso")) %>% 
+  left_join(enaho100_19, by = c("conglome","vivienda","hogar")) %>% 
+  left_join(sumaria_19, by = c("conglome","vivienda","hogar"))
+
+
+table(enaho19$p300a)
+
+names(enaho19)
+
+attr(enaho19$p300a, 'labels')
+attr(enaho19$p301a, 'label')
+attr(enaho19$pobreza, 'labels')
+
+
+lapply(enaho19, attr, 'labels')
+
+lapply(enaho19, attr, 'label')
+
+#-----------------------------------------------#
+
+### Uso de case_when -------------------------------------------
+
+enaho19$lengua <- case_when(
+  enaho19$p300a == 4 ~ 1,
+  enaho19$p300a < 4 ~ 2,
+  enaho19$p300a > 5 ~ 3
 )
 
 
-# by: variable que permite identificar las observaciones en común en las bases de datos
-# all.x : La base de datos preservará todas las observaciones de left data (enaho02)
-# all.x tiene como valor predeterminado a False.
+# siempre hacer cruce de variables para verificar que el proceso sea el correcto
 
+# frecuencia relativa por columna
 
-# all.x = False, all.y = False
+table(enaho19$p300a, enaho19$lengua)
 
-# _merge3 == 2,3
+prop.table(table(enaho19$p300a, enaho19$lengua), margin = 2)
+  
 
-
-enaho_02_05 <- merge(enaho02, enaho05,
-                     by = c("conglome", "vivienda", "hogar","codperso"),
-                     all.y = TRUE
-                      )
-
-
-# _merge3 == 3 (match inner)
-
-enaho_merge_inner <- merge(enaho02, enaho01,
-                     by = c("conglome", "vivienda", "hogar"),
-                     all.x = F, all.y = F
-                       )
-
-
-
-enaho_merge_inner <- merge(enaho02, enaho01,
-                     by = c("conglome", "vivienda", "hogar")
-                  )
-
-enaho_merge_02_05 <- merge(enaho02, enaho05,
-                           by = c("conglome", "vivienda", "hogar","codperso")
+enaho19$area <- case_when(
+  enaho19$estrato <= 5 ~ 1,
+  enaho19$estrato > 5 ~ 2
+  
 )
 
+# años de educación #
 
-# Match outer
-
-
-enaho_merge_outer <- merge(enaho02, enaho05,
-                           by = c("conglome", "vivienda", "hogar","codperso"),
-                           all.x = T, all.y = T
-)
-
-
-enaho_merge_outer_2 <- merge(enaho02, enaho05,
-                           by = c("conglome", "vivienda", "hogar","codperso"),
-                           all=  T
-)
+enaho19 <- enaho19 %>% mutate(
+  educ1 = case_when(
+    between(p301a,1,4) ~ 0,
+    between(p301a,5,6) ~ 6,
+    between(p301a,7,10) ~ 11,
+    p301a == 11 ~ 16
+  ))
 
 
-
-# suffixes
-
-enaho_merge <- merge(enaho02, enaho01,
-                     by = c("conglome", "vivienda", "hogar"),
-                     all.x = T
-)
-
-
-names(enaho_merge)
+enaho19$educ2 <- apply(enaho19[,c("p301b","p301c")], 1 , sum , na.rm = T)
+enaho19$years_educ <- apply(enaho19[,c("educ1","educ2")], 1 , sum , na.rm = T)
 
 
 
-enaho_merge <- merge(enaho02, enaho01,
-                     by = c("conglome", "vivienda", "hogar"),
-                     all.x = T, suffixes = c("","")
-                      )
-
-enaho_merge <- merge(enaho02, enaho01,
-                     by = c("conglome", "vivienda", "hogar"),
-                     all.x = T, suffixes = c("",".y")
-)
-
-
-names(enaho_merge)
-
-#------------------------- Match with different keyword (variable llave)  -------------------------
-
-
-# rename variables que identifican de manera unica a cada hogar
-
-enaho05 <- enaho05 %>% dplyr::rename(Conglo = conglome, viv = vivienda,
-                              hog = hogar, cod = codperso)
-
-
-
-
-enaho_02_05 <- merge(enaho02, enaho05,
-                     by.x = c("conglome", "vivienda", "hogar","codperso"),
-                     by.y = c("Conglo", "viv", "hog","cod"),
-                     all = TRUE
-)
-
-
-
-# reset los nombre correctos de la variables que identificar cada hogar
-
-enaho05 <- enaho05 %>% dplyr::rename(conglome = Conglo, vivienda = viv,
-                              hogar = hog, codperso = cod)
-
-
-
-#---------------------- Merge in Loop ------------------------------------
-
-# <-  shortcut Alt + -
-
-num = list(enaho34 , enaho37) # lista de data.frames
-
-merge_hog = enaho01 # Master Data
-
-for (i in num){
-
-  merge_hog <- merge(merge_hog, i,
-                     by = c("conglome", "vivienda", "hogar"),
-                     all.x = T, suffixes = c("",".y")
-                     )
-}
-
-names(merge_hog)
-
-
-
-# Individual dataset
-
-num = list(enaho03 , enaho04, enaho05 ) # lista de data.frames
-
-merge_ind = enaho02 # Master Data
-
-for (i in num){
-
-  merge_ind <- merge(merge_ind, i,
-                     by = c("conglome", "vivienda", "hogar","codperso"),
-                     all.x = T, suffixes = c("",".y")
+enaho19 <- enaho19 %>% mutate(
+  educ1 = case_when(
+    between(p301a,1,4) ~ 0,
+    between(p301a,5,6) ~ 6,
+    between(p301a,7,10) ~ 11,
+    p301a == 11 ~ 16
   )
-}
-
-names(merge_ind)
-
-
-#----------------------- Merge Indivual and Hohar datasets -----------------------------------
-
-# merge merge_hog and merge_ind
-# mwrge_ind : master data
-
-merge_base <- merge(merge_ind, merge_hog,
-                   by = c("conglome", "vivienda", "hogar"),
-                   all.x = T, suffixes = c("",".y"))
-
-
-colnames(merge_base)
-
-index <- grep(".y$", colnames(merge_base))  # Regular regular
-
-# $ el texto finaliza con .y
-
-merge_base_2020 <- merge_base[, - index]
-
-colnames(merge_base_2020)
-
-
-### Ubigeo de departamento
-
-#ubigeo: 12 (ubigeo region junin, 1206 (provincia de satipo)
-# 120601 (distrito de la provincia de satipo, region junin)
-
-# sibstr permite sustraer digitos de un string, texto, caracter
-
-merge_base_2020['ubigeo_dep'] = substr(merge_base_2020$ubigeo, 1, 2)
-
-# a aprtir de  la posición inicial, extraer los dos primeros digitos
-
-merge_base_2020['ubigeo_dep_2'] = paste(substr(merge_base_2020$ubigeo,1,2),
-                                        "0000", sep = "")
-
-
-### filtrado para algunos departamentos
-
-merge_base_2020 <- merge_base_2020 %>%  filter(
-  merge_base_2020$ubigeo_dep  %in% c("15","03","04","12") )
-
-#library(dplyr)
-
-merge_base_2020 <- merge_base_2020 %>%
-  mutate(region = case_when(ubigeo_dep == "04" ~ "Arequipa",
-                          ubigeo_dep == "03" ~ "Apurimac",
-                          ubigeo_dep == "12" ~ "Junin",
-                          ubigeo_dep == "15" ~ "Lima") )
-
-
-
-
-"ENAHO 2019"
-
-enaho01 <- data.frame(
-  read_dta("../../../datos/2019/687-Modulo01/687-Modulo01/enaho01-2019-100.dta")
-)
-
-enaho02 = data.frame(
-  read_dta("../../../datos/2019/687-Modulo02/687-Modulo02/enaho01-2019-200.dta")
-)
-
-enaho03 = data.frame(
-  read_dta("../../../datos/2019/687-Modulo03/687-Modulo03/enaho01a-2019-300.dta"))
-
-enaho04 = data.frame(
-  read_dta("../../../datos/2019/687-Modulo04/687-Modulo04/enaho01a-2019-400.dta")
-)
-
-enaho05 = data.frame(
-  read_dta("../../../datos/2019/687-Modulo05/687-Modulo05/enaho01a-2019-500.dta")
-)
-
-enaho34 = data.frame(
-  read_dta("../../../datos/2019/687-Modulo34/687-Modulo34/sumaria-2019.dta")
-)
-
-enaho37 = data.frame(
-  read_dta("../../../datos/2019/687-Modulo37/687-Modulo37/enaho01-2019-700.dta")
-)
-
-
-# Seleccionar variables
-
-
-enaho02 <- enaho02[ , c("conglome", "vivienda", "hogar" , "codperso",
-                        "ubigeo", "dominio" ,"estrato" ,"p208a", "p209",
-                        "p207", "p203", "p201p" , "p204",  "facpob07")]
-
-enaho03 <- enaho03[ , c("conglome", "vivienda", "hogar" , "codperso",
-                        "p301a", "p301b", "p301c" , "p300a","p301b","p301c")]
-
-enaho05 <- enaho05[ , c("conglome", "vivienda", "hogar" , "codperso",
-                        "i524e1", "i538e1", "p558a5" , "i513t", "i518",
-                        "p507", "p511a", "p512b", "p513a1", "p505" , "p506", "d544t",
-                        "d556t1",
-                        "d556t2" , "d557t" , "d558t" , "ocu500" , "i530a" , "i541a")]
-
-
-
-
-num = list(enaho34 , enaho37) # lista de data.frames
-
-merge_hog = enaho01 # Master Data
-
-for (i in num){
-
-  merge_hog <- merge(merge_hog, i,
-                     by = c("conglome", "vivienda", "hogar"),
-                     all.x = T, suffixes = c("",".y")
-  )
-}
-
-# Individual dataset
-
-num = list(enaho03 , enaho04, enaho05 ) # lista de data.frames
-
-merge_ind = enaho02 # Master Data
-
-for (i in num){
-
-  merge_ind <- merge(merge_ind, i,
-                     by = c("conglome", "vivienda", "hogar","codperso"),
-                     all.x = T, suffixes = c("",".y")
-  )
-}
-
-
-
-merge_base <- merge(merge_ind, merge_hog,
-                    by = c("conglome", "vivienda", "hogar"),
-                    all.x = T, suffixes = c("",".y"))
-
-index <- grep(".y$", colnames(merge_base))
-
-
-merge_base_2019 <- merge_base[, - index]
-
-
-
-#----------------------- Append -----------------------------------
-
-
-merge_append <-  bind_rows(merge_base_2020, merge_base_2019) # bind_rows from dyplr
-
-
-unique(merge_append$aÑo)
-
-# bind_rows from dplyr library
-
-
-write_dta(merge_append, "../data/append_enaho_r.dta")
-
-
-#------------------------ Poverty and dummies -------------------------------
-
-#Ingreso nominal percapita mensual y gasto nominal mensual percapital del hogar
-
-# inghog1d: ingreso anual bruto del hogar  (incluye ingresos en forma de bienes)
-# gashog2d: gasto anual bruto hogar
-
-# Estas variables provienen del módulo 34 - sumaria (módulo de variables calculadas)
-# Linea de pobreza
-# mieperho: miembros del hogar
-# Excluye a los trabajadores domésticos y a las personas que subarriendan una habitación en el hogar
-
-
-merge_base_2020 <- merge_base_2020 %>%
-  dplyr::mutate(ingreso_month_pc = inghog1d/(12*mieperho),
-         gasto_month_pc = gashog2d/(12*mieperho)
-         ) %>%
-  dplyr::mutate(dummy_pobre = ifelse( gasto_month_pc < linea ,
-                        1 ,
-                        0 ) ) %>%
-  dplyr::mutate(pobre = ifelse( gasto_month_pc < linea ,
-                               "pobre" ,
-                               "No pobre") )   %>%
-  dplyr::mutate(pc_pobre = case_when(pobreza == 1 ~ "Pobre extremo",
-                             pobreza == 2 ~ "Pobre",
-                             pobreza == 3 ~ "No pobre"))
-
-# Si existe missing values en las variables usadas en el condicional
-# entonces R colocará missing, esto no es directo en python
-
-
-# Ejemplo adicional
-
-var1 <- c(NA,2,3)
-
-var2 <- c(400,1,5)
-
-# creamos una base de datos en formato tibble similar a un data.frame
-
-base <- tibble(
-  var1, var2
-
-)
-
-
-# aplicamos mutate para crear la dummy
-
-base %>%  mutate(
-
-  Dummy = ifelse(var1 < var2, 1,0)
-
-)
-
-
-sum(is.na(merge_base_2020$gashog2d)) # no hay missing en la variables gasto anual del hogar
-
-
-#creando dummies usando la variabe de nivel educativo alcanzado p301a
-
-merge_base_2020 <- dummy_cols(merge_base_2020, select_columns = 'p301a')
-
-
-View(merge_base_2020[, c("p301a","p301a_1","p301a_2","p301a_3","p301a_4","p301a_5")])
-
-
-
-################ Colappse #############################################
-
-
-# Tab in R from dplyr library
-
-count(merge_base_2020, pobreza, sort = TRUE)
-
-count(merge_base_2020, pc_pobre, sort = F)
-
-
-
-#Alternativa de tab (STATA) en R
-
-table(merge_base_2020$pc_pobre)
-
-table(merge_base_2020$p301a)
-
-merge_base_2020 %>% dplyr::filter(!is.na(p301a)) %>%  group_by(p301a) %>% summarise(Freq.abs = n()) %>%
-  mutate(Freq.relative = (Freq.abs/sum(Freq.abs))*100) %>% arrange(desc(Freq.relative))
-
-# arrange de la libreria dplyr permite ordenar una variable
-# dplyr::filter pues al instalar las librerias, R indica de conflicto en el nombre de funciones
-# en librerias diferentes. El código significa que que usará la función o método filter de la librearia dplyr
-
-
-df1 <- merge_base_2020 %>% group_by(conglome, vivienda, hogar ) %>%
-  summarise(
-    edu_min = min(p301a),
-    sup_educ = sum(p301a_10), total_miembros = n(),
-    edu_max = max(p301a), .groups = "keep"
-  )
-
-
-
-# sin considerar los missing
-
-df1_no_missing <- merge_base_2020 %>% group_by(conglome, vivienda, hogar ) %>%
-  summarise(
-    edu_min = min(p301a, na.rm = TRUE),
-    sup_educ = sum(p301a_10, na.rm = T), total_miembros = n(),
-    edu_max = max(p301a, na.rm = T),
-  )
-
-
-
-# La advertencia surge por que se están agrupando por varias variables.
-# Para evitar el mensaje, debemos incluir el argumento .groups = "keep"
-
-df2 <- merge_base_2020 %>% group_by(conglome, vivienda, hogar ) %>%
-  summarise(
-    edu_min = min(p301a, na.rm = TRUE),
-    sup_educ = sum(p301a_10, na.rm = T), total_miembros = n(),
-    edu_max = max(p301a, na.rm = T), .groups = "keep"
-  )
-
-
-#  max(p301a, na.rm = T), na.rm = T causa que R no tome en cuenta a los missings
-
-
-# na.rm permite ignorar los missing en las operaciones mean, sum, max
-
-
-df3 <- merge_base_2020 %>% group_by(ubigeo_dep, region) %>%
-  summarise(index_poverty = mean(dummy_pobre, na.rm = T), .groups = "keep" )
-
-
-class(merge_base_2020$p505)
-
-
-#----------------- Indicadores socieconómicos ------------------------
-
-# Primero indicamos a R que nuestra base de datos es una encuesta
-# Para ello demebos declarar el diseño de la encuesta
-# ids: conglomerado, strato: estrato y wieght : factor de expansión
-
-survey_enaho <- merge_base_2020  %>% as_survey_design(ids = conglome, strata = estrato,
-                                                      weight = facpob07)
-
-#facpob07: factor de expansión a nivel población. Esto se constriye a partir de información Censo 2017
-
-
-names(merge_base_2020)
-
-ind1 <- survey_enaho %>%  dplyr::filter(p208a >=  10 & p208a<= 65) %>%  # me quedo con personas de 10 a 65 años
+  ) %>% rowwise() %>% 
   mutate(
-    g1 = ifelse(p208a>=10 & p208a <=20,1,0),  # dummies por grupos de edad
-    g2 = ifelse(p208a>20 & p208a <=30,1,0),
-    g3 = ifelse(p208a >30 & p208a <=40,1,0),
-    g4 = ifelse(p208a >40 & p208a <=65,1,0),
+  educ2 = sum(p301b, p301c, na.rm = T),
+  years_educ = sum(educ1, educ2, na.rm = T)
+) %>% 
+  ungroup()
 
-  )  %>%  group_by(region) %>%   # indicadores de grupo de edad y nivel educativo
-                                 # indicadores a nivel regional
+### Dummies de educación ----------------------------------------------
 
-  summarise(
+# Crear dummies por cada anivel educativo
 
-    gp1 = survey_mean(g1), gp2 = survey_mean(g2), gp3 = survey_mean(g3),
-    gp4 = survey_mean(g4),
-    g_sec = survey_mean(p301a_6, na.rm = T), g_uni_co = survey_mean(p301a_10, na.rm = T)
+enaho19 <- dummy_cols(enaho19, select_columns = 'p301a')
 
+enaho19$p301a_NA <- NULL
+
+# Variables de pobreza #
+
+enaho19 <- enaho19 %>% 
+  mutate(dpto_code = substr(ubigeo, 1, 2),
+         ubigeo3 = str_pad(ubigeo2, 6, pad ="0"),
+         dpto = case_when(
+           dpto_code == "01" ~ "Amazonas", dpto_code == "02" ~ "Ancash",
+           dpto_code == "03" ~ "Apurimac", dpto_code == "04" ~ "Arequipa",
+           dpto_code == "05" ~ "Ayacucho", dpto_code == "06" ~ "Cajamarca",
+           dpto_code == "07" ~ "Callao"  , dpto_code == "08" ~ "Cusco",
+           dpto_code == "09" ~ "Huancavelica",dpto_code == "10" ~ "Huanuco",
+           dpto_code == "11" ~ "Ica"     , dpto_code == "12" ~ "Junin",
+           dpto_code == "13" ~ "La Libertad",dpto_code == "14" ~ "Lambayaque",
+           dpto_code == "15" ~ "Lima"    , dpto_code == "16" ~ "Loreto",
+           dpto_code == "17" ~ "Madre de Dios",dpto_code == "18" ~ "Moquegua",
+           dpto_code == "19" ~ "Pasco"   ,dpto_code == "20" ~ "Piura",
+           dpto_code == "21" ~ "Puno"    ,dpto_code == "22" ~ "San Martin",
+           dpto_code == "23" ~ "Tacna"   ,dpto_code == "24" ~ "Tumbes",
+           dpto_code == "25" ~ "Ucayali"
+         ),
+         gmensual_pc = gashog2d/(mieperho*12),  # gasto del hogar mensual percapita
+         imensual_pc = inghog1d/(mieperho*12)   # ingreso del hogar percapita
+         )
+
+# Variable binaria de pobreza: pobre y no pobre #
+
+enaho19$dummy_pobre <- ifelse(enaho19$pobreza %in% c(1,2), 1, 0)
+
+# var label
+
+var_label(enaho19) <- list(dummy_pobre = "Dummy de pobreza")
+
+
+# value labels
+
+
+val_labels(enaho19$dummy_pobre) <- c("Hogar pobre" = 0,
+                                    "Hogar no pobre" = 1)
+
+val_labels(enaho19$area) <- c("Urbano" = 0,
+                              "Rural" = 1)
+
+# Replace 
+
+enaho19$dummy_pobre <- replace( enaho19$dummy_pobre , 
+                                which( enaho19$pobreza ==1 ), 1 )
+
+enaho19$dummy_pobre <- replace( enaho19$dummy_pobre , 
+                                which( enaho19$pobreza ==2 ), 2 )
+
+enaho19$dummy_pobre <- replace( enaho19$dummy_pobre , 
+                                which( enaho19$pobreza ==3 ), 3 )
+
+table(enaho19$pobreza, enaho19$dummy_pobre)
+
+enaho19$dummy_pobre <- ifelse(enaho19$pobreza %in% c(1,2), 1, 0)
+
+
+# usando pip %>% 
+
+enaho19 <- enaho19 %>% 
+  mutate(
+    dummy_pobre2 = 0,
+    dummy_pobre2 = replace(dummy_pobre2, which(pobreza == 1), 1),
+    dummy_pobre2 = replace(dummy_pobre2, which(pobreza == 2), 2),
+    dummy_pobre2 = replace(dummy_pobre2, which(pobreza == 3), 3),
   )
 
 
+table(enaho19$pobreza, enaho19$dummy_pobre2)
 
-merge_base_2020$estrato
+# Tasa de pobreza a nivel región usando la libreru survey
 
-merge_base_2020$dominio
+# Survey design --------------------------------
+
+# primero se declara el diseño muestral de la encuesta
+
+enaho19$factorpob <- round(enaho19$factor07*enaho19$mieperho, 1)
+
+data_ind <- enaho19  %>% 
+  as_survey_design(ids = conglome, 
+                  strata = estrato,
+                  weight = factorpob) %>% 
+                    dplyr::group_by(dpto) %>% 
+                    summarise(
+                    poverty_rate = survey_mean(dummy_pobre, na.rm = T)*100
+                    )
+
+# Uso de groupby
+          
+enaho19  %>%  group_by(dpto) %>% 
+  summarise(
+    poverty_rate = mean(dummy_pobre, na.rm = T)*100
+  ) %>% as.data.frame()
 
 
-#------- Libreria Survey -------
+# Uso de libreria survey #
 
-# Se declara el diseño muestral
+# tabla de frecuencia relativa 
+
+# Diseño de la encuesta 
+
+design <- svydesign(
+  data = enaho19,
+  ids = ~ conglome,
+  strata = ~estrato,
+  weights = ~ factorpob,
+  nest = TRUE
+)
+
+### tabla de frecuencia -------------------------------------
+
+prop.table(svytable(~ dpto + dummy_pobre, design = design), 1)
+
+### Trabajo infantil y adolescente --------------------------------------
+
+# ifelse coloca missing si alguna de las varaibles de la condicional es NA
+# Esto es diferente en Python
+
+enaho19 <- enaho19 %>% 
+  mutate(
+    dchildwork = ifelse( between(p208a,5,17), 0 , NA),
+    dchildwork = replace(dchildwork, which(
+      between(p208a,5,17) & (p210 == 1 | (p210 == 2 & (! t211 %in% c(9,11))) )
+    ), 1),
+    dmujer = ifelse(p207== 1, 0, 1)
+  )
+
+# label de la variable dummy di el menor de edad labora
+
+val_labels(enaho19$dchildwork) <- c("No trabajo" = 0,
+                                    "Trabaja" = 1)
 
 
-survey_enaho <- svydesign(id=~conglome, weights=~facpob07,strata=~estrato, data=merge_base_2020)
+design <- svydesign(
+  data = enaho19,
+  ids = ~ conglome,
+  strata = ~estrato,
+  weights = ~ factorpob,
+  nest = TRUE
+)
+
+# area 1 (urbano), 2 (rural)
+
+prop.table(svytable(~ area + dchildwork, design = design), 1)
+
+prop.table(svytable(~ dmujer + dchildwork, design = design), 1)
+
+prop.table(svytable(~ dpto + dchildwork, design = design), 1) %>%
+  as.data.frame() %>% 
+  filter(dchildwork == 1) %>% 
+  mutate(ratechildw = Freq*100) %>% 
+  ggplot(aes(y = reorder( dpto, -ratechildw) , x = ratechildw   )) +
+  geom_col() +
+  scale_fill_identity(guide = "none") +
+  theme_minimal()+
+  xlab("")+
+  ylab("Department")
+
+  
+
+
+
+# Append --------------------------------
+
+# Ingreso mensual per cápital del hogar promedio 2018-2020
+
+append_enaho <- bind_rows(sumaria_18, sumaria_19, sumaria_20)
+
+append_enaho$factorpob <-  round(append_enaho$factor07*append_enaho$mieperho, 1) 
+
+append_enaho <- append_enaho %>% 
+  mutate(
+    area =  factor(case_when(
+      estrato <= 5 ~ 1,
+      estrato > 5 ~ 2  ), levels = c(1,2), labels = c("Urbano", "Rural")),
+    ingmpc = inghog1d/(mieperho*12),
+    factorpob = round(factor07*mieperho, 1)
+  )
+
+
+income_years <- append_enaho %>% 
+  as_survey_design(ids = conglome, 
+                   strata = estrato,
+                   weight = factorpob) %>%   
+  group_by(año, area) %>% 
+  summarise(
+    ingmpc = survey_mean(ingmpc, na.rm = T),
+    ingmpc_sd = survey_sd(ingmpc, na.rm = T)
+  )
+
+  
+income_years %>% ggplot( aes(x = año, y = ingmpc, group = area, colour = area) ) +
+  geom_line()+
+  geom_point() +
+  geom_errorbar(aes(ymin=ingmpc -ingmpc_se, ymax = ingmpc + ingmpc_se),
+                width=.04) +
+  theme_bw() +
+  ggtitle("Average monthly income percapita by area")+
+  xlab("")+
+  ylab("")
+
+
+ggsave("../../output/plots/line_income.png"
+       , height = 8  # alto
+       , width = 12  # ancho
+       , dpi = 320   # resolución (calidad de la imagen)
+)
+
+
+
+# inghog1d/(mieperho*12*i00)  próxima tarea
+
+
+# ld: deflactor espacial
+# i00: deflactor temporal
+
+# ENDES ---------------------------------------------------
+
+# Base a nivel hogar
+
+read_dta("../../data/endes/RECH0.dta")[1,2]
+
+rech0 <- read_dta("../../data/endes/RECH0.dta") %>% 
+  mutate(
+    HHID = str_trim(HHID)
+  )
+
+names(rech0) <- tolower(names(rech0))
+
+sapply(rech0,attr ,'labels')
+sapply(rech0,attr ,'label')
+sapply(rech0, class)
+
+# Mas información a nivel hogar
+
+rech23 <- read_dta("../../data/endes/RECH23.dta") %>% 
+  mutate( HHID = str_trim(HHID) )
+
+names(rech23) <- tolower(names(rech23))
+
+sapply(rech23,attr ,'labels')
+sapply(rech23,attr ,'label')
+sapply(rech23, class)
+
+# Información a nivel individuo
+
+rech1 <- read_dta("../../data/endes/RECH1.dta")
+
+
+rech1 <- read_dta("../../data/endes/RECH1.dta") %>% 
+  mutate(
+    HHID = str_trim(HHID)
+  )
+
+names(rech1) <- tolower(names(rech1))
+
+sapply(rech1,attr ,'labels')
+sapply(rech1,attr ,'label')
+
+sapply(rech1, class)
+
+# Información de desnutrición 
+
+rech6 <- read_dta("../../data/endes/RECH6.dta") %>% 
+  mutate(
+    HHID = str_trim(HHID)
+  )
+
+names(rech6) <- tolower(names(rech6))
+
+sapply(rech6, class)
+
+# Salud mental
+
+salud <- read_dta("../../data/endes/CSALUD01.dta") %>% 
+  mutate(
+    HHID = str_trim(HHID)
+  )
+
+names(salud) <- tolower(names(salud))
+
+sapply(salud, class)
+
+#----------------------- Merge ---------------------------------#
+
+endes_health_child <- rech6 %>% 
+  left_join(rech0, by = "hhid") %>% 
+  left_join(rech23, by = "hhid") %>% 
+  left_join(rech1, by = c("hhid", "hc0"="hvidx"))
+
+ 
+  # left_join(salud, by = c("hhid", "hvidx"="qsnumero"))
+
+# Trabajaremos las variables 
+
+### Dummies de anemia-------------------
+
+# El problema no es la presencia de missing tal cual
+# Sino cuando la falta de información es representada por valores: 9, 999, 9998, 99888
+
+endes_health_child <- endes_health_child %>% 
+  mutate(
+    anemia_sev = case_when(
+      hc57 == 1 ~ 1,
+      hc57 %in% c(2,3,4) ~ 0,
+      hc57 == 9 ~ NA
+    ),
+    anemia_mildmod = case_when(
+      hc57 %in% c(1,4) ~ 0,
+      hc57 %in% c(2,3) ~ 1,
+      hc57 == 9 ~ NA
+    )
+    
+  )
+
+### Dummy por desnutrición crónica ----------------------------
+# Niñas y niños que están por debajo de -3 DE de la media #
+
+endes_health_child <- endes_health_child  |>
+  mutate(
+    hc70 = replace(hc70, which(hc70 %in% c(996,9998,9999)), NA),
+    desncro = ifelse(hc70 < -300 & hv103 == 1, 1, NA),
+    desncro = replace(desncro, which(hc70 >= -300 & hc70 < 601 & hv103 == 1), 0 ),
+    peso = hv005a/1000000,
+    region = factor(hv024, 
+                    levels = c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
+                               17,18,19,20,21,22,23,24,25),
+                    labels = c("Amazonas", "Ancash", "Apurimac","Arequipa",
+                          "Ayacuho","Cajamarca","Callao","Cusco","Huancavelica",
+                          "Huanuco","Ica","Junin", "La Libertad", "Lambayeque",
+                          "Lima", "Loreto", "Madre de Dios", "Moquegua",
+                          "Pasco", "Piura" ,"Puno", "San Martín", "Tacna", "Tumbes",
+                          "Ucayali"))
+  )
+
+# hv103 : la persona pasó la noche en el hogar
+
+
+design <- svydesign(
+  data = endes_health_child,
+  ids = ~ hv001,
+  strata = ~ hv022,
+  weights = ~ peso
+)
+
+# area 1 (urbano), 2 (rural)
+
+
+prop.table(svytable(~ region + desncro, design = design), 1) %>%
+  as.data.frame() %>% 
+  filter(desncro == 1) %>% 
+  mutate(ratechildcro = Freq*100) %>% 
+  ggplot(aes(y = reorder( region , -ratechildcro ) , x = ratechildcro    )) +
+  geom_col() +
+  scale_fill_identity(guide = "none") +
+  theme_minimal()+
+  xlab("")+
+  ylab("Department")
+
+### Mental health -----------------------------
+
+endes_mental <- salud %>% 
+  left_join(rech0, by = "hhid") %>% 
+  left_join(rech23, by = "hhid") %>% 
+  left_join(rech1, by = c("hhid", "qsnumero"="hvidx"))
+
+
+# Dummies de depression #
+
+" Preguntas respecto a los últimos 14 días"
+
+col_repl <- c("qs700a", "qs700b", "qs700c", "qs700d","qs700e", "qs700f",
+              "qs700g", "qs700h","qs700i")
+
+attr(endes_mental$qs700a, "labels")
+                                  
+endes_mental[col_repl] <- sapply(endes_mental[col_repl],  
+                              function(x) replace(x, x == 9, NA))
+
+endes_mental <- endes_mental |>
+  rename(low_interest = qs700a,
+         depressed = qs700b,
+         not_sleep = qs700c,
+         tired = qs700d,
+         poor_appetite = qs700e,
+         pay_attention = qs700f,
+         difficult_move = qs700g,
+         suicide =  qs700h,
+         feel_bad = qs700i) |> rowwise() |>
+        mutate(
+                 phq9_score = sum(
+                   low_interest,depressed, not_sleep, tired, poor_appetite,
+                   pay_attention, difficult_move, suicide, feel_bad
+                   , na.rm = T)
+               ) |> ungroup() 
+
+attach(endes_mental) # cada variable es un objeto independiente
+
+endes_mental$mild_depression <- ifelse(phq9_score<5 | phq9_score >9, 0, 
+                              ifelse(phq9_score>=5 | phq9_score <=9, 1, NA))
+
+endes_mental$moderate_depression <- ifelse(phq9_score<10 | phq9_score >14, 0,
+                                 ifelse(phq9_score>=10 | phq9_score <=14, 1, NA))
+
+endes_mental$severe_depression <- ifelse(phq9_score<15, 0 ,
+                                ifelse(phq9_score>=15, 1, NA))
+
+
+# References -----------------------------------
+
+browseURL("https://stats.oarc.ucla.edu/r/seminars/survey-data-analysis-with-r/")
+browseURL("https://github.com/DHSProgram/DHS-Indicators-Stata")
+
+
+
+
+
+
+
+
+
 
 
 
