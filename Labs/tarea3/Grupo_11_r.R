@@ -20,8 +20,6 @@ library(stringr)
 
 # Desarrollo de las preguntas ####
 
-## Pregunta 1:  ####
+## Pregunta 1: Map, sapply, apply, función Lambda ####
 
-## Pregunta 2: Condicional 1 ####
-
-## Pregunta 3: Condicional 1 ####
+## Pregunta 2: Apply ####
