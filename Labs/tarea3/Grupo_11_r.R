@@ -23,3 +23,7 @@ library(stringr)
 ## Pregunta 1: Map, sapply, apply, función Lambda ####
 
 ## Pregunta 2: Apply ####
+siagie <- read.csv("../../data/siagie.csv")
+
+
+
