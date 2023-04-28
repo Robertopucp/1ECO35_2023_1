@@ -47,7 +47,7 @@ df1 <- data.frame(
 
 df2 <- data.frame(
   id = c(2,3,4,10,20,30),
-  value = c(1000, 2000, 3000)
+  value = c(1000, 2000, 3000,4000,5000,6000)
   
 )
 
@@ -77,7 +77,7 @@ data$dummy <- ifelse(data$value > 1500, 1, 0)
 
 ### Merge ENAHO ------------------------------
 
-enaho100_19 <- read_dta("../../data/enaho/enaho01-2020-100.dta")
+enaho100_19 <- read_dta("../../data/enaho/enaho01-2019-100.dta")
 enaho200_19 <- read_dta("../../data/enaho/enaho01-2019-200.dta")
 enaho300_19 <- read_dta("../../data/enaho/enaho01a-2019-300.dta")
 enaho400_19 <- read_dta("../../data/enaho/enaho01a-2019-400.dta")
@@ -85,9 +85,6 @@ enaho500_19 <- read_dta("../../data/enaho/enaho01a-2019-500.dta")
 sumaria_19 <- read_dta("../../data/enaho/sumaria-2019.dta")
 sumaria_20 <- read_dta("../../data/enaho/sumaria-2020.dta")
 sumaria_18 <- read_dta("../../data/enaho/sumaria-2018.dta")
-
-
-
 
 # Elegimos nuestro Master data
 
