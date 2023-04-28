@@ -1,4 +1,4 @@
-################  laboratorio 2 ############################
+################  laboratorio 4 ############################
 ## Curso: Laboratorio de R y Python ###########################
 ## @author: Roberto Mendoza 
 
@@ -18,6 +18,8 @@ options(scipen = 999)      # No scientific notation
 
 # Library ####
 
+#install.packages("pacman")
+
 library(pacman) 
 # permite llamar a varias librerias de manera simultánea
 # Si la librería no está instalada, entonces lo instala y llama para su uso
@@ -35,6 +37,7 @@ getwd()
 
 # Load datasets ----------------------
 
+# csv (comma separated values)
 
 datoscsv <- read.csv("../../data/Riesgo_morosidad.csv")
 
@@ -48,11 +51,16 @@ datoscsv <- read.csv("../../data/Riesgo_morosidad.csv", sep = ";")
 
 str(datoscsv)
 
+
 # Variables categoricas
 
 datoscsv$sexo      <- factor(datoscsv$sexo, levels = c(1, 2),
                              labels = c("Masculino", "Femenino"))
 
+datoscsv$morosidad <- factor(datoscsv$morosidad, levels = c(1,2),
+                             labels = c("No moroso", "Moroso"))
+
+# factor (variable, niveles, etiquetas labels )
 
 levels(datoscsv$sexo)
 levels(datoscsv$sexo) <- c("M","F")
@@ -80,8 +88,8 @@ datoscsv$dpto      <- factor(datoscsv$dpto,
                              labels = c("Lima", "Trujillo", "Arequipa",
                                         "Cusco", "Ica", "Piura"))
 
-datoscsv$morosidad <- factor(datoscsv$morosidad, levels = c(1, 2),
-                             labels = c("No Moroso", "Moroso"))
+# datoscsv$morosidad <- factor(datoscsv$morosidad, levels = c(1, 2),
+#                              labels = c("No Moroso", "Moroso"))
 
 str(datoscsv)
 
@@ -89,17 +97,26 @@ str(datoscsv)
 
 table(datoscsv$dpto, datoscsv$morosidad)
 
+table(datoscsv$morosidad, datoscsv$dpto)
+
+# table morosidad y tipo de renta 
+
+# morosidad 1: no moroso, 
+# morosidad 2: moroso 
+
 #### 1.1 Datos *.TXT ####
 
+                                                      
+
 datost <- read.table("../../data/Riesgo_morosidad.dat",
-                     sep = "\t")
+                     sep = "\t", header = F)
                      
 
 # primera fila como nombre de las columnas 
 
 datost <- read.table("../../data/Riesgo_morosidad.dat",
                      sep = "\t",
-                     header = TRUE)
+                     header = T)
 
 str(datost)
 
@@ -124,17 +141,24 @@ str(datosd)
 #### 1.2 Datos SPSS *.sav ####
 
 # read.spss de la libreria foreign 
+# permite asignar las etiquetas como datos 
+value_label <- read.spss("../../data/Riesgo_morosidad.sav"
+                      )
+
+# etiqueta de valores
+
+attributes(value_label)$label.table
+
+# load dataset as datafrmae
 
 datospss <- read.spss("../../data/Riesgo_morosidad.sav",
                       use.value.labels = F, 
                       to.data.frame = TRUE)
 
-# permite asignar las etiquetas como datos 
-datospss <- read.spss("../../data/Riesgo_morosidad.sav",
-                      to.data.frame = TRUE)
+attributes(datospss)$variable.labels  # etiqueta de variable 
 
+# encoding: detectar el tipo de numero y letras 
 
-str(datospss)
 
 
 #### 1.3 Datos EXCEL *.XLS *.XLSX ####
@@ -152,7 +176,10 @@ datos1_xlsx <- as.data.frame(datos1_xlsx)
 str(datos1_xlsx)
 
 
+
 # Lectura de caracteres especiales 
+
+# UTF-8 es el encoding universal 
 
 netflix <- read.csv("../../data/netflix_titles.csv")
                     
@@ -163,7 +190,9 @@ netflix <- read.csv("../../data/netflix_titles.csv", encoding = "UTF-8")
 netflix <- read.csv("../../data/netflix_titles.csv", encoding = "UTF-8",
                     na.strings=c("",NA)) 
 
-# na.strings=c("",NA) reemplaza vacios por missing 
+# NA
+
+# na.strings=c("",NA) reemplaza vacios en las variables character (texto) por missing 
 
 #--------------------------------------------#
 
@@ -171,6 +200,7 @@ bbdd <- paises # dataset from "datos" library
 
 write.csv(bbdd, "../../data/paises.csv", row.names = F)
 
+# row.names = F no guarda el indexing de filas
 
 # Base de datos en formato tibble
 
@@ -187,7 +217,7 @@ sapply(bbdd, class)  # tipo de varaible
 
 summary(bbdd)   # principales estadisticas descriptivas
 
-sum(is.na(pais))  # ningun missing en la base país
+sum(is.na(bbdd))  # ningun missing en la base país
 
 sapply(bbdd, function(x) sum(is.na(x))) # check missing all variables 
 
@@ -205,9 +235,11 @@ str(paises.d)
 
 ### 2.1 Filtro ----------------------
 
-filter(bbdd, anio == 1957)  # > >= < <=  & | == !=
+# dplyr 
 
-bbdd_1957 <- filter(bbdd, anio == 1957) 
+bbdd_1957 <- filter(bbdd, anio == 1957)  # > >= < <=  & | == !=
+filter(bbdd, anio == 1957) -> bbdd_1957
+
 
 # guardar la base de datos filtrada
 
@@ -227,18 +259,21 @@ bbdd %>% filter(pais == "Chile" | pais == "Perú") %>% View
 
 bbdd %>% filter(pais == "Perú", anio == 1997 | anio == 2002 | anio == 2007)
 
-bbdd %>% filter(pais == "Perú", anio %in% c(1997, 2002, 2007))  # Es equivalente
+bbdd %>% filter(pais == "Perú", anio %in% c(1997, 2002, 2007)) %>% 
+  View # Es equivalente
 
 
 ### 2.2 Ordenando datos ------------------------------------------
 
 #  Ordenando observaciones según la esperanza de vida
 
-bbdd %>% arrange(esperanza_de_vida)  # Por defecto ascendente
+bbdd %>% arrange(esperanza_de_vida) %>% 
+  View # Por defecto ascendente
 
 bbdd %>% arrange(desc(esperanza_de_vida)) # ordenamiento descendente
 
-bbdd %>% arrange(-esperanza_de_vida) # Equivalente al anterior
+bbdd %>% arrange(-esperanza_de_vida) %>% 
+  View# Equivalente al anterior
 
 
 #  Filtrando y ordenando
@@ -248,15 +283,15 @@ bbdd %>% filter(anio == 1957) %>%
 
 
 #      Ejercicio    #
-# Muestre la información de Europa del año 1987 ordenada 
-# según el PIB de manera descendente
-
+# Muestre la información de Europa del año 1987 
+# ordenamiento según el PIB percapita de manera descendente
 
 ### 2.3 Creación de variable --------
 
 # Usando mutate para cambiar o crear una columna
 
 # esperanza de vida en meses
+# mutate es de la libreria dplyr 
 
 bbdd %>% mutate(esperanza_de_vida_meses = 12*esperanza_de_vida,
                 pbipc_miles = pib_per_capita/1000)
@@ -264,10 +299,13 @@ bbdd %>% mutate(esperanza_de_vida_meses = 12*esperanza_de_vida,
 
 #      Ejercicio    #
 
-# población en millones, año 2007, países de áfrica
+# población en millones, año 2007, países de áfrica, orden de forma ascendente (pob)
+
 
 
 ### 2.4 Selección variables  ----------------------
+
+#bbdd[filtro de filas, filtro de columnas]
 
 bbdd[ , c(1, 3, 5)]
 bbdd[ , 1:3]
@@ -299,30 +337,13 @@ bbdd[c(1,100,50,25), ]
 
 bbdd[ c(100:200), c("pais", "anio", "poblacion")]
 
-indices <- split(seq(nrow(bbdd)), sort( seq(nrow(bbdd)) %% 3 ) )
-
-
-# indexing de las filas agrupado en 3 
-indices
-
-# add names to each vector
-
-names(indices) <- c('training', 'est', 'test') ## add labels 
-
-indices$est
-indices$test
-indices$training
-
-bbdd[indices$training,]  # observaciones de trainning 
-bbdd[indices$test,]  # observaciones de test
-
 
 # using dplyr for selecting 
 
 bbdd %>% select(pais, anio, poblacion)
 
 bbdd  %>% select(pais, poblacion, anio) %>% 
-  slice(100:n())  # desde la observación hasta la finaln
+  slice(100:n())  # desde la observación hasta la final
 
 bbdd  %>% select(pais, poblacion, anio) %>% 
   slice(100:150) 
@@ -330,9 +351,9 @@ bbdd  %>% select(pais, poblacion, anio) %>%
 
 ### 2.5 Rename() ------------------------
 
-paises2 <- bbdd %>% rename(Pais = pais, Año = anio, 
+paises2 <- bbdd %>% dplyr::rename(Pais = pais, Año = anio, 
                              PBI = pib_per_capita) %>%
-  select(Año, Pais, PBI)
+  dplyr::select(Año, Pais, PBI)
 
 paises2
 
@@ -357,6 +378,7 @@ bbdd[, ! names(bbdd) %in% c('var1', 'var2')] -> bbdd
 bbdd$var <- 1000
 bbdd$var <- NULL  # borrar variable de forma rapida 
 
+bbdd$var <- NULL
 
 # Ordenar la posición de las variables 
 
@@ -379,14 +401,6 @@ bbdd %>% select(anio, continente, pais, everything()) %>% View()
 ### 2.8 Resumiendo con summarise() y count() ---------------------
 
 # Resumiendo la esperanza de vida
-
-mean(esperanza_de_vida)
-
-# la variable esperanza_de_vida no existe 
-
-attach(bbdd) # cada columna es una variable 
-
-mean(esperanza_de_vida)
 
 bbdd %>% summarise(mean(esperanza_de_vida))   # summarize()
 
@@ -411,14 +425,11 @@ bbdd %>% filter(between(anio, 1950, 1990)) %>%
 
 # Resumiendo por año y continente
 
-bbdd %>% group_by(anio) %>% 
-    summarise(mean_esperanza_de_vida = mean(esperanza_de_vida))
-
-bbdd %>% group_by(anio, continente) %>% 
+bbdd %>% dplyr::group_by(anio, continente) %>% 
   summarise(mean_esperanza_de_vida = mean(esperanza_de_vida)) %>%
   View
 
-bbdd %>% group_by(anio, continente) %>% 
+bbdd %>% dplyr::group_by(anio, continente) %>% 
   summarise(mean_esperanza_de_vida = mean(esperanza_de_vida), 
             sd_esperanza_vida = sd(esperanza_de_vida)) %>%
   View
@@ -426,25 +437,42 @@ bbdd %>% group_by(anio, continente) %>%
 
 # Número de países por continente en 2007
 bbdd %>% filter(anio == 2007) %>% 
-  group_by(continente) %>% summarise(n())
+  dplyr::group_by(continente) %>% summarise(n())
 
 bbdd %>% filter(anio == 2007) %>% 
-  group_by(continente) %>% count()    # Es equivalente
+  dplyr::group_by(continente) %>% count()    # Es equivalente
 
 bbdd %>% filter(anio == 2007) %>% 
-  group_by(continente) %>% summarise(Número_Paises = n()) 
+  dplyr::group_by(continente) %>% summarise(Número_Paises = n()) 
 
 
 # Añadiendo el summarise a la base de datos 
 
-clean_data <- bbdd %>% group_by(pais) %>% 
+bbdd %>% dplyr::group_by(pais) %>% 
+  summarise(mean_pbipc_pais = mean(pib_per_capita)) 
+
+
+bbdd %>% dplyr::group_by(pais) %>% 
+  mutate(mean_pbipc_pais = mean(pib_per_capita),
+         dif_pbipc = pib_per_capita- mean_pbipc_pais) 
+
+
+bbdd %>% dplyr::group_by(continente, anio) %>% 
+  mutate(mean_pbipc_continente = mean(pib_per_capita),
+         dif_pbipc = pib_per_capita - mean_pbipc_continente) %>% 
+  filter(pais =="Perú") %>% View()
+
+
+
+clean_data <- bbdd %>% dplyr::group_by(pais) %>% 
   mutate(mean_pbipc_pais = mean(pib_per_capita)) %>% ungroup() %>% 
   group_by(continente) %>%  mutate(median_pob = median(poblacion)) %>% 
   as.data.frame()
 
+
 # |> alterantiva de pip 
 
-clean_data <- bbdd |> group_by(pais) |>
+clean_data <- bbdd |> dplyr::group_by(pais) |>
   mutate(mean_pbipc_pais = mean(pib_per_capita)) |> ungroup() |>
   group_by(continente) |> mutate(median_pob = median(poblacion)) |>
   as.data.frame()
@@ -457,6 +485,7 @@ clean_data <- bbdd |> group_by(pais) |>
 
 
 browseURL("https://allisonhorst.shinyapps.io/edge-of-the-tidyverse/#section-welcome")
+
 
 
 
