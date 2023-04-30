@@ -31,13 +31,16 @@ print (vector) # Imprimimos el vector para ver los números
 sapply(vector, function(x) (x - min(vector))/(max(vector) - min(vector)))
 
 # Llamamos a la base de datos 
-base_compras <- read.csv("../../data/BDD_compras_consumidores.csv", sep = ";")
+base_compras <- read.csv("../../data/BDD_compras_consumidores.csv", sep = ";") 
+    # Debemos comolocar ";", pues esta es la forma de separación presente en el 
+    # csv
 
 #Aplicamos el escalamiento a la base_compras 
 base_compras$escalamiento <- apply(base_compras[, 3:8], 2, function(x)
   (x - min(base_compras))/(max(base_compras)- min(base_compras)))
 
 ## Pregunta 2: Apply ####
+# Llamamos a la base de datos
 siagie <- read.csv("../../data/siagie.csv")
 str(siagie)
 
