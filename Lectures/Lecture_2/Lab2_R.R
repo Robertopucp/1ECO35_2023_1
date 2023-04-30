@@ -170,7 +170,7 @@ while (year < n){
 
 ## For ----
 
-ages <-  1:10000
+ages <-  1:10
 
 for (age in ages) {
   
@@ -280,6 +280,8 @@ calculator <- function(x,y,z)
 calculator( 158, 38, 10 )
 
 calculator( 158, 38)
+#No existe un tercer argumento, entonces no se
+#realizará la operación
 
 # Different arguments location
 

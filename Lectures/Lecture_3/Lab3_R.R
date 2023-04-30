@@ -41,7 +41,14 @@ getwd()
 "Lapply and Sapply"
 
 genero <- c('F', 'M', 'M', 'F', 'M')
+
+
+lapply(genero, function(x) {if (x == 'M') 0 else 1 })
+
+
 sapply(genero, function(x)  {if (x == 'M') 0 else 1})
+
+
 
 NSE <- c('A', 'A', 'C', 'B', 'C')
 sapply(NSE, function(x)  {if (x == 'A') 3 else if (x == 'B') 2 else 1})
@@ -78,19 +85,27 @@ sapply(vector, function(x){
 
 lapply(vector, function(i)  ( i -  mean(vector) ) / sd(vector) )
 
+sapply(vector, function(y) (y - mean(vector) ) / sd(vector) )
+       
 
 # Asignando el nombre de la función: standarize
 
-standarize <- function(i, mean, sd){
-  ( i -  mean ) / sd
+standarize <- function(i, mean_1, sd_1){
+  ( i -  mean_1 ) / sd_1
 }
 
 
 lapply(vector,standarize,  mean = mean(vector), sd = sd(vector))
+
+sapply(vector, standarize, mean_1 = mean(vector), sd_1 = sd(vector))
+
 sapply(vector,standarize,  mean = mean(vector), sd = sd(vector))
 
 
 # lapply(x, FUN, ...) ... significa argumentos adicionales para la función
+
+args(sapply)
+
 
 
 "Función 3"
@@ -125,7 +140,7 @@ vector_tx <- c("Tiene 9 años","Dice tener 24 ", "35 years",
 
 extract_numb <- function(x){
   
- return(str_extract(x,"[0-9]+") )
+ return(as.numeric(  str_extract(x,"\\d+") )  )
   
 }
 
@@ -225,7 +240,11 @@ caso2(sample(1:50, size = 5))
 
 datos <- read.csv("../../data/BDD_compras_consumidores.csv", sep = ";")
 
+
+
 str(datos) # muestra el tipo de variable de cada columna
+
+# str()  .info()
 
 # Convirtiendo a variables categórica
 
@@ -248,13 +267,14 @@ table(datos$Region)
 
 # Total de ventas
 
-apply(datos[, 3:8], 1, sum)  # 1 es por filas
+apply(datos[, 3:8], 2, sum)  # 2 : suma aplciarse por columna 
 
 datos$Ventas <- apply(datos[, 3:8], 1, sum) # creando nueva columna de ventas
 
-apply(datos[,3:8], 2, sum)    
 # 2 es por columnas (total de ventas por tipo de producto)
+
 apply(datos[,3:8], 2, mean)
+
 # 2 es por columnas (promedio de ventas por tipo de producto)
 
 
@@ -274,7 +294,9 @@ apply(datos[,3:8], 2, range) # range devuelve el máximo y minimo
 # conversión de las ventas a dólares
 
 datos2 <- apply(datos[, 3:8], 2, function(x) x/3.9) 
-datos3 <- cbind(datos[, 1:2], datos2)  # uniendo bases de columa en columnas
+
+
+#datos3 <- cbind(datos[, 1:2], datos2)  # uniendo bases de columa en columnas
 
 #---------------#
 #### Tapply ####
