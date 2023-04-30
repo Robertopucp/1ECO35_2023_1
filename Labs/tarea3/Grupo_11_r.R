@@ -23,13 +23,11 @@ getwd()
 # Desarrollo de las preguntas ####
 
 ## Pregunta 1: Map, sapply, apply, función Lambda ####
+
+vector <- sample(100) # Creamos el vector aletoario
 base_compras <- read.csv("../../data/BDD_compras_consumidores.csv", sep = ";")
-
-vector <- runif(100) # Creamos el vector aletoario
-View(vector)         # Vemos los números aleatoreos creados en un rango de (0 a 1)
-
-lapply(vector, function(x)  ( x -  min(vector) ) / max(vector) - min(vector) )
-
+base_compras$escalmamiento <- apply(base_compras[, 3:8], 2, function(x)
+  (x - min(vector))/(max(vector)- min(vector)))
 
 
 
@@ -47,5 +45,3 @@ siagie$Nota_max <- apply(siagie[, 7:17], 1, max)
 siagie$Nota_max <- apply(siagie[, 7:17], 1, min)
 
 # Hallando el promedio de cada curso
- 
-
