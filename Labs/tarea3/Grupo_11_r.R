@@ -23,18 +23,19 @@ getwd()
 # Desarrollo de las preguntas ####
 
 ## Pregunta 1: Map, sapply, apply, función Lambda ####
-sample(1:100000, 100, replace=FALSE)
 
-vector <- runif(100, min=0, max=15000) # Creamos el vector aletoario
-view(vector)
+vector <- runif(100, min=0, max=1) # Creamos el vector 
+print (vector) # Imprimimos el vector para ver los números 
 
+# Aplicamos el escalamiento al vector 
 sapply(vector, function(x) (x - min(vector))/(max(vector) - min(vector)))
 
+# Llamamos a la base de datos 
 base_compras <- read.csv("../../data/BDD_compras_consumidores.csv", sep = ";")
-base_compras$escalmamiento <- apply(base_compras[, 3:8], 2, function(x)
-  (x - min(vector))/(max(vector)- min(vector)))
 
-
+#Aplicamos el escalamiento a la base_compras 
+base_compras$escalamiento <- apply(base_compras[, 3:8], 2, function(x)
+  (x - min(base_compras))/(max(base_compras)- min(base_compras)))
 
 ## Pregunta 2: Apply ####
 siagie <- read.csv("../../data/siagie.csv")
