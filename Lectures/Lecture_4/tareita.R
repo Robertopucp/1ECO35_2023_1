@@ -1,4 +1,3 @@
-# clean environment variables
 
 rm(list = ls())
 
@@ -13,6 +12,8 @@ cat("\014")
 options(scipen = 999)      # No scientific notation
 
 # Library ####
+
+#install.packages("pacman")
 
 library(pacman) 
 # permite llamar a varias librerias de manera simult√°nea
@@ -29,18 +30,24 @@ p_load(dplyr, readxl, tidyverse, foreign, datos)
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 getwd()
 
-# Cargar base de datos
-siagie <- read.csv("../../data/siagie.csv")
 
-# Calcular nota promedio final, nota m·xima y mÌnima por alumno
-siagie <- siagie %>%
-  group_by(alumno) %>%
-  mutate(promedio_final = mean(nota_final),
-         nota_maxima = max(nota_final),
-         nota_minima = min(nota_final))
+# Cargar paquete "readxl" para leer el archivo Excel
+library(readxl)
 
-# Calcular promedio y mediana de notas por curso
-siagie <- siagie %>%
-  group_by(curso) %>%
-  mutate(promedio_curso = mean(nota_final),
-         mediana_curso = median(nota_final))
+# Leer la base de datos desde el archivo Excel
+siagie <- read.csv("../../data/siagie.csv", row.names = F)
+# Calcular la nota promedio final de cada alumno
+datos$promedio <- rowMeans(datos[,2:ncol(datos)])
+
+# Calcular la nota m·xima y mÌnima de cada alumno
+datos$maxima <- apply(datos[,2:ncol(datos)], 1, max)
+datos$minima <- apply(datos[,2:ncol(datos)], 1, min)
+
+# Calcular el promedio y mediana de notas de cada curso
+curso_promedio <- apply(datos[,2:ncol(datos)], 2, mean)
+curso_mediana <- apply(datos[,2:ncol(datos)], 2, median)
+
+# Imprimir los resultados
+print(datos)
+print(curso_promedio)
+print(curso_mediana)
