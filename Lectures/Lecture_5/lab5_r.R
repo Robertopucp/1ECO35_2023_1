@@ -85,6 +85,8 @@ enaho500_19 <- read_dta("../../data/enaho/enaho01a-2019-500.dta")
 sumaria_19 <- read_dta("../../data/enaho/sumaria-2019.dta")
 sumaria_20 <- read_dta("../../data/enaho/sumaria-2020.dta")
 sumaria_18 <- read_dta("../../data/enaho/sumaria-2018.dta")
+base_deflactores <- read_dta("../../data/enaho/deflactores_base2020_new.dta")
+
 
 # Elegimos nuestro Master data
 
@@ -139,6 +141,7 @@ table(enaho19$p300a, enaho19$lengua)
 
 prop.table(table(enaho19$p300a, enaho19$lengua), margin = 2)
   
+# Creación de la variable area 1 : urbano y 2 para rural
 
 enaho19$area <- case_when(
   enaho19$estrato <= 5 ~ 1,
@@ -148,6 +151,8 @@ enaho19$area <- case_when(
 
 # años de educación #
 
+# años de estudio acumulado hasta el nivel educativo alcanzado
+
 enaho19 <- enaho19 %>% mutate(
   educ1 = case_when(
     between(p301a,1,4) ~ 0,
@@ -156,11 +161,19 @@ enaho19 <- enaho19 %>% mutate(
     p301a == 11 ~ 16
   ))
 
+# Años de estudio en el nivel educativo actual
+
+# Sumamos el grado o año de estudios. Grado para secundaria o primaria
+# año de estudio para educación superior
 
 enaho19$educ2 <- apply(enaho19[,c("p301b","p301c")], 1 , sum , na.rm = T)
 enaho19$years_educ <- apply(enaho19[,c("educ1","educ2")], 1 , sum , na.rm = T)
+  
+# margin = 1 para sumar fila por fila (suma horizontal)
 
+# na.rm ignora los missing
 
+# otra alternatica
 
 enaho19 <- enaho19 %>% mutate(
   educ1 = case_when(
@@ -169,12 +182,12 @@ enaho19 <- enaho19 %>% mutate(
     between(p301a,7,10) ~ 11,
     p301a == 11 ~ 16
   )
-  ) %>% rowwise() %>% 
+  ) %>% rowwise() %>%  # row (fila), se realizará operaciones fila por fila
   mutate(
-  educ2 = sum(p301b, p301c, na.rm = T),
+  educ2 = sum(p301b, p301c, na.rm = T),  # suma horizontal
   years_educ = sum(educ1, educ2, na.rm = T)
 ) %>% 
-  ungroup()
+  ungroup()  # resactivar rowwise()
 
 ### Dummies de educación ----------------------------------------------
 
@@ -255,7 +268,7 @@ enaho19 <- enaho19 %>%
 
 table(enaho19$pobreza, enaho19$dummy_pobre2)
 
-# Tasa de pobreza a nivel región usando la libreru survey
+# Tasa de pobreza a nivel región usando la libreria survey
 
 # Survey design --------------------------------
 
@@ -349,18 +362,25 @@ prop.table(svytable(~ dpto + dchildwork, design = design), 1) %>%
 
 # Append --------------------------------
 
-# Ingreso mensual per cápital del hogar promedio 2018-2020
+# Append sumaria y merge con los deflactores anuales. 
+# El año base es 2020
 
-append_enaho <- bind_rows(sumaria_18, sumaria_19, sumaria_20)
+append_enaho <- bind_rows(sumaria_18, sumaria_19, sumaria_20) %>% 
+  mutate(  dpto = as.numeric( substr(ubigeo,1,2) ),
+           año = as.numeric(año))  %>% 
+  left_join(base_deflactores, by = c("dpto", "año" = "aniorec"))
 
 append_enaho$factorpob <-  round(append_enaho$factor07*append_enaho$mieperho, 1) 
+
+
+# Uniendo con la base deflactores 
 
 append_enaho <- append_enaho %>% 
   mutate(
     area =  factor(case_when(
       estrato <= 5 ~ 1,
       estrato > 5 ~ 2  ), levels = c(1,2), labels = c("Urbano", "Rural")),
-    ingmpc = inghog1d/(mieperho*12),
+    ingmpc = inghog1d/(mieperho*12*i00),
     factorpob = round(factor07*mieperho, 1)
   )
 
@@ -371,8 +391,7 @@ income_years <- append_enaho %>%
                    weight = factorpob) %>%   
   group_by(año, area) %>% 
   summarise(
-    ingmpc = survey_mean(ingmpc, na.rm = T),
-    ingmpc_sd = survey_sd(ingmpc, na.rm = T)
+    ingmpc = survey_mean(ingmpc, na.rm = T)
   )
 
   
@@ -464,6 +483,12 @@ salud <- read_dta("../../data/endes/CSALUD01.dta") %>%
     HHID = str_trim(HHID)
   )
 
+dv <- read_dta("../../data/endes/REC84DV.dta") %>% 
+  mutate(
+    caseid = str_trim(caseid)
+  )
+
+
 names(salud) <- tolower(names(salud))
 
 sapply(salud, class)
@@ -476,7 +501,7 @@ endes_health_child <- rech6 %>%
   left_join(rech1, by = c("hhid", "hc0"="hvidx"))
 
  
-  # left_join(salud, by = c("hhid", "hvidx"="qsnumero"))
+# left_join(salud, by = c("hhid", "hvidx"="qsnumero"))
 
 # Trabajaremos las variables 
 
@@ -530,6 +555,7 @@ design <- svydesign(
   weights = ~ peso
 )
 
+
 # area 1 (urbano), 2 (rural)
 
 
@@ -545,6 +571,8 @@ prop.table(svytable(~ region + desncro, design = design), 1) %>%
   ylab("Department")
 
 ### Mental health -----------------------------
+
+# Este módulo es respondido por el jefe o jefa del hogar
 
 endes_mental <- salud %>% 
   left_join(rech0, by = "hhid") %>% 
@@ -591,6 +619,54 @@ endes_mental$moderate_depression <- ifelse(phq9_score<10 | phq9_score >14, 0,
 
 endes_mental$severe_depression <- ifelse(phq9_score<15, 0 ,
                                 ifelse(phq9_score>=15, 1, NA))
+
+
+# Violencia Doméstica -----------------------------------------------------
+
+# unir bases de datos 
+# Master Data es la base RECH84DV
+# Uniré la bases de información socioeconómica personal rech1 e 
+# información a nivel hogar (rech0 y rech24)
+
+# En este caso, el identificador de la mujer es el caseid
+# En esta base de datos se entrevistó a mujeres casadas o en convivencia.
+
+# A partir de la variable caseid, creamos el HHID (id hogar) y HVIDX (id persona)
+
+dv[c('hhid','hvidx')] <- str_split_fixed(dv$caseid, " ", 2) # split del espacio vacío
+
+# 2 significa la cantidad de palabras separadas
+
+dv$hvidx <- as.numeric( dv$hvidx )
+
+dv_endes <- dv %>% 
+  left_join(rech1, by = c("hhid","hvidx")) %>% 
+left_join(rech0, by = "hhid") %>% 
+  left_join(rech23, by = "hhid") 
+
+# etiquetas
+
+sapply(dv_endes, attr, 'label')
+
+sapply(dv_endes, attr, 'labels')
+
+# Violencia psicológica #
+
+dv_endes <- dv_endes %>% 
+  mutate(
+    humiliated = ifelse(d103a %in% c(1,2), 1 , 
+                         ifelse(d103a %in% c(0,3), 0, NA)),
+    threatened = ifelse(d103a %in% c(1,2), 1 , 
+                        ifelse(d103a %in% c(0,3), 0, NA)),
+    insulted = ifelse(d103a %in% c(1,2), 1 , 
+                        ifelse(d103a %in% c(0,3), 0, NA)),
+    
+    psycho = ifelse(humiliated==1 | threatened== 1 | insulted== 1, 1 , 
+                    ifelse(humiliated==0 & threatened== 0 & insulted== 0, 0, NA))
+  )
+
+
+table(dv_endes$psycho)
 
 
 # References -----------------------------------
