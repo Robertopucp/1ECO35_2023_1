@@ -47,6 +47,5 @@ siagie$Nota_max <- apply(siagie[, 7:17], 1, max)
 siagie$Nota_max <- apply(siagie[, 7:17], 1, min)
 
 # Hallando el promedio de cada curso
-siagie$Promedio_curso1 <- apply(siagie[, 7:17], 1, mean)
-
+ 
 
