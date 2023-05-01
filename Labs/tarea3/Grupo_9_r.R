@@ -1,5 +1,7 @@
 #TAREA 3 
 #PARTE EN R Y PYTHON
+
+#PREGUNTA1
 #Map, sapply, apply, función Lambda
 #Aplique la siguiente función a un vector de 100 numeros aleatorios y 
 #a las columnas numéricas de la base de datos BDD_compras_consumidores.xlsx
