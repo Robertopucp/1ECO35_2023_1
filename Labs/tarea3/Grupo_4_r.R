@@ -31,6 +31,10 @@ head(mi_dataframe_escalamiento)
 #2.  
 siagie <- read.csv("siagie.csv")
 
+# Instalar las librerías
+
+# install.packages("tidyr")
+library(tidyr)
 library(dplyr)
 
 
@@ -48,8 +52,6 @@ siagie_min <- siagie %>%
 
 #hallar el promedio y mediana de notas de cada curso.
 
-install.packages("tidyr")
-library(tidyr)
 siagie_promedio_curso <- siagie %>%
   select(7:ncol(.)) %>%
   pivot_longer(everything(), names_to = "curso", values_to = "nota") %>%
