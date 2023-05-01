@@ -69,6 +69,6 @@ notas_cursos <- apply(datos_siage[, 7:17], 2, function(x) c(promedio = mean(x), 
 notas_cursos_df <- data.frame(curso = colnames(datos_siage[, 7:17]), t(notas_cursos))
 View(notas_cursos_df)
 
-#se pueden ver las notas y promedios
+#se pueden ver las notas y promedios requeridos
 
 
