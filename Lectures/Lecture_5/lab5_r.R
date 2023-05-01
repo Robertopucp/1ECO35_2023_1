@@ -239,34 +239,9 @@ val_labels(enaho19$dummy_pobre) <- c("Hogar pobre" = 0,
 val_labels(enaho19$area) <- c("Urbano" = 0,
                               "Rural" = 1)
 
-# Replace 
-
-enaho19$dummy_pobre <- replace( enaho19$dummy_pobre , 
-                                which( enaho19$pobreza ==1 ), 1 )
-
-enaho19$dummy_pobre <- replace( enaho19$dummy_pobre , 
-                                which( enaho19$pobreza ==2 ), 2 )
-
-enaho19$dummy_pobre <- replace( enaho19$dummy_pobre , 
-                                which( enaho19$pobreza ==3 ), 3 )
-
-table(enaho19$pobreza, enaho19$dummy_pobre)
 
 enaho19$dummy_pobre <- ifelse(enaho19$pobreza %in% c(1,2), 1, 0)
 
-
-# usando pip %>% 
-
-enaho19 <- enaho19 %>% 
-  mutate(
-    dummy_pobre2 = 0,
-    dummy_pobre2 = replace(dummy_pobre2, which(pobreza == 1), 1),
-    dummy_pobre2 = replace(dummy_pobre2, which(pobreza == 2), 2),
-    dummy_pobre2 = replace(dummy_pobre2, which(pobreza == 3), 3),
-  )
-
-
-table(enaho19$pobreza, enaho19$dummy_pobre2)
 
 # Tasa de pobreza a nivel región usando la libreria survey
 
@@ -313,15 +288,14 @@ prop.table(svytable(~ dpto + dummy_pobre, design = design), 1)
 
 ### Trabajo infantil y adolescente --------------------------------------
 
-# ifelse coloca missing si alguna de las varaibles de la condicional es NA
+# ifelse coloca missing si alguna de las variables de la condicional es NA
 # Esto es diferente en Python
 
 enaho19 <- enaho19 %>% 
   mutate(
-    dchildwork = ifelse( between(p208a,5,17), 0 , NA),
-    dchildwork = replace(dchildwork, which(
-      between(p208a,5,17) & (p210 == 1 | (p210 == 2 & (! t211 %in% c(9,11))) )
-    ), 1),
+    dchildwork = ifelse(  
+      between(p208a,5,17) & (p210 == 1 | (p210 == 2 & (! t211 %in% c(9,11)))),
+      1, ifelse( between(p208a,5,17), 0 , NA) ) ,
     dmujer = ifelse(p207== 1, 0, 1)
   )
 
@@ -367,11 +341,21 @@ prop.table(svytable(~ dpto + dchildwork, design = design), 1) %>%
 
 append_enaho <- bind_rows(sumaria_18, sumaria_19, sumaria_20) %>% 
   mutate(  dpto = as.numeric( substr(ubigeo,1,2) ),
-           año = as.numeric(año))  %>% 
-  left_join(base_deflactores, by = c("dpto", "año" = "aniorec"))
+           año = as.numeric(año)
+           ) 
+
+# Asignamos el código de Lima metropolitana al Callao
+
+
+append_enaho$dpto[ append_enaho$dpto == 7 ] <- 15
+
+
+append_enaho <- left_join(append_enaho,
+                          base_deflactores, by = c("dpto", "año" = "aniorec"))
+
+# Factor de expansión a nivel persona 
 
 append_enaho$factorpob <-  round(append_enaho$factor07*append_enaho$mieperho, 1) 
-
 
 # Uniendo con la base deflactores 
 
@@ -508,7 +492,7 @@ endes_health_child <- rech6 %>%
 ### Dummies de anemia-------------------
 
 # El problema no es la presencia de missing tal cual
-# Sino cuando la falta de información es representada por valores: 9, 999, 9998, 99888
+  # Sino cuando la falta de información es representada por valores: 9, 999, 9998, 99888
 
 endes_health_child <- endes_health_child %>% 
   mutate(
@@ -534,7 +518,7 @@ endes_health_child <- endes_health_child  |>
     desncro = ifelse(hc70 < -300 & hv103 == 1, 1, NA),
     desncro = replace(desncro, which(hc70 >= -300 & hc70 < 601 & hv103 == 1), 0 ),
     peso = hv005a/1000000,
-    region = factor(hv024, 
+      region = factor(hv024, 
                     levels = c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
                                17,18,19,20,21,22,23,24,25),
                     labels = c("Amazonas", "Ancash", "Apurimac","Arequipa",
@@ -588,7 +572,10 @@ col_repl <- c("qs700a", "qs700b", "qs700c", "qs700d","qs700e", "qs700f",
               "qs700g", "qs700h","qs700i")
 
 attr(endes_mental$qs700a, "labels")
-                                  
+
+
+# reemplazamos los valores 9 por missing
+
 endes_mental[col_repl] <- sapply(endes_mental[col_repl],  
                               function(x) replace(x, x == 9, NA))
 
@@ -656,13 +643,10 @@ dv_endes <- dv_endes %>%
   mutate(
     humiliated = ifelse(d103a %in% c(1,2), 1 , 
                          ifelse(d103a %in% c(0,3), 0, NA)),
-    threatened = ifelse(d103a %in% c(1,2), 1 , 
-                        ifelse(d103a %in% c(0,3), 0, NA)),
-    insulted = ifelse(d103a %in% c(1,2), 1 , 
-                        ifelse(d103a %in% c(0,3), 0, NA)),
-    
-    psycho = ifelse(humiliated==1 | threatened== 1 | insulted== 1, 1 , 
-                    ifelse(humiliated==0 & threatened== 0 & insulted== 0, 0, NA))
+    threatened = ifelse(d103b %in% c(1,2), 1 , 
+                        ifelse(d103b %in% c(0,3), 0, NA)),
+    psycho = ifelse(humiliated==1 | threatened== 1, 1 , 
+                    ifelse(humiliated==0 & threatened== 0, 0, NA))
   )
 
 
