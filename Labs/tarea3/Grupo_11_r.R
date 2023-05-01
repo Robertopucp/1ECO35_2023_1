@@ -55,9 +55,9 @@ siagie$Nota_min <- apply(siagie[, 7:17], 1, min)
 
 # Hallando el promedio de cada curso
 Promedio_cursos <- apply(siagie[, 7:17], 2, mean)
-print (Promedio_cursos)
+print (Promedio_cursos) # Imprimimos el promedio de los cursos
 
 # Hallando el mediana de cada curso
 Mediana_cursos <- apply(siagie[, 7:17], 2, median)
-print (Mediana_cursos)
+print (Mediana_cursos) # Imprimimos la mediana de los cursos
 
