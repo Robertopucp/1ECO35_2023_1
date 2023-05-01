@@ -92,34 +92,35 @@ print(NMC)
 
 
 
+#%% Funciones
 
-#PARTE 3
 #3.1.- Crear una función que permita calcular el factorial de un número (n).
 
+
 def factorial(n):
+    
     x=1
+   
     if n<0:
-        print('no valido')
+        x=print("No valido")
         
     elif n==0:
-        print(1)
+        x=1
         
     elif n>0:
         for i in range(1,n+1):
             x=x*i
-   
-        
     return x
 
-#Por ejemplo 
+# Por ejemplo: 
 
-#si n<0
+# si n<0
 factorial(-3)
 
-#si n=0
+# si n=0
 factorial(0)
 
-#si n>0
+# si n>0
 factorial(7)
 
 
@@ -156,7 +157,7 @@ print(BMI(70, 1.5))
 print("Estudiante 2")
 print(BMI(85, 1.8))
 
-#Estudiante 1
+#Estudiante 3
 
 print("Estudiante 3")
 print(BMI(50, 1.6))
@@ -175,9 +176,11 @@ w1= 0.2 #Fijamos el peso del activo "X"
 w2= 0.8 #Fijamos el peso del activo "Y"
 
 # Formula de Coeficiente de correlacion de Pearson
+
 def coeficiente_pearson(x,y):
     coeficiente=np.cov(x,y)[0][1]/(math.sqrt(np.var(x, ddof=1)*np.var(y, ddof=1)))
     return coeficiente
+
 coeficiente_pearson(x,y)
 
 
@@ -207,14 +210,17 @@ def f_resc_inv(*args, **kwargs):
         
     return result
 
-#1. Reescalamiento
+#1. Aplicamos la función para el Reescalamiento
 A=f_resc_inv(2,5,7,9, function="reescalamiento")
 print(A)
 
-#2.Transformación
+#2.Aplicamos la función para la Transformación
 B=f_resc_inv(99,2,0,67,57,34,7,function="transformacion")
 print(B)
 
-#Error
+# Otros casos: Error
 C=f_resc_inv(1,9, function="suma")
 print(C)
+
+
+
