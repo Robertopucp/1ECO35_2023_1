@@ -32,7 +32,8 @@ vector <- runif(100)
 minimo <- min(vector)
 maximo <- max(vector)
 vector_esc <- (vector - minimo) / (maximo - minimo)
-View(vector_esc)
+#se crea un vector con los resultados
+
 
 #para los datos
 minimos <- apply(datos[, 3:8], 2, min)
@@ -40,11 +41,31 @@ maximos <- apply(datos[, 3:8], 2, max)
 library(purrr)
 datos_esc <- datos[, 3:8] %>% 
   map_dfc(~(. - min(.)) / (max(.) - min(.)))
-view(datos_esc)
-write_csv(datos_esc, "datos_esc.csv", col_names = TRUE)
+View(datos_esc)
 
 
+#PREGUNTA 2
+#Apply Base de datos 
+# Cargar el paquete necesario para leer archivos de Excel
+# Cargar el paquete necesario para leer archivos de Excel
 
+# Cargar el archivo de Excel con los datos
+
+datos_siage <- read.csv("../../data/siagie.csv", sep = ",")
+
+
+# Primero paracalcular la nota promedio, máxima y mínima de cada alumno
+notas_alumnos <- apply(datos_siage[, 7:17], 1, function(x) c(promedio = mean(x), maximo = max(x), minimo = min(x)))
+
+# Luego para Crear un nuevo data frame con los resultados de notas de cada alumno
+notas_alumnos_df <- data.frame(id_alumno = datos_siage[, 1], t(notas_alumnos))
+View(notas_alumnos_df)
+# Ahora para calcular el promedio y la mediana de notas de cada curso
+notas_cursos <- apply(datos_siage[, 7:17], 2, function(x) c(promedio = mean(x), mediana = median(x)))
+
+#Finalmente para crear una nuevo data frame con los resultados de notas de cada curso
+notas_cursos_df <- data.frame(curso = colnames(datos_siage[, 7:17]), t(notas_cursos))
+View(notas_cursos_df)
 
 
 
