@@ -382,9 +382,8 @@ income_years <- append_enaho %>%
 income_years %>% ggplot( aes(x = año, y = ingmpc, group = area, colour = area) ) +
   geom_line()+
   geom_point() +
-  geom_errorbar(aes(ymin=ingmpc -ingmpc_se, ymax = ingmpc + ingmpc_se),
-                width=.04) +
   theme_bw() +
+  scale_x_continuous(breaks = c(2018, 2019 , 2020) ) +
   ggtitle("Average monthly income percapita by area")+
   xlab("")+
   ylab("")
