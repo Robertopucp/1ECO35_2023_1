@@ -1,9 +1,4 @@
-#----------------------------------#
-#  CURSO: R FOR BUSINESS ANALYTICS #
-#         GRÁFICOS CON R           #    
-#     Mg. Jesús Salinas Flores     # 
-#     jsalinas@lamolina.edu.pe     #
-#----------------------------------#
+
 
 # Para limpiar el workspace, por si hubiera algún dataset 
 # o información cargada
@@ -407,32 +402,7 @@ ggplot(economics) + aes(x = date, y = unemploy) +
       theme_minimal() 
 
 # geom_smooth(method = "lm") 
-  
-# Serie de Tiempo con animación
-library(gganimate)
-p2 <- ggplot(economics) + aes(x = date, y = unemploy) + 
-      geom_line(size = 0.8, color = "#E46726") +
-      theme_minimal() + 
-      labs(title = "Serie de Tiempo", 
-           x = "Años", 
-           y = "Desempleo") +
-      transition_reveal(date) +
-      enter_fade() +
-      exit_fade() 
 
-p2 
-
-animate(p2, nframes = 150, renderer = magick_renderer())
-anim_save("Serie de Tiempo.gif", p2)
-# Se pueden usar otros formatos como *.gif , *.mp4
-
-#________________________
-# ________ \\|// ________
-# ________( o o ) _______ 
-# ___oo0____(_)____Ooo___
-#      Ejercicio   6     #
-# Construya un gráfico de serie de tiempo animado para 
-# la variable uempmed
 
 
 # Material complementario -------------------------------------
