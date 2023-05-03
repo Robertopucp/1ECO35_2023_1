@@ -329,7 +329,6 @@ enaho19 <- enaho19 %>%
 val_labels(enaho19$dchildwork) <- c("No trabajo" = 0,
                                     "Trabaja" = 1)
 
-
 design <- svydesign(
   data = enaho19,
   ids = ~ conglome,
