@@ -27,7 +27,7 @@ library(pacman)
 p_load(readxl, tidyverse, foreign,fastDummies, haven, survey,
        srvyr, labelled) 
 
-# tidyverse es una recopilación de varias librerias (dply, ggplot, stringr, etc)
+# tidyverse es una recopilación de varias librerias (dplyr, ggplot, stringr, etc)
 # foreign, libreria que permite leer base de datos de diferentes extensiones
 # haven tambien permite la lectura de base de datos de diferentes extensiones (i.e stata)
 
@@ -72,6 +72,7 @@ data <- df1 |>
 
 data$dummy <- ifelse(data$value > 1500, 1, 0)
 
+
 # Cuando alguna de las variables del condicional es missing
 # la dummy toma el valor NA  ( Esto es diferente en python y stata )
 
@@ -114,7 +115,9 @@ table(enaho19$p300a)
 names(enaho19)
 
 attr(enaho19$p300a, 'labels')
+
 attr(enaho19$p301a, 'label')
+
 attr(enaho19$pobreza, 'labels')
 
 
@@ -132,6 +135,9 @@ enaho19$lengua <- case_when(
   enaho19$p300a > 5 ~ 3
 )
 
+# ~ ALT + 126
+
+# recode 
 
 # siempre hacer cruce de variables para verificar que el proceso sea el correcto
 
@@ -144,14 +150,16 @@ prop.table(table(enaho19$p300a, enaho19$lengua), margin = 2)
 # Creación de la variable area 1 : urbano y 2 para rural
 
 enaho19$area <- case_when(
-  enaho19$estrato <= 5 ~ 1,
-  enaho19$estrato > 5 ~ 2
+  enaho19$estrato <= 5 ~ 1,  # urbano
+  enaho19$estrato > 5 ~ 2    #rural 
   
 )
 
 # años de educación #
 
 # años de estudio acumulado hasta el nivel educativo alcanzado
+
+
 
 enaho19 <- enaho19 %>% mutate(
   educ1 = case_when(
@@ -161,6 +169,11 @@ enaho19 <- enaho19 %>% mutate(
     p301a == 11 ~ 16
   ))
 
+# p301a 1,2,3,4 -> educ1 = 0
+# p301a 5,6 -> educ1 = 6
+# p301a 7,10 ->  educa1 = 11 
+# p301a 11 -> 16 
+
 # Años de estudio en el nivel educativo actual
 
 # Sumamos el grado o año de estudios. Grado para secundaria o primaria
@@ -168,6 +181,8 @@ enaho19 <- enaho19 %>% mutate(
 
 enaho19$educ2 <- apply(enaho19[,c("p301b","p301c")], 1 , sum , na.rm = T)
 enaho19$years_educ <- apply(enaho19[,c("educ1","educ2")], 1 , sum , na.rm = T)
+
+# rowtotal()
 
 # margin = 1 para sumar fila por fila (suma horizontal)
 
@@ -195,12 +210,16 @@ enaho19 <- enaho19 %>% mutate(
 
 enaho19 <- dummy_cols(enaho19, select_columns = 'p301a')
 
+
+
 enaho19$p301a_NA <- NULL
+
+
 
 # Variables de pobreza #
 
 enaho19 <- enaho19 %>% 
-  mutate(dpto_code = substr(ubigeo, 1, 2),
+  mutate(dpto_code = substr(ubigeo, 1, 2), # posicicón inicial, 2 : posición final
          ubigeo3 = str_pad(ubigeo2, 6, pad ="0"),
          dpto = case_when(
            dpto_code == "01" ~ "Amazonas", dpto_code == "02" ~ "Ancash",
@@ -220,6 +239,9 @@ enaho19 <- enaho19 %>%
          gmensual_pc = gashog2d/(mieperho*12),  # gasto del hogar mensual percapita
          imensual_pc = inghog1d/(mieperho*12)   # ingreso del hogar percapita
          )
+
+# mierperho : cantidad de miembros del hogar
+# gashog2d
 
 # Variable binaria de pobreza: pobre y no pobre #
 
@@ -250,6 +272,9 @@ enaho19$dummy_pobre <- ifelse(enaho19$pobreza %in% c(1,2), 1, 0)
 # primero se declara el diseño muestral de la encuesta
 
 enaho19$factorpob <- round(enaho19$factor07*enaho19$mieperho, 1)
+
+
+# factor07 es de modulo sumaria (factor de expansión a nivel hogar)
 
 data_ind <- enaho19  %>% 
   as_survey_design(ids = conglome, 
