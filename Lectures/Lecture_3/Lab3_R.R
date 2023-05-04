@@ -209,7 +209,7 @@ X<- apply(X, 2, demean)
 #------------------------------------------------------------#
 #             Equivalent *args de Python en R (...)
 
-# args permite observar los argumentos de una función que corresponde a una liberia
+# args permite observar los argumentos de una función que corresponde a una libreria
 # (...) argumentos adicionales que usará la función
 
 args(read.csv)
@@ -267,7 +267,7 @@ table(datos$Region)
 
 # Total de ventas
 
-apply(datos[, 3:8], 2, sum)  # 2 : suma aplciarse por columna 
+apply(datos[, 3:8], 2, sum)  # 2 : suma aplicarse por columna 
 
 datos$Ventas <- apply(datos[, 3:8], 1, sum) # creando nueva columna de ventas
 
