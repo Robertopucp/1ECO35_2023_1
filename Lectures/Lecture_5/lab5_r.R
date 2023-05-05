@@ -619,7 +619,7 @@ endes_mental <- endes_mental |>
                    , na.rm = T)
                ) |> ungroup() 
 
-attach(endes_mental) # cada variable es un objeto independiente
+attach(endes_mental) # acceso directo de las variables 
 
 endes_mental$mild_depression <- ifelse(phq9_score<5 | phq9_score >9, 0, 
                               ifelse(phq9_score>=5 | phq9_score <=9, 1, NA))
@@ -629,6 +629,9 @@ endes_mental$moderate_depression <- ifelse(phq9_score<10 | phq9_score >14, 0,
 
 endes_mental$severe_depression <- ifelse(phq9_score<15, 0 ,
                                 ifelse(phq9_score>=15, 1, NA))
+
+
+detach(endes_mental) # elmininar el acceso directo de las variables
 
 
 # Violencia Doméstica -----------------------------------------------------
