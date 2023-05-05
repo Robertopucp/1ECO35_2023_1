@@ -26,9 +26,9 @@ pago <- 400
 
 #Usamos el comando if para indicar que si es una cantidad menor igual a 100 soles, se paga en efectivo.
 
-#En caso contrario, se sigue la condición else if.
+#En caso contrario, se sigue la condici?n else if.
 
-#En cualquier otro caso, se usa la condición else.
+#En cualquier otro caso, se usa la condici?n else.
 
 if (pago <= 100) {
   cat ("Compra de", pago, "soles y pago en efectivo")
@@ -41,17 +41,17 @@ if (pago <= 100) {
 
 ## Pregunta 2: Condicional 2 ####
 
-#Definimos la función fx1, que afecta a la variable x. 
+#Definimos la funci?n fx1, que afecta a la variable x. 
 
 #Usamos if para la primera condicional
 #Else if para el siguiente caso
 #Else para cualquier otro caso
 
-#Especificamos que la función nos debe dar como return a "result". 
+#Especificamos que la funci?n nos debe dar como return a "result". 
 
 fx1 <- function(x)
 {
-  if ((x=>0) & (x<100)) {
+  if ((x>=0) & (x<100)) {
     result = x^(1/2)
   } else if ((x>=100) & (x<300)) {
     result = x-5
@@ -61,7 +61,7 @@ fx1 <- function(x)
   return(result)
 }
 
-#Probamos la función
+#Probamos la funci?n
 fx1( 400 )
 
 ## Pregunta 3: Loops ####

@@ -27,7 +27,7 @@ library(pacman)
 p_load(readxl, tidyverse, foreign,fastDummies, haven, survey,
        srvyr, labelled) 
 
-# tidyverse es una recopilación de varias librerias (dply, ggplot, stringr, etc)
+# tidyverse es una recopilación de varias librerias (dplyr, ggplot, stringr, etc)
 # foreign, libreria que permite leer base de datos de diferentes extensiones
 # haven tambien permite la lectura de base de datos de diferentes extensiones (i.e stata)
 
@@ -72,6 +72,7 @@ data <- df1 |>
 
 data$dummy <- ifelse(data$value > 1500, 1, 0)
 
+
 # Cuando alguna de las variables del condicional es missing
 # la dummy toma el valor NA  ( Esto es diferente en python y stata )
 
@@ -114,7 +115,9 @@ table(enaho19$p300a)
 names(enaho19)
 
 attr(enaho19$p300a, 'labels')
+
 attr(enaho19$p301a, 'label')
+
 attr(enaho19$pobreza, 'labels')
 
 
@@ -132,6 +135,9 @@ enaho19$lengua <- case_when(
   enaho19$p300a > 5 ~ 3
 )
 
+# ~ ALT + 126
+
+# recode 
 
 # siempre hacer cruce de variables para verificar que el proceso sea el correcto
 
@@ -144,14 +150,16 @@ prop.table(table(enaho19$p300a, enaho19$lengua), margin = 2)
 # Creación de la variable area 1 : urbano y 2 para rural
 
 enaho19$area <- case_when(
-  enaho19$estrato <= 5 ~ 1,
-  enaho19$estrato > 5 ~ 2
+  enaho19$estrato <= 5 ~ 1,  # urbano
+  enaho19$estrato > 5 ~ 2    #rural 
   
 )
 
 # años de educación #
 
 # años de estudio acumulado hasta el nivel educativo alcanzado
+
+
 
 enaho19 <- enaho19 %>% mutate(
   educ1 = case_when(
@@ -161,6 +169,11 @@ enaho19 <- enaho19 %>% mutate(
     p301a == 11 ~ 16
   ))
 
+# p301a 1,2,3,4 -> educ1 = 0
+# p301a 5,6 -> educ1 = 6
+# p301a 7,10 ->  educa1 = 11 
+# p301a 11 -> 16 
+
 # Años de estudio en el nivel educativo actual
 
 # Sumamos el grado o año de estudios. Grado para secundaria o primaria
@@ -168,6 +181,8 @@ enaho19 <- enaho19 %>% mutate(
 
 enaho19$educ2 <- apply(enaho19[,c("p301b","p301c")], 1 , sum , na.rm = T)
 enaho19$years_educ <- apply(enaho19[,c("educ1","educ2")], 1 , sum , na.rm = T)
+
+# rowtotal()
 
 # margin = 1 para sumar fila por fila (suma horizontal)
 
@@ -195,12 +210,16 @@ enaho19 <- enaho19 %>% mutate(
 
 enaho19 <- dummy_cols(enaho19, select_columns = 'p301a')
 
+
+
 enaho19$p301a_NA <- NULL
+
+
 
 # Variables de pobreza #
 
 enaho19 <- enaho19 %>% 
-  mutate(dpto_code = substr(ubigeo, 1, 2),
+  mutate(dpto_code = substr(ubigeo, 1, 2), # posicicón inicial, 2 : posición final
          ubigeo3 = str_pad(ubigeo2, 6, pad ="0"),
          dpto = case_when(
            dpto_code == "01" ~ "Amazonas", dpto_code == "02" ~ "Ancash",
@@ -221,26 +240,38 @@ enaho19 <- enaho19 %>%
          imensual_pc = inghog1d/(mieperho*12)   # ingreso del hogar percapita
          )
 
+# mierperho : cantidad de miembros del hogar
+# gashog2d
+
+
+# Variable de pobreza
+
+attr(enaho19$pobreza, "labels")
+
 # Variable binaria de pobreza: pobre y no pobre #
 
 enaho19$dummy_pobre <- ifelse(enaho19$pobreza %in% c(1,2), 1, 0)
 
 # var label
 
+
+# libreria labelled 
+
 var_label(enaho19) <- list(dummy_pobre = "Dummy de pobreza")
+
+
+attr(enaho19$dummy_pobre, "label")  # attr: atribute - label 
 
 
 # value labels
 
-
-val_labels(enaho19$dummy_pobre) <- c("Hogar pobre" = 0,
-                                    "Hogar no pobre" = 1)
-
-val_labels(enaho19$area) <- c("Urbano" = 0,
-                              "Rural" = 1)
+val_labels(enaho19$dummy_pobre) <- c("Hogar no pobre" = 0,
+                                    "Hogar pobre" = 1)
 
 
-enaho19$dummy_pobre <- ifelse(enaho19$pobreza %in% c(1,2), 1, 0)
+val_labels(enaho19$area) <- c("Urbano" = 1,
+                              "Rural" = 2)
+
 
 
 # Tasa de pobreza a nivel región usando la libreria survey
@@ -251,6 +282,12 @@ enaho19$dummy_pobre <- ifelse(enaho19$pobreza %in% c(1,2), 1, 0)
 
 enaho19$factorpob <- round(enaho19$factor07*enaho19$mieperho, 1)
 
+# factor07 : factor de expansión a nivel hogar
+
+# factor07 es de modulo sumaria (factor de expansión a nivel hogar)
+
+# srvyr libreria
+
 data_ind <- enaho19  %>% 
   as_survey_design(ids = conglome, 
                   strata = estrato,
@@ -259,6 +296,8 @@ data_ind <- enaho19  %>%
                     summarise(
                     poverty_rate = survey_mean(dummy_pobre, na.rm = T)*100
                     )
+
+# c(1,0,0,1) mean(1+0+0+1)/4 = 0.5
 
 # Uso de groupby
           
@@ -284,7 +323,13 @@ design <- svydesign(
 
 ### tabla de frecuencia -------------------------------------
 
+
+
 prop.table(svytable(~ dpto + dummy_pobre, design = design), 1)
+
+# proporción por filas (region)
+
+
 
 ### Trabajo infantil y adolescente --------------------------------------
 
@@ -299,11 +344,15 @@ enaho19 <- enaho19 %>%
     dmujer = ifelse(p207== 1, 0, 1)
   )
 
+#p208a : edad 
+#p210: "la semana pasada ... ¿estuvo trabajando o realizando alguna tarea en el hogar
+#  ! t211 %in% c(9,11) : individuo ocupado en actividades diferentes al estudio o vacaciones
+
 # label de la variable dummy di el menor de edad labora
+
 
 val_labels(enaho19$dchildwork) <- c("No trabajo" = 0,
                                     "Trabaja" = 1)
-
 
 design <- svydesign(
   data = enaho19,
@@ -312,6 +361,7 @@ design <- svydesign(
   weights = ~ factorpob,
   nest = TRUE
 )
+
 
 # area 1 (urbano), 2 (rural)
 
@@ -326,14 +376,11 @@ prop.table(svytable(~ dpto + dchildwork, design = design), 1) %>%
   ggplot(aes(y = reorder( dpto, -ratechildw) , x = ratechildw   )) +
   geom_col() +
   scale_fill_identity(guide = "none") +
-  theme_minimal()+
-  xlab("")+
+  theme_minimal() +  #diseño 
+  xlab("") +
   ylab("Department")
 
   
-
-
-
 # Append --------------------------------
 
 # Append sumaria y merge con los deflactores anuales. 
@@ -344,7 +391,10 @@ append_enaho <- bind_rows(sumaria_18, sumaria_19, sumaria_20) %>%
            año = as.numeric(año)
            ) 
 
-# Asignamos el código de Lima metropolitana al Callao
+
+
+
+# Asignamos el código de Lima region  al Callao
 
 
 append_enaho$dpto[ append_enaho$dpto == 7 ] <- 15
@@ -352,6 +402,7 @@ append_enaho$dpto[ append_enaho$dpto == 7 ] <- 15
 
 append_enaho <- left_join(append_enaho,
                           base_deflactores, by = c("dpto", "año" = "aniorec"))
+
 
 # Factor de expansión a nivel persona 
 
@@ -381,19 +432,12 @@ income_years <- append_enaho %>%
   
 income_years %>% ggplot( aes(x = año, y = ingmpc, group = area, colour = area) ) +
   geom_line()+
-  geom_point() +
-  theme_bw() +
+  geom_point(size = 1.5) +
+  theme_bw() + # diseño de fondo
   scale_x_continuous(breaks = c(2018, 2019 , 2020) ) +
   ggtitle("Average monthly income percapita by area")+
   xlab("")+
   ylab("")
-
-
-ggsave("../../output/plots/line_income.png"
-       , height = 8  # alto
-       , width = 12  # ancho
-       , dpi = 320   # resolución (calidad de la imagen)
-)
 
 
 
@@ -409,10 +453,15 @@ ggsave("../../output/plots/line_income.png"
 
 read_dta("../../data/endes/RECH0.dta")[1,2]
 
+# HHID : código de hogar 
+# RECH0 , RECH23 <> modulo 100 de ENAHO 
+
 rech0 <- read_dta("../../data/endes/RECH0.dta") %>% 
   mutate(
     HHID = str_trim(HHID)
   )
+
+# pasando los nombres a minuscula 
 
 names(rech0) <- tolower(names(rech0))
 
@@ -432,6 +481,11 @@ sapply(rech23,attr ,'label')
 sapply(rech23, class)
 
 # Información a nivel individuo
+
+# rech1 <>  modulo 200 de ENAHO
+
+# hhid : id del hogar
+# hvidx: id de la persona 
 
 rech1 <- read_dta("../../data/endes/RECH1.dta")
 
@@ -478,6 +532,11 @@ sapply(salud, class)
 
 #----------------------- Merge ---------------------------------#
 
+
+# RECH6 información de salud de menos de edad < 6
+
+# hhid, hc0 ( id de persona)
+
 endes_health_child <- rech6 %>% 
   left_join(rech0, by = "hhid") %>% 
   left_join(rech23, by = "hhid") %>% 
@@ -496,26 +555,28 @@ endes_health_child <- rech6 %>%
 endes_health_child <- endes_health_child %>% 
   mutate(
     anemia_sev = case_when(
-      hc57 == 1 ~ 1,
-      hc57 %in% c(2,3,4) ~ 0,
+      hc57 == 1 ~ 1,  # grave
+      hc57 %in% c(2,3,4) ~ 0, 
       hc57 == 9 ~ NA
     ),
     anemia_mildmod = case_when(
       hc57 %in% c(1,4) ~ 0,
-      hc57 %in% c(2,3) ~ 1,
+      hc57 %in% c(2,3) ~ 1,  # moderado y leve 
       hc57 == 9 ~ NA
     )
     
   )
+
+
+# En ENDES, los missing están con 99, 98, 9999, 9898, 999999
 
 ### Dummy por desnutrición crónica ----------------------------
 # Niñas y niños que están por debajo de -3 DE de la media #
 
 endes_health_child <- endes_health_child  |>
   mutate(
-    hc70 = replace(hc70, which(hc70 %in% c(996,9998,9999)), NA),
-    desncro = ifelse(hc70 < -300 & hv103 == 1, 1, NA),
-    desncro = replace(desncro, which(hc70 >= -300 & hc70 < 601 & hv103 == 1), 0 ),
+    hc70 = replace(hc70, which(hc70 %in% c(9996,9998,9999)), NA),
+    desncro = ifelse(hc70 < -300 & hv103 == 1, 1, 0),
     peso = hv005a/1000000,
       region = factor(hv024, 
                     levels = c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,
@@ -528,19 +589,17 @@ endes_health_child <- endes_health_child  |>
                           "Ucayali"))
   )
 
+
+
 # hv103 : la persona pasó la noche en el hogar
 
 
 design <- svydesign(
   data = endes_health_child,
-  ids = ~ hv001,
-  strata = ~ hv022,
-  weights = ~ peso
+  ids = ~ hv001, # conglome
+  strata = ~ hv022,  # estrato
+  weights = ~ peso  # factor de expansión 
 )
-
-
-# area 1 (urbano), 2 (rural)
-
 
 prop.table(svytable(~ region + desncro, design = design), 1) %>%
   as.data.frame() %>% 
@@ -595,7 +654,7 @@ endes_mental <- endes_mental |>
                    , na.rm = T)
                ) |> ungroup() 
 
-attach(endes_mental) # cada variable es un objeto independiente
+attach(endes_mental) # acceso directo de las variables 
 
 endes_mental$mild_depression <- ifelse(phq9_score<5 | phq9_score >9, 0, 
                               ifelse(phq9_score>=5 | phq9_score <=9, 1, NA))
@@ -605,6 +664,9 @@ endes_mental$moderate_depression <- ifelse(phq9_score<10 | phq9_score >14, 0,
 
 endes_mental$severe_depression <- ifelse(phq9_score<15, 0 ,
                                 ifelse(phq9_score>=15, 1, NA))
+
+
+detach(endes_mental) # elmininar el acceso directo de las variables
 
 
 # Violencia Doméstica -----------------------------------------------------

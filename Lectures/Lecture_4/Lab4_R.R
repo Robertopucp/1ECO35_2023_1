@@ -157,6 +157,8 @@ datospss <- read.spss("../../data/Riesgo_morosidad.sav",
 
 attributes(datospss)$variable.labels  # etiqueta de variable 
 
+
+
 # encoding: detectar el tipo de numero y letras 
 
 
