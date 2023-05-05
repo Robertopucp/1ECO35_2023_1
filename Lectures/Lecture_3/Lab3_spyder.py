@@ -277,7 +277,7 @@ datos['Region'].value_counts()
 
 datos.info()
 
-
+# Convertimos a categórica el nombre de las columnas:
 
 datos['Channel'] = datos['Channel'].astype("category")
 datos['Region'] = datos['Region'].astype("category")
@@ -289,13 +289,15 @@ datos.info()
 
 # Las ventas totales por tipo de producto 
 
-datos.iloc[:,2:8].apply(lambda x: sum(x), axis = 0)  # axis = 0 , operación a nivel columna 
+datos.iloc[:,2:8].apply(lambda x: sum(x), axis = 0)  # axis = 0 , operación a nivel columna
+
+# "iloc" permite seleccionar filas o columnas usando sus posiciones.
 
 # ventas total por cada observación
 
 datos['ventas'] = datos.iloc[:,2:8].apply(lambda x: sum(x), axis = 1) # axis = 0 , operación a nivel fila
 
-#datos['ventas'] = datos['milk'] + datos['fresh']+ datos['grocery']
+#datos['ventas'] = datos['milk'] + datos['fresh']+ datos['grocery'] (poco eficiente)
 
 # promedio por tipo de producto
 
@@ -315,7 +317,7 @@ datos2 = datos.iloc[:,2:8].apply(lambda x: x/3.9)
 
 
 
-#datos3 = pd.concat([datos.iloc[:,:2],datos2], axis = 1) # se uen a nivel columna o de forma horizontal
+#datos3 = pd.concat([datos.iloc[:,:2],datos2], axis = 1) # se une a nivel columna o de forma horizontal
 
 
 
