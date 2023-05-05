@@ -21,7 +21,7 @@ options(scipen = 999)      # No scientific notation
 library(pacman) 
 
 
-p_load(readxl, tidyverse, foreign, ggthemes)
+p_load(readxl, tidyverse, foreign, ggthemes, datos)
 
 # Change working directory
 
@@ -153,31 +153,6 @@ ggplot(datospss) + aes(morosidad) +
        y = "Frecuencia absoluta") 
 
 
-# Paletas de colores a partir de las funciones 
-#    rainbow(n), heat.colors(n), terrain.colors(n), 
-#    topo.colors(n), and cm.colors(n)
-
-
-ggplot(datospss) + aes(morosidad) + 
-  geom_bar(color = "black", fill = rainbow(2)) +
-  theme_light() + 
-  labs(title = "Gráfico de Barras Vertical", 
-       x = "Condición de la morosidad", 
-       y = "Frecuencia") 
-
-# Nivel departamento
-
-ggplot(datospss) + aes(x = dpto) + 
-  geom_bar(fill = rainbow(6))
-
-# colores cálidos
-
-ggplot(datospss) + aes(x = dpto) + 
-  geom_bar(fill = heat.colors(6)) 
-
-ggplot(datospss) + aes(x = dpto) + 
-  geom_bar(fill = terrain.colors(6)) 
-
 # Stack barras ----------------
 
 ggplot(datospss) + aes(x = tiporenta, fill = morosidad) +
@@ -278,7 +253,7 @@ datospss |>
 
 
 
-# Subgráficos de histogramas ---------------------------------
+#### Subgráficos de histogramas ---------------------------------
 
 
 ggplot(datospss) + aes(edad, fill = dpto) + 
@@ -331,25 +306,82 @@ ggplot(economics) + aes(x = date, y = psavert) +
   scale_x_continuous( expand = c(0, 0) ) 
 
 
-# save plot
+paises %>% filter(continente == "Américas") %>% 
+  ggplot() + aes(x= anio, y=pib_per_capita, color = pais) +
+  geom_line(show.legend = F) + facet_wrap(vars(pais))
 
-ggsave("../../output/plots/time_series_save.png"
+# Presente un gráfico que muestre la evolución del 
+# pbi por país de América
+
+
+# Visualizando la esperanza de vida media
+
+paises %>%
+  group_by(anio) %>%
+  summarise(pbi_pc_media = mean(pib_per_capita)) %>%
+  ggplot()+ aes(x = anio, y = pbi_pc_media) + 
+  geom_line(color = "blue") + 
+  geom_point() +
+  geom_text(aes(label = round(pbi_pc_media, 1)),
+            vjust = -2, size = 3) + ylim(3000,13000) +
+  labs(x= "Año",
+       y="PBI per-cápita media") +
+  scale_x_continuous(breaks = seq(1952,2007,5)) + theme_few()
+  
+
+ggsave("../../output/plots/time_series_pbi.png"
        , height = 8  # alto
        , width = 12  # ancho
        , dpi = 320   # resolución (calidad de la imagen)
 )
 
 
-# Diagrama de dispersión
 
-ggplot(datospss) + aes(x = antiguedad, y = edad) +
-  geom_point() +
-  labs(title = "Diagrama de Dispersión", 
-       x = "Antiguedad", 
-       y = "Edad") +
-  theme_replace() 
+# Diagrama de dispersión -----------------------
+
+load("../../data/wage2015_subsample_inference.Rdata")
+
+dim(data)
+
+data <- data %>% filter(clg == 1)  
+
+# nos quedamos con la muestra de individuos con nivel educativo universitario
 
 
+# gráfico de dispersión salario (logaritmo) vs experiencia laboral 
+
+ggplot(data, aes(y = lwage, x = exp1)) + geom_point()
+
+ggplot(data, aes(y = lwage, x = exp1)) + geom_line()
+
+# Bins plot #
+#---------------------------------------------------------#
+
+options(repr.plot.width = 10, repr.plot.height =10)  # plot size
+
+ggplot(NULL,aes(exp1,lwage)) +
+  stat_summary_bin(data=data, fun='mean', bins=20,
+                   color='red', size=3.5, geom='point') +
+  theme_classic()+
+  labs(title= "",
+       x = "Experiencia laboral", y = "Salario (log)",
+  ) +
+  theme(
+    axis.title = element_text(size=12,color='black'),
+    axis.text = element_text(size=10,color='black')
+  )
+  
+
+ggsave("../../output/plots/wage_exp.jpg"
+       , height = 10  # alto
+       , width = 15  # ancho
+       , dpi = 320   # resolución (calidad de la imagen)
+)
+
+#---------------------------------------------------------#
+
+# Presente un gráfico que compare el pbi y la esperanza de vida para el año 2007
+# use la base de datos paises 
 
 
 
@@ -362,7 +394,9 @@ browseURL("https://www.r-graph-gallery.com/")
 # Data Visualization with R. Rob Kabacoff
 browseURL("https://rkabacoff.github.io/datavis/")
 
-browseURL("https://damzar.medium.com/eso-que-quieres-decir-hazlo-con-gr%C3%A1ficas-fc7b4963d9d3")
+# World banck Git Hub repository
+
+browseURL("https://worldbank.github.io/r-econ-visual-library/")
 
 
 
