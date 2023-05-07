@@ -156,19 +156,21 @@ ggplot(datospss) + aes(morosidad) +
 # Stack barras ----------------
 
 ggplot(datospss) + aes(x = tiporenta, fill = morosidad) +
-  geom_bar(position = position_stack()) +
-  theme_bw() +
+  geom_bar(position = position_stack(), color = "black" ,
+           fill = c("#E69F00", "#56B4E9") , width = 0.6) +
+  theme_classic() +
   labs(title = "Situación de la Morosidad según Tipo de Renta", 
        x = "Tipo de Renta",
        y = "Frecuencia") 
 
-##### La opción position = "stack" es por default
+# width: ancho de la barra
 
+##### La opción position = "stack" es por default
 
 #     (Stacked Bar Plot en proporción) 
 
 
-ggplot(datospss, aes(x = tiporenta, fill = morosidad ) ) +
+ggplot(datospss, aes(y = tiporenta, fill = morosidad ) ) +
   geom_bar(position = position_fill()) +
   theme_bw() +
   labs(title = "Situación de la Morosidad según el Tipo de Renta (%)", 
@@ -223,9 +225,11 @@ ggplot(datospss, aes(edad) )+ geom_histogram(color = "white",
 
 datospss |>
 ggplot() + aes(x = edad, fill = morosidad ) + 
-  geom_histogram( alpha = 0.4, color = "black") + # alpha: nivel de transparencia
-  scale_fill_manual(values=c("#0000CD", "red")) +
-  theme(legend.position = "left") # posición de la leyenda
+  geom_histogram( alpha = 0.5, color = "black") + # alpha: nivel de transparencia
+  scale_fill_manual(values=c("#E69F00", "#56B4E9")) +
+  theme(legend.position = "left") +# posición de la leyenda
+  labs(x = "Edad", 
+       y = "Frecuencia absoluta")
 
 # legend.position="right"
 # legend.position="left"
@@ -237,20 +241,23 @@ ggplot() + aes(x = edad, fill = morosidad ) +
 
 datospss |>
   ggplot() + aes(x = edad, fill = morosidad ) + 
-  geom_histogram( alpha = 0.4, color = "black") + # alpha: nivel de transparencia
-  scale_fill_manual(values=c("#0000CD", "red")) +
+  geom_histogram( alpha = 0.5, color = "black") + # alpha: nivel de transparencia
+  scale_fill_manual(values=c("#E69F00", "#56B4E9")) +
   theme(legend.position = "bottom",   # leyenda ubicada en la parte inferior
-        legend.title = element_blank())  # sin titulo en la leyenda
+        legend.title = element_blank()) + # sin titulo en la leyenda
+  labs(x = "Edad", 
+       y = "Frecuencia absoluta")
 
 # unicación manual
 
 datospss |>
   ggplot() + aes(x = edad, fill = morosidad ) + 
-  geom_histogram( alpha = 0.4, color = "black") + # alpha: nivel de transparencia
-  scale_fill_manual(values=c("#0000CD", "red")) +
+  geom_histogram( alpha = 0.5, color = "black") + # alpha: nivel de transparencia
+  scale_fill_manual(values=c("#E69F00", "#56B4E9")) +
   theme(legend.position = c(0, 0) , 
-        legend.title = element_blank()) 
-
+        legend.title = element_blank()) + 
+  labs(x = "Edad", 
+       y = "Frecuencia absoluta")
 
 
 #### Subgráficos de histogramas ---------------------------------
