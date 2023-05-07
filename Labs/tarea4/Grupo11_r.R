@@ -25,7 +25,7 @@ getwd()
 
 #ENAHO
 
-##Guardamos y leemos los módulos de la enaho que utilizaremos----
+###Guardamoslos módulos de la enaho que utilizaremos----
 enaho100_19 <- read_dta("../../data/enaho/enaho01-2019-100.dta")
 enaho200_19 <- read_dta("../../data/enaho/enaho01-2019-200.dta")
 enaho300_19 <- read_dta("../../data/enaho/enaho01a-2019-300.dta")
@@ -49,7 +49,11 @@ enaho19 <- enaho19 %>% filter((p204==1 & p205==2) | (p204==2 & p206==1))
 ###Años de educación de cada miembro del hogar ------------------------
 
 ### Vemos las label de la variable del último nivel educativo alcanzado
-attr(enaho19$p301a, 'label')
+attr(enaho19$p301a, 'labels')
+
+### Creamos la variable educ1 dentro de la database enaho19
+# Cuando p301a se encuentre entre 1-4,  se le asigna a la variable educ1 el valor de 0.
+# Se repite para las otras variables. 
 
 enaho19<- enaho19 %>% mutate(
   educ1=case_when(
@@ -59,7 +63,10 @@ enaho19<- enaho19 %>% mutate(
     p301a == 11 ~16
   ))
 
+
 enaho19$educ2 <- apply(enaho19[,c("p301b","p301c")], 1, sum, na.rm=T) 
+
+#Creamos la variable años de educación al sumar educ1 y educ2, sin usar los NA en el cálculo.
 enaho19$years_educ <- apply(enaho19[,c("educ1","educ2")], 1, sum, na.rm=T)
 
 #Variable con la máxima cantidad de años de educación alcanzado
@@ -67,12 +74,15 @@ enaho19$years_educ <- apply(enaho19[,c("educ1","educ2")], 1, sum, na.rm=T)
 
 
 
-### Merge ENAHO 100 y sumaria del 2019 ---------------------------
+# Merge ENAHO 100 y sumaria del 2019 ---------------------------
 
-enaho19 <- enaho100_19 %>%
+enaho19_sumaria <- enaho100_19 %>%
   left_join(sumaria_19, by = c("conglome","vivienda","hogar"))
+#Dummy necesidad basica insatisfecha
+enaho19_sumaria$suma_nbi <- apply(enaho19_sumaria[,c("nbi1","nbi2", "nbi3", "nbi4", "nbi5")], 1, sum, na.rm=T)
 
-# Append --------------------------------
+
+# Append -------------------------------------------------------
 
 # Append sumaria y merge con los deflactores anuales. 
 # El año base es 2020
