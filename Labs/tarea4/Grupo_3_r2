@@ -1,0 +1,143 @@
+cat("\014")
+
+
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+library(haven)
+
+#1
+enaho200_19 <- read_dta("C:/Users/ALICIA/DOCUMENTS/GITHUB/1ECO35_2031_1_APUNTES/DATA_PUBLICA/ENAHO/enaho01-2019-200.dta")
+enaho300_19 <- read_dta("C:/Users/ALICIA/DOCUMENTS/GITHUB/1ECO35_2031_1_APUNTES/DATA_PUBLICA/ENAHO/enaho01a-2019-300.dta")
+
+#enaho200_19 <- read_dta("C:/Users/oscar/Downloads/enaho01-2019-200.dta")
+#enaho300_19 <- read_dta("C:/Users/oscar/Downloads/enaho01a-2019-300.dta")
+
+# Elegimos nuestro Master data
+
+enaho19 <- merge(enaho200_19, enaho300_19, by = c("conglome","vivienda","hogar","codperso"))
+
+#Filtramos 
+
+enaho19_filtrado <- enaho19  %>%
+  filter((p204 == 1 & p205 == 2) | (p204 == 2 & p206 == 1))
+
+#Años de estudio=educ1
+enaho19_filtrado <- enaho19_filtrado %>% mutate(educ1 = case_when(
+    between(p301a,1,4) ~ 0,
+    between(p301a,5,6) ~ 6,
+    between(p301a,7,10) ~ 11,
+    p301a == 11 ~ 12
+  ))
+
+#La máxima cantidad de años de educación alcanzado por algún miembro del hogar=max_educ1
+
+datos_concatenados <- enaho19_filtrado %>%
+  unite(col = "id", c("conglome", "vivienda", "hogar"), sep = "_")
+
+enaho19_filtrado_2 <-datos_concatenados %>%
+  group_by (id) %>%
+  mutate(max_educ1 = max(educ1))
+#2
+#enaho200_19 <- read_dta("C:/Users/ALICIA/DOCUMENTS/GITHUB/1ECO35_2031_1_APUNTES/DATA_PUBLICA/ENAHO/enaho01-2019-200.dta")
+#enaho300_19 <- read_dta("C:/Users/ALICIA/DOCUMENTS/GITHUB/1ECO35_2031_1_APUNTES/DATA_PUBLICA/ENAHO/enaho01a-2019-300.dta")
+
+enaho100_19 <- read_dta("C:/Users/ALICIA/DOCUMENTS/GITHUB/1ECO35_2031_1_APUNTES/DATA_PUBLICA/ENAHO/enaho01-2019-100.dta")
+sumaria_19 <- read_dta("C:/Users/ALICIA/DOCUMENTS/GITHUB/1ECO35_2031_1_APUNTES/DATA_PUBLICA/ENAHO/sumaria-2019.dta")
+
+# Elegimos nuestro Master data
+
+enasum <- merge(enaho100_19, sumaria_19, by = c("conglome","vivienda","hogar"))
+
+# Creamos una variable dummy que indique si el hogar presenta al menos una necesidad básica insatisfecha
+
+enasum <- enasum %>%
+  mutate(nbi_suma = nbi1 + nbi2 + nbi3 + nbi4 + nbi5) %>%
+  mutate(necinst = ifelse(nbi_suma > 0, 1, 0))
+
+enasum <- enasum %>%
+  mutate(Departamento = substr(ubigeo, 1, 2))
+
+# Crear un dataframe resumen con el porcentaje de "1" y "0" en la columna "necinst" a nivel "Departamento"
+porcentaje_dep <- enasum %>%
+  group_by(Departamento) %>%
+  summarise(porc_1 = sum(necinst == 1) / n(),
+            porc_0 = sum(necinst == 0) / n())
+# aquí
+# se creó un dataframe resumen con el porcentaje de "1" y "0" en la columna "necinst" a nivel "Departamento"
+porcentaje_dep <- enasum %>%
+  group_by(Departamento) %>%
+  summarise(porc_1 = sum(necinst == 1) / n(),
+            porc_0 = sum(necinst == 0) / n())
+
+# se agregó la columna factor07 a porcentaje_dep
+porcentaje_dep <- porcentaje_dep %>%
+  mutate(factor07 = enasum$factor07[enasum$Departamento == Departamento][1])
+
+# se mostró gráfico de las barras por nivel de departamento
+ggplot(data = porcentaje_dep, aes(x = Departamento, y = porc_1 * 100, fill = factor07)) +
+  geom_col(position = "dodge", alpha = 0.9, color = "black", linewidth = 0.1) +
+  scale_y_continuous(name = "Porcentaje de hogares", limits = c(0, 100)) +
+  scale_fill_gradient(low = "#EFEFEF", high = "#00BFFF") +
+  labs(title = "Porcentaje de hogares con necesidades insatisfechas por departamento", fill = "Factor 07") +
+  theme_bw()
+
+#3
+
+sumaria_15 <- read_dta("C:/Users/ALICIA/DOCUMENTS/GITHUB/1ECO35_2031_1_APUNTES/DATA_PUBLICA/ENAHO/sumaria-2015.dta")
+sumaria_16 <- read_dta("C:/Users/ALICIA/DOCUMENTS/GITHUB/1ECO35_2031_1_APUNTES/DATA_PUBLICA/ENAHO/sumaria-2016.dta")
+sumaria_17 <- read_dta("C:/Users/ALICIA/DOCUMENTS/GITHUB/1ECO35_2031_1_APUNTES/DATA_PUBLICA/ENAHO/sumaria-2017.dta")
+sumaria_18 <- read_dta("C:/Users/ALICIA/DOCUMENTS/GITHUB/1ECO35_2031_1_APUNTES/DATA_PUBLICA/ENAHO/sumaria-2018.dta")
+sumaria_19 <- read_dta("C:/Users/ALICIA/DOCUMENTS/GITHUB/1ECO35_2031_1_APUNTES/DATA_PUBLICA/ENAHO/sumaria-2019.dta")
+sumaria_20 <- read_dta("C:/Users/ALICIA/DOCUMENTS/GITHUB/1ECO35_2031_1_APUNTES/DATA_PUBLICA/ENAHO/sumaria-2020.dta")
+
+#Evolución del ingreso percápita mensual del hogar 2018-2020 según área urbana o rural
+
+
+# se procede a leer las siguientes bases de datos
+#sumaria_15 <- read_dta("../../data/enaho/sumaria-2015.dta")
+#sumaria_16 <- read_dta("../../data/enaho/sumaria-2016.dta")
+#sumaria_17 <- read_dta("../../data/enaho/sumaria-2017.dta")
+#sumaria_18 <- read_dta("../../data/enaho/sumaria-2018.dta")
+#sumaria_19 <- read_dta("../../data/enaho/sumaria-2019.dta")
+#sumaria_20 <- read_dta("../../data/enaho/sumaria-2020.dta")
+
+# concatenación de las filas de todos los sumaria desde 2015 hasta 2020.
+sumarias <- rbind(sumaria_15, sumaria_16, sumaria_17, sumaria_18, sumaria_19, sumaria_20)
+
+# se estableció la diferencia del ubigeo entre rural y urbano
+sumarias$ubigeo<- case_when(
+  sumarias$estrato <= 5 ~ 1,  # urbano
+  sumarias$estrato > 5 ~ 2    #rural 
+)
+
+
+#Evolución del ingreso y gasto percápita mensual del hogar 2018-2020 según área urbana o rural
+
+library(ggplot2)
+
+# se filtraron las observaciones del periodo 2015-2020
+sumarias_filtrado <- sumarias %>% filter(año >= 2015 & año <= 2020)
+
+# se creó el gráfico del ingreso per cápita del hogar 2018-2020
+ggplot(sumarias_filtrado, aes(x = año, y = inghog1d, color = factor(ubigeo))) +
+  geom_line() +
+  scale_color_manual(values = c("blue", "green"), 
+                     labels = c("Urbano", "Rural")) +
+  labs(x = "Año", y = "Ingreso per cápita mensual del hogar",
+       color = "Área geográfica") +
+  theme_minimal()
+
+
+# se creó el gráfico del gasto per cápita del hogar 2018-2020
+
+ggplot(sumarias_filtrado, aes(x = año, y = gashog2d, color = factor(ubigeo))) +
+  geom_line() +
+  scale_color_manual(values = c("blue", "green"), 
+                     labels = c("Urbano", "Rural")) +
+  labs(x = "Año", y = "Gasto per cápita mensual del hogar",
+       color = "Área geográfica") +
+  theme_minimal()
+
+
+  
