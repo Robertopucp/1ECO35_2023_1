@@ -129,7 +129,181 @@ datosViolenciaDEP_PERIOD <- datossav %>%
             tortura = sum(TTR),
             violacionSexual = sum(TVS)) 
 
+## Script solo en R----
 
+
+### Bases del modulo 200 y 300 ####
+
+cat("\014")
+rm(list = ls())
+library(foreign)
+library(dplyr)
+library(haven)
+library(pacman)
+library(ggplot2)
+
+p_load(readxl, tidyverse, foreign,fastDummies, haven, survey,
+       srvyr, labelled)
+
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+
+enaho_200 <- read_dta("../../data/enaho/enaho01-2019-200.dta")
+enaho_300 <- read_dta("../..//data/enaho/enaho01a-2019-300.dta")
+
+
+enaho_unidos <- inner_join(enaho_200, enaho_300, by = c("conglome", "vivienda", "hogar", "codperso"))
+
+# Filtro de datos
+
+enaho200_filtrado <- subset(enaho_200, (p204 == 1 & p205 == 2) | (p204 == 2 & p206 == 1))
+
+# Creacion de a?os de educacion
+
+enaho_unidos <- enaho_unidos %>% 
+  mutate(
+    educ1 = case_when(
+      between(p301a,1,4) ~ 0,
+      between(p301a,5,6) ~ 6,
+      between(p301a,7,10) ~ 11,
+      p301a == 11 ~ 16
+    ),
+    educ2 = ifelse(p301b == 0 & p301c == 0, NA_real_, p301b + p301c)
+  ) %>% 
+  group_by(conglome, vivienda, hogar, codperso) %>% 
+  mutate(
+    years_educ = sum(educ1, educ2, na.rm = TRUE)
+  ) %>% 
+  ungroup()
+
+#Se halla el maximo de años de educacion de algun miembro del hogar y se agrega al dataframe enaho_unidos. Por ejemplo, si en un hogar uno tiene 11 y otro tiene 6 años de educacion, 11 se le asigna al hogar como el maximo. 
+
+enaho_unidos_maxeduc <- enaho_unidos %>% 
+  group_by(conglome, vivienda, hogar) %>% 
+  summarise(max_educ = max(years_educ, na.rm = TRUE)) %>% 
+  ungroup()
+
+enaho_unidos <- enaho_unidos %>% 
+  left_join(enaho_unidos_maxeduc, by = c("conglome", "vivienda", "hogar"))
+
+
+
+
+### Uso del modulo 100 ####
+
+enaho_100 <- read_dta("../..//data/enaho/enaho01-2019-100.dta")
+sumaria <- read_dta("../..//data/enaho/sumaria-2019.dta")
+union_all <- inner_join(enaho_100, sumaria, by = c("conglome", "vivienda", "hogar"))
+
+# Creacion de la variable dummy. nbi_dummy toma el valor de 1 si es que existe al menos una necesidad basica insatisfecha.
+
+union_all <- union_all %>%
+  mutate(nbi_total = nbi1 + nbi2 + nbi3 + nbi4 + nbi5,
+         nbi_dummy = ifelse(nbi_total > 0, 1, 0))
+
+# Gr?fico de barras
+
+
+
+#
+union_all <- union_all %>% 
+  mutate(dpto_code = substr(ubigeo, 1, 2), # posicicón inicial, 2 : posición final
+         ubigeo3 = str_pad(ubigeo2, 6, pad ="0"),
+         dpto = case_when(
+           dpto_code == "01" ~ "Amazonas", dpto_code == "02" ~ "Ancash",
+           dpto_code == "03" ~ "Apurimac", dpto_code == "04" ~ "Arequipa",
+           dpto_code == "05" ~ "Ayacucho", dpto_code == "06" ~ "Cajamarca",
+           dpto_code == "07" ~ "Callao"  , dpto_code == "08" ~ "Cusco",
+           dpto_code == "09" ~ "Huancavelica",dpto_code == "10" ~ "Huanuco",
+           dpto_code == "11" ~ "Ica"     , dpto_code == "12" ~ "Junin",
+           dpto_code == "13" ~ "La Libertad",dpto_code == "14" ~ "Lambayaque",
+           dpto_code == "15" ~ "Lima"    , dpto_code == "16" ~ "Loreto",
+           dpto_code == "17" ~ "Madre de Dios",dpto_code == "18" ~ "Moquegua",
+           dpto_code == "19" ~ "Pasco"   ,dpto_code == "20" ~ "Piura",
+           dpto_code == "21" ~ "Puno"    ,dpto_code == "22" ~ "San Martin",
+           dpto_code == "23" ~ "Tacna"   ,dpto_code == "24" ~ "Tumbes",
+           dpto_code == "25" ~ "Ucayali"
+         ),
+         
+  )
+#
+
+
+# Se crea un diseño de encuesta donde se usa factor07
+diseño <- union_all %>% 
+  as_survey_design(ids = conglome, strata = estrato, weight = factor07)
+
+# Se halla el porcentaje de hogares con NBI por departamento
+nbi_departamentos <- diseño %>% 
+  group_by(dpto) %>% 
+  summarise(pct_hogares_nbi = survey_mean(nbi_dummy) * 100)
+
+# Se realiza el gráfico de barras por departamento
+ggplot(nbi_departamentos, aes(x = dpto, y = pct_hogares_nbi)) +
+  geom_col(fill = "steelblue") +
+  labs(x = "Departamento", y = "Porcentaje de hogares con NBI", 
+       title = "Porcentaje de hogares con NBI por departamento - 2019") +
+  coord_flip()
+
+
+### Append de las modulos de sumaria desde 2015 hasta 2020 ####
+
+sumaria_2015 <- read_dta("../..//data/enaho/sumaria-2015.dta")
+sumaria_2016 <- read_dta("../..//data/enaho/sumaria-2016.dta")
+sumaria_2017 <- read_dta("../..//data/enaho/sumaria-2017.dta")
+sumaria_2018 <- read_dta("../..//data/enaho/sumaria-2018.dta")
+sumaria_2019 <- read_dta("../..//data/enaho/sumaria-2019.dta")
+sumaria_2020 <- read_dta("../..//data/enaho/sumaria-2020.dta")
+base_deflactores <- read_dta("../../data/enaho/deflactores_base2020_new.dta")
+#Se juntan las bases de datos
+
+
+appendSumaria <- bind_rows(sumaria_2015, sumaria_2016, sumaria_2017, sumaria_2018, sumaria_2019, sumaria_2020) %>% 
+  rename(anio = año) %>% 
+  mutate(  dpto = as.numeric(substr(ubigeo, 1, 2)),
+           anio = as.numeric(anio)
+  )
+
+# Se asigna el código de Lima region  al Callao
+
+
+appendSumaria$dpto[ appendSumaria$dpto == 7 ] <- 15
+appendSumaria <- left_join(appendSumaria,
+                           base_deflactores, by = c("dpto", "anio" = "aniorec"))
+
+# Se obtiene el factor de expansión a nivel persona 
+
+appendSumaria$factorpob <-  round(appendSumaria$factor07*appendSumaria$mieperho, 1) 
+
+# Se obtiene la variable area (rural o urbana) y el gasto mensual per capita asi como el factor de expansion
+appendSumaria <- appendSumaria %>% 
+  mutate(
+    area =  factor(case_when(
+      estrato <= 5 ~ 1,
+      estrato > 5 ~ 2  ), levels = c(1,2), labels = c("Urbano", "Rural")),
+    gasmpc = gashog2d/(mieperho*12*i00), #Se deflacta
+    factorpob = round(factor07*mieperho, 1)
+  )
+
+#Se crea un diseño de encuesta
+gasto_years <- appendSumaria %>% 
+  as_survey_design(ids = conglome, 
+                   strata = estrato,
+                   nest = TRUE,
+                   weight = factorpob) %>%   
+  group_by(anio, area) %>% 
+  summarise(
+    gasmpc = survey_mean(gasmpc, na.rm = T)
+  )
+
+#Se realiza el gráfico
+gasto_years %>% ggplot( aes(x = anio, y = gasmpc, group = area, colour = area) ) +
+  geom_line()+
+  geom_point(size = 1.5) +
+  theme_bw() + # diseño de fondo
+  scale_x_continuous(breaks = c(2015,2016,2017,2018, 2019 , 2020) ) +
+  ggtitle("Average monthly expenditure percapita by area")+
+  xlab("")+
+  ylab("")
 
 
 
