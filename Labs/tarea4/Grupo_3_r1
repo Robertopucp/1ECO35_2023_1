@@ -1,0 +1,76 @@
+cat("\014")
+
+# Tarea 4
+# Integrantes: Narumi Miyamoto , Rodrigo Cervera , Alicia Chaquila
+
+#Instalando las librerías que necesitaríamos
+install.packages(c("data.table", "tidyverse", "caret"))
+install.packages("sjlabelled")
+library(haven)
+library(foreign)  #para leer archivos spss
+library(sjlabelled)
+library(pacman) 
+library(dplyr)
+library(rstudioapi)
+
+#Fijamos directorio
+setwd("C:/Users/ALICIA/Documents/GitHub/1ECO35_2031_1_APUNTES/tarea4")
+getwd()
+
+# Leemos el archivo SPSS
+datos_base1 <- read.spss("actos_est.sav",
+                      use.value.labels = F, 
+                      to.data.frame = TRUE,
+                      reencode = "UTF-8")
+
+# Obtenemos las etiquetas de las variables
+attributes(datos_base1)$variable.labels
+
+# Filtramos la base de datos para los tipos de eventos: desaparición, secuestros, reclutamiento forzado y muertes en atentados
+# Si bien, no es necesario crear una base de datos para este caso, lo haremos para observar la reducción de observaciones 
+datos_f1 <- filter(datos_base1, IDTIPOAC == c("LDS", "LSE", "LRC", "MAT"))
+
+# Se eliminan los valores duplicados de la columna IDACTO
+datos_f1 <- datos_f1[!duplicated(datos_f1$IDACTO), ]
+
+# Se crea una nueva base de datos filtrando idacto, idtipoac y departamento
+df_select <- datos_f1[c("IDACTO","IDTIPOAC","DEPNA0","UBIDIST","PERIODO","LDS_LDT","LSE","LRC","MAT")]
+
+# Se renombran a algunas variables
+colnames(df_select)[colnames(df_select)=="DEPNA0"] <- "DPTO"
+colnames(df_select)[colnames(df_select)=="UBIDIST"] <- "DIST"
+colnames(df_select)[colnames(df_select)=="PERIODO"] <- "PER"
+df_select
+
+=====================
+  
+# Para cada departamento se obtiene el total de eventos de violencia y los renombraremos
+  
+tot_event_violen <- df_select %>% group_by(DPTO) %>% 
+summarise(TotalDesap = sum(LDS_LDT),    #renombramos
+            TotalSecu = sum(LSE),
+            TotalRe = sum(LRC),
+            TotalMuertes = sum(MAT))
+
+# Para cada distrito se obtiene el total de eventos de violencia y los renombraremos
+tot_event_dist <- df_select %>% group_by(DIST) %>% 
+summarise(TotalDesap = sum(LDS_LDT),    #renombramos
+          TotalSecu = sum(LSE),
+          TotalRe = sum(LRC),
+          TotalMuertes = sum(MAT))
+
+# Según su tipo a nivel departamento (DEPNAO) y periodo (PERIODO). 
+tot_dist_perio <- df_select %>% group_by(DPTO,PER) %>% 
+summarise(TotalDesap = sum(LDS_LDT),
+          TotalSecu = sum(LSE),
+          TotalRe = sum(LRC),
+          TotalMuertes = sum(MAT))
+
+# Convertimos el DataFrame de pandas a data frame de R
+df_tot_event_dist <- data.frame(tot_event_dist)
+  
+# Creamos variables con el logaritmo del total de eventos
+df_tot_event_dist$Log_TotalDesap <- log(df_tot_event_dist$TotalDesap)
+df_tot_event_dist$Log_TotalSecu <- log(df_tot_event_dist$TotalSecu)
+df_tot_event_dist$Log_TotalRe <- log(df_tot_event_dist$TotalRe)
+df_tot_event_dist$Log_TotalMuertes <- log(df_tot_event_dist$TotalMuertes)
