@@ -175,7 +175,7 @@ enaho_unidos <- enaho_unidos %>%
   ) %>% 
   ungroup()
 
-#Se halla el maximo de años de educacion de algun miembro del hogar y se agrega al dataframe enaho_unidos. Por ejemplo, si en un hogar uno tiene 11 y otro tiene 6 años de educacion, 11 se le asigna al hogar como el maximo. 
+#Se halla el maximo de a?os de educacion de algun miembro del hogar y se agrega al dataframe enaho_unidos. Por ejemplo, si en un hogar uno tiene 11 y otro tiene 6 a?os de educacion, 11 se le asigna al hogar como el maximo. 
 
 enaho_unidos_maxeduc <- enaho_unidos %>% 
   group_by(conglome, vivienda, hogar) %>% 
@@ -206,7 +206,7 @@ union_all <- union_all %>%
 
 #
 union_all <- union_all %>% 
-  mutate(dpto_code = substr(ubigeo, 1, 2), # posicicón inicial, 2 : posición final
+  mutate(dpto_code = substr(ubigeo, 1, 2), # posicic?n inicial, 2 : posici?n final
          ubigeo3 = str_pad(ubigeo2, 6, pad ="0"),
          dpto = case_when(
            dpto_code == "01" ~ "Amazonas", dpto_code == "02" ~ "Ancash",
@@ -228,16 +228,16 @@ union_all <- union_all %>%
 #
 
 
-# Se crea un diseño de encuesta donde se usa factor07
-diseño <- union_all %>% 
+# Se crea un dise?o de encuesta donde se usa factor07
+dise?o <- union_all %>% 
   as_survey_design(ids = conglome, strata = estrato, weight = factor07)
 
 # Se halla el porcentaje de hogares con NBI por departamento
-nbi_departamentos <- diseño %>% 
+nbi_departamentos <- dise?o %>% 
   group_by(dpto) %>% 
   summarise(pct_hogares_nbi = survey_mean(nbi_dummy) * 100)
 
-# Se realiza el gráfico de barras por departamento
+# Se realiza el gr?fico de barras por departamento
 ggplot(nbi_departamentos, aes(x = dpto, y = pct_hogares_nbi)) +
   geom_col(fill = "steelblue") +
   labs(x = "Departamento", y = "Porcentaje de hogares con NBI", 
@@ -258,19 +258,19 @@ base_deflactores <- read_dta("../../data/enaho/deflactores_base2020_new.dta")
 
 
 appendSumaria <- bind_rows(sumaria_2015, sumaria_2016, sumaria_2017, sumaria_2018, sumaria_2019, sumaria_2020) %>% 
-  rename(anio = año) %>% 
+  rename(anio = a?o) %>% 
   mutate(  dpto = as.numeric(substr(ubigeo, 1, 2)),
            anio = as.numeric(anio)
   )
 
-# Se asigna el código de Lima region  al Callao
+# Se asigna el c?digo de Lima region  al Callao
 
 
 appendSumaria$dpto[ appendSumaria$dpto == 7 ] <- 15
 appendSumaria <- left_join(appendSumaria,
                            base_deflactores, by = c("dpto", "anio" = "aniorec"))
 
-# Se obtiene el factor de expansión a nivel persona 
+# Se obtiene el factor de expansi?n a nivel persona 
 
 appendSumaria$factorpob <-  round(appendSumaria$factor07*appendSumaria$mieperho, 1) 
 
@@ -284,7 +284,7 @@ appendSumaria <- appendSumaria %>%
     factorpob = round(factor07*mieperho, 1)
   )
 
-#Se crea un diseño de encuesta
+#Se crea un dise?o de encuesta
 gasto_years <- appendSumaria %>% 
   as_survey_design(ids = conglome, 
                    strata = estrato,
@@ -295,15 +295,117 @@ gasto_years <- appendSumaria %>%
     gasmpc = survey_mean(gasmpc, na.rm = T)
   )
 
-#Se realiza el gráfico
+#Se realiza el gr?fico
 gasto_years %>% ggplot( aes(x = anio, y = gasmpc, group = area, colour = area) ) +
   geom_line()+
   geom_point(size = 1.5) +
-  theme_bw() + # diseño de fondo
+  theme_bw() + # dise?o de fondo
   scale_x_continuous(breaks = c(2015,2016,2017,2018, 2019 , 2020) ) +
   ggtitle("Average monthly expenditure percapita by area")+
   xlab("")+
   ylab("")
+
+
+##ENDES----
+
+library(pacman) 
+p_load(readxl, tidyverse, foreign,fastDummies, haven, survey,
+       srvyr, labelled) 
+
+
+
+## Se importa la base RECHO y se define como rech0
+
+rech0 <- read_dta("../../data/endes/RECH0.dta") %>%  ## se importa la base RECHO y se define como rech0
+  mutate(
+    HHID = str_trim(HHID)    ## con str_trim se elimina los espacios en blanco
+  )
+
+names(rech0) <- tolower(names(rech0))  ## Se pasa los nombres de las variables de mayÃºscula a minÃºscula
+
+## se importa la base RECH23 y se define como rech23
+
+rech23 <- read_dta("../../data/endes/RECH23.dta") %>%    
+  mutate( HHID = str_trim(HHID) )
+
+names(rech23) <- tolower(names(rech23))   ## Se pasa los nombres de las variables de mayÃºscula a minÃºscula
+
+## se importa la base RECH1 y se define como rech1
+
+rech1 <- read_dta("../../data/endes/RECH1.dta") %>%     
+  mutate(
+    HHID = str_trim(HHID)
+  )
+
+names(rech1) <- tolower(names(rech1))   ## Se pasa los nombres de las variables de mayÃºscula a minÃºscula
+
+## se importa la base REC84DV y se define como dv
+
+dv <- read_dta("../../data/endes/REC84DV.dta") %>% 
+  mutate(
+    caseid = str_trim(caseid)
+  )
+
+
+## Se crea HHID (id hogar) y HVIDX (id persona)
+
+dv[c('hhid','hvidx')] <- str_split_fixed(dv$caseid, " ", 2) 
+
+
+dv$hvidx <- as.numeric( dv$hvidx )  ## se convierte los elementos a nÃºmeros
+
+
+# Se une las 4 bases, se toma como master data a la base REC84DV, definida como dv
+
+endes_violencia_fÃ­sica <- dv %>% 
+  left_join(rech1, by = c("hhid","hvidx")) %>% 
+  left_join(rech0, by = "hhid") %>% 
+  left_join(rech23, by = "hhid") 
+
+
+# Se crea una dummy que va a tomar el valor de 1, si la variable de violencia toma los valores de 1 y 2,
+# mientras que tomarÃ¡ el valor de 0, si la variable de violencia toma los valores 0 y 3
+
+endes_violencia_fÃ­sica <- endes_violencia_fÃ­sica %>% 
+  mutate(
+    dummy_d105a = case_when(
+      d105a %in% c(0,3) ~ 0,
+      d105a %in% c(1,2) ~ 1,   
+      d105a == 9 ~ NA
+    ),
+    dummy_d105b = case_when(
+      d105b %in% c(0,3) ~ 0,
+      d105b %in% c(1,2) ~ 1,  
+      d105b == 9 ~ NA
+    ),
+    dummy_d105c = case_when(
+      d105c %in% c(0,3) ~ 0,
+      d105c %in% c(1,2) ~ 1,   
+      d105c == 9 ~ NA
+    ),
+    dummy_d105d = case_when(
+      d105d %in% c(0,3) ~ 0,
+      d105d %in% c(1,2) ~ 1,   
+      d105d == 9 ~ NA
+    ),
+    dummy_d105e = case_when(
+      d105e %in% c(0,3) ~ 0,
+      d105e %in% c(1,2) ~ 1,   
+      d105e == 9 ~ NA
+    )
+    
+  )
+
+
+
+# Se crea una dummy llamada physical que tomarÃ¡ el valor de 1 si alguna de las dummys toma el valor de 1 y tomarÃ¡
+# el valor de 0 si cada dummy toma el valor de 0
+
+endes_violencia_fÃ­sica <- endes_violencia_fÃ­sica %>% 
+  mutate(
+    physical = ifelse(dummy_d105a==1 | dummy_d105b == 1 | dummy_d105c == 1 | dummy_d105d == 1 | dummy_d105e == 1, 1 , 
+                      ifelse(dummy_d105a==0 & dummy_d105b== 0 & dummy_d105c== 0 & dummy_d105d== 0 & dummy_d105e== 0, 0, NA))
+  )
 
 
 
