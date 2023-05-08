@@ -4,12 +4,89 @@
 ## Curso: Laboratorio de R y Python ####
 ## Profesor: Roberto Mendoza  ####
 ## Autor: Grupo 4 ####
+## Integrantes: Mishell Delgado, Lisbeth Ccoyo y Steven Atoche
 
 # clean environment variables
 rm(list = ls())
 
 # clean console
 cat("\014")
+
+#Datos de la Comisión de la Verdad y Reconciliación
+
+##Instalamos pacman
+
+##install.packages("pacman")
+##install.packages("Hmisc")
+
+##Llamamos a la librería pacman
+
+library(pacman) 
+library(Hmisc)
+library(labelled)
+
+
+##Lo llamamos para su uso
+p_load(dplyr, readxl, tidyverse, foreign, datos) 
+p_load(haven, labelled)
+
+# Change working directory
+
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+getwd()
+
+##Accedemos a la base de datos actos_est.sav
+
+datoscvr <- read.spss("../../data/actos_est.sav", to.data.frame = TRUE)
+
+#Revisamos las variables y en qué formato están
+
+str(datoscvr)
+
+## 1) Etiquetas de valor y etiquetas de las variables
+# Extraemos las etiquetas de variable en var_labels
+
+var_labels <- attr(datoscvr, "variable.labels")
+var_labels
+
+# Extaemos las etiquetas de valor
+
+attributes(value_label)$label.table
+
+## 2) Filtrar la base de datos 
+#Desaparición
+
+datoscvr[datoscvr$IDTIPOAC == "LDS",]
+
+#Secuestros
+
+datoscvr[datoscvr$IDTIPOAC == "LSE", ]
+
+#Reclutamiento forzado
+
+datoscvr[datoscvr$IDTIPOAC == "LRC", ]
+
+#Muertes en atentados
+
+datoscvr[datoscvr$IDTIPOAC=="MAT",]
+
+## 3) Borrar duplicados
+#Solo dejamos la primera observacion de cada persona
+
+datoscvr2 <- distinct(datoscvr, IDACTO, .keep_all = TRUE)
+
+##4) Crear distintas base de datos
+###4.1) Total de eventos de violencia según su tipo a nivel departamento
+
+actos <- var_values[['IDTIPOAC']]
+actos
+
+# Después, buscamos los departamentos registrados
+
+departamentos <- var_values[['DEPNA0']]
+departamentos
+
+#Parte de la ENAHO
 
 # Library 
 library(pacman)  # me permite llamar a varias librerias a la vez
@@ -274,6 +351,98 @@ income_years %>% ggplot( aes(x = año, y = gasmpc, group = area, colour = area) )
   ggtitle("Evolución del gasto per capita mensual por area")+
   xlab("")+
   ylab("")
+
+#ENDES
+
+rm(list = ls())
+
+library(readxl)
+library(dplyr) 
+library(rstudioapi)  
+library(readr)
+library(haven) # para leer archivos .dta
+
+
+# cargar datos 
+rech84dv <- read_dta("REC84DV.dta")
+rech0 <- read_dta("RECH0.dta")
+rech1 <- read_dta("RECH1.dta")
+rech23 <- read_dta("RECH23.dta")
+
+str(rech84dv)
+
+# para ver los nombres de las columnas de las bases de datos
+head(rech84dv, n = 13)
+head(rech0, n = 13)
+head(rech1, n = 13)
+head(rech23, n = 13)
+
+#identifiicar las columnas repetidas de las bases de datos
+intersect(colnames(rech1), colnames(rech23))
+intersect(colnames(rech0), colnames(rech1))
+intersect(colnames(rech0), colnames(rech84dv))
+
+# Combina rech0, rech1 y rech23 en una sola tabla utilizando la columna comÃºn HHID
+datos_combinados <- merge(rech0, rech1, by = "HHID")
+
+datos_combinados <- merge(datos_combinados, rech23, by = "HHID")
+
+# no se puede unir datos_combinados con rech84dv porque no comparten una columna en comÃºn
+names(rech84dv)
+
+names(datos_combinados)
+
+# crear una columna nueva para las dos bases de datos y luego unirlas 
+datos_combinados$clave <- 1:nrow(datos_combinados)
+rech84dv$clave <- 1:nrow(rech84dv)
+
+datos_combinados_con_rech84dv <- merge(datos_combinados, rech84dv, by = "clave")
+
+
+
+# variable dummy de violencia fisica: identificamos las variables que evidencien algun tipo de violencia fisica
+
+datos_combinados_con_rech84dv$violencia_fisica <- ifelse(datos_combinados_con_rech84dv$d103b == 1 |
+                                                           datos_combinados_con_rech84dv$d105a == 1 |
+                                                           datos_combinados_con_rech84dv$d105b == 1 |
+                                                           datos_combinados_con_rech84dv$d105c == 1 |
+                                                           datos_combinados_con_rech84dv$d105d == 1 |
+                                                           datos_combinados_con_rech84dv$d105e == 1 |
+                                                           datos_combinados_con_rech84dv$d105f == 1 |
+                                                           datos_combinados_con_rech84dv$d105j == 1 |
+                                                           datos_combinados_con_rech84dv$d105h == 1,
+                                                         1, 0)
+
+
+# dummy de violencia sexual 
+datos_combinados_con_rech84dv$violencia_sexual <- ifelse(datos_combinados_con_rech84dv$d105i == 1, 1, 0)
+
+
+#crear una variable ficticia por cada tipo de violencia fisica
+
+
+datos_combinados_con_rech84dv$ficticia_fisica <- ifelse(datos_combinados_con_rech84dv$d105a == 0 & datos_combinados_con_rech84dv$d105b == 0 & datos_combinados_con_rech84dv$d105c == 0 & datos_combinados_con_rech84dv$d105d == 0 & datos_combinados_con_rech84dv$d105e == 0, 0,   # Si todas las respuestas son No
+                                                        ifelse(datos_combinados_con_rech84dv$d105a == 1 | datos_combinados_con_rech84dv$d105b == 1 | datos_combinados_con_rech84dv$d105c == 1 | datos_combinados_con_rech84dv$d105d == 1 | datos_combinados_con_rech84dv$d105e == 1, 1,  # Si alguna respuesta es Frecuentemente
+                                                               ifelse(datos_combinados_con_rech84dv$d105a == 2 | datos_combinados_con_rech84dv$d105b == 2 | datos_combinados_con_rech84dv$d105c == 2 | datos_combinados_con_rech84dv$d105d == 2 | datos_combinados_con_rech84dv$d105e == 2, 2,  # Si alguna respuesta es Algunas veces
+                                                                      3)))  # Si todas las respuestas son Nunca
+
+# Ver los primeros registros del nuevo data frame con la variable ficticia
+head(datos_combinados_con_rech84dv)
+
+
+#crear dummys por cada variable ficticia creada
+
+datos_combinados_con_rech84dv$d105a_dummy <- ifelse(datos_combinados_con_rech84dv$ficticia_fisica %in% c(1, 2), ifelse(datos_combinados_con_rech84dv$d105a %in% c(1, 2), 1, 0), 0)
+datos_combinados_con_rech84dv$d105b_dummy <- ifelse(datos_combinados_con_rech84dv$ficticia_fisica %in% c(1, 2), ifelse(datos_combinados_con_rech84dv$d105b %in% c(1, 2), 1, 0), 0)
+datos_combinados_con_rech84dv$d105c_dummy <- ifelse(datos_combinados_con_rech84dv$ficticia_fisica %in% c(1, 2), ifelse(datos_combinados_con_rech84dv$d105c %in% c(1, 2), 1, 0), 0)
+datos_combinados_con_rech84dv$d105d_dummy <- ifelse(datos_combinados_con_rech84dv$ficticia_fisica %in% c(1, 2), ifelse(datos_combinados_con_rech84dv$d105d %in% c(1, 2), 1, 0), 0)
+datos_combinados_con_rech84dv$d105e_dummy <- ifelse(datos_combinados_con_rech84dv$ficticia_fisica %in% c(1, 2), ifelse(datos_combinados_con_rech84dv$d105e %in% c(1, 2), 1, 0), 0)
+
+# Crear variable dummy "physical"
+datos_combinados_con_rech84dv$physical <- ifelse(datos_combinados_con_rech84dv$d105a_dummy == 1 | datos_combinados_con_rech84dv$d105b_dummy == 1 | datos_combinados_con_rech84dv$d105c_dummy == 1 | datos_combinados_con_rech84dv$d105d_dummy == 1 | datos_combinados_con_rech84dv$d105e_dummy == 1, 1, 0)
+
+# Ver los primeros registros del nuevo data frame con las variables dummy y la variable "physical"
+head(datos)
 
 
 ## Gracias -------------
