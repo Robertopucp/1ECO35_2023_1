@@ -13,28 +13,24 @@ install.packages("pacman")
 install.packages("stringr")
 
 
-<<<<<<< Updated upstream
+
 # Limpiamos la consola
 
 cat("\014")
-=======
+
 # Limpiamos la consola, variables y gráficos
 
 cat("\014")
 rm(list = ls())
 graphics.off()
->>>>>>> Stashed changes
+
 
 # Library y otras opciones
 
 library(pacman) 
-<<<<<<< Updated upstream
-p_load(dplyr, readxl, rstudioapi, tidyverse, foreign, datos)
-=======
+
 p_load(dplyr, readxl, rstudioapi, tidyverse, foreign, datos,
        fastDummies, haven, survey, srvyr, labelled)
-
->>>>>>> Stashed changes
 
 
 options(scipen = 999) 
@@ -113,22 +109,12 @@ EventosxDpto <- datoscvr %>% group_by(DEPARTAMENTO) %>%
 # Base de datos que se agrupa por distrito y obtenemos el total de eventos
 # de violencia
 
-<<<<<<< Updated upstream
-=======
-# Creamos la variable Total_Eventos que representa la suma total
-# de cada evento.
 
- 
 
->>>>>>> Stashed changes
 EventosxDistr <- datoscvr %>% group_by(DISTRITO) %>% 
   summarise(Total_Desaparición = sum(LDS_LDT),
             Total_Secuestros = sum(LSE),
             Total_RecluForza = sum(LRC),
-<<<<<<< Updated upstream
-            Total_MuAtentados = sum(MAT))
-
-=======
             Total_MuAtentados = sum(MAT),
             Log_T_Desaparición = log(Total_Desaparición),
             Log_T_Secuestros = log(Total_Secuestros),
@@ -136,7 +122,6 @@ EventosxDistr <- datoscvr %>% group_by(DISTRITO) %>%
             Log_T_MuAtentados = log(Total_MuAtentados))
             
             
->>>>>>> Stashed changes
 # Base de datos que se agrupa por departamento y periodo, y luego obtenemos el total de eventos
 # obtenemos el total de eventos de violencia
 
@@ -146,13 +131,14 @@ EventosDyP <- datoscvr %>% group_by(DEPARTAMENTO, PERIODO) %>%
             Total_RecluForza = sum(LRC),
             Total_MuAtentados = sum(MAT))
 
-<<<<<<< Updated upstream
-=======
+
+rm(list = ls())
+
 # ENAHO------------------------------------------------------
 
-#-----------------------------------
-# MODULO 200 Y MODULO 300-----------
-#-----------------------------------
+
+## MODULO 200 Y MODULO 300 ####
+
 
 #Cargamos las bases de batos
 
@@ -167,7 +153,7 @@ enaho19 <- enaho200_19 %>%
 
 
 #PREGUNTA 1
-#-----------
+
 
 #Filtramos la base de datos con la siguiente condicion:
 #La persona entrevistada en el hogar es miembro del hogar (p204 == 1) 
@@ -179,7 +165,7 @@ enaho_19_1 <- filter(enaho19, (p204==1 & p205==2) | (p204==2 & p206==1))
 
 
 #PREGUNTA 2
-#-----------
+
 
 # Años de educación #
 
@@ -209,9 +195,9 @@ enaho19$educ2 <- apply(enaho19[,c("p301b","p301c")], 1 , sum , na.rm = T)
 enaho19$years_educ <- apply(enaho19[,c("educ1","educ2")], 1 , sum , na.rm = T)
 
 
-#-----------------------------------
-# MODULO 100 Y SUMARIA--------------
-#-----------------------------------
+
+## MODULO 100 Y SUMARIA ####
+
 
 #Cargamos las bases de batos
 
@@ -225,7 +211,7 @@ enaho19 <- enaho100_19 %>%
 
 
 #PREGUNTA 1
-#-----------
+
 
 #Creamos una variable que indica la cantidad de necesidades basicas, sumando los valores 
 # de 5 variables que indican diferentes tipos de necesidades basicas
@@ -239,7 +225,7 @@ enaho19$nec_bas <- ifelse(enaho19$num_nec > 0, 1, 0)
 
 
 #PREGUNTA 2
-#-----------
+
 
 #Creamos la variable departamento (dpto)
 
@@ -290,9 +276,9 @@ prop.table(svytable(~ dpto + nec_bas, design = design), 1) %>%
   ylab("Departmento")
 
 
-#-----------------------------------
-# APPEND SUMARIA (2015 -2020)-------
-#-----------------------------------
+
+## APPEND SUMARIA (2015 -2020) ####
+
 sumaria_15 <- read_dta("../../data/enaho/sumaria-2015.dta")
 sumaria_16 <- read_dta("../../data/enaho/sumaria-2016.dta")
 sumaria_17 <- read_dta("../../data/enaho/sumaria-2017.dta")
@@ -397,8 +383,57 @@ gasto_years %>% ggplot( aes(x = año, y = gmensual_pc, group = area, colour = ar
   xlab("")+
   ylab("")
 
+#ENDES----------------------------------------------------------
 
+# 3) PREGUNTA SOBRE EL MODULO ENDES
 
+## 3.1) Unión de módulos ####
 
->>>>>>> Stashed changes
+# Trayendolos módulos RECH84DV, RECH0, RECH1 y RECH23
+
+rech1 <- read_dta("../../data/endes/RECH1.dta")
+rech23 <- read_dta("../../data/endes/RECH23.dta")
+rech84dv <- read_dta("../../data/endes/REC84DV.dta")
+rech0 <- read_dta("../../data/endes/RECH0.dta")
+
+#Para asegurarnos de que los nombres de cada módulo estén bien
+
+names(rech84dv)
+names(rech0)
+names(rech1)
+names(rech23)
+
+#Ahora procedemos a identificar las variables que se repiten
+
+intersect(colnames(rech1), colnames(rech23))
+intersect(colnames(rech0), colnames(rech1))
+intersect(colnames(rech0), colnames(rech84dv))
+
+# La columna que se repite es la HHDI, entonces esta sirve de puente para unir rech0, rech1 y rech23
+
+datos_unidos <- merge(rech0, rech1, by = "HHID")
+datos_unidos <- merge(datos_unidos, rech23, by = "HHID")
+rech84dv$HHID <- substring(rech84dv$caseid, 1, 15)
+datos_unidos <- merge(datos_unidos, rech84dv, by = "HHID")
+
+## 3.2) Creando la variable dummy violencia física ####
+
+#En torno a la violencia física, pasamos a crear las variables dummy para cada tipo de violencia fisica
+
+datos_unidos$d105a_dummy <- ifelse(datos_unidos$d105a %in% c(1, 2), 1, 0)
+
+datos_unidos$d105b_dummy <- ifelse(datos_unidos$d105b %in% c(1, 2), 1, 0)
+
+datos_unidos$d105c_dummy <- ifelse(datos_unidos$d105c %in% c(1, 2), 1, 0)
+
+datos_unidos$d105d_dummy <- ifelse(datos_unidos$d105d %in% c(1, 2), 1, 0)
+
+datos_unidos$d105e_dummy <- ifelse(datos_unidos$d105e %in% c(1, 2), 1, 0)
+
+## 3.3) Creando la variable dummy physical ####
+
+#Ahora, creamos la variable dummy physical en base a la variable "datos unidos"
+
+datos_unidos$physical <- ifelse(rowSums(datos_unidos[, c("d105a_dummy", "d105b_dummy", "d105c_dummy", "d105d_dummy", "d105e_dummy")]) > 0, 1, 0)
+
 
