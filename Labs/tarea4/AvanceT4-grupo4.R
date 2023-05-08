@@ -29,7 +29,7 @@ names(datos200_19) # no existe la variable p204, p205 ni p206
 
 # 1.2 Merge de los módulos 200 y 300 ----
 enaho_2019 <- datos200_19 %>% 
-  left_join(datos300_19, by = c("conglome","vivienda","hogar","codperso"))
+  inner_join(datos300_19, by = c("conglome","vivienda","hogar","codperso"))
 
 names(enaho_2019)
 
@@ -70,11 +70,13 @@ table(enaho_2019$years_educ, enaho_2019$hogar)
 datos100_19 <- read_dta("../../data/enaho/enaho01-2019-100.dta")
 datos_sumaria_19 <- read_dta("../../data/enaho/sumaria-2019.dta")
 
+
 ## 2.2 Merge del módulo 100 y la sumaria ----
 enaho1_2019 <- datos100_19 %>% 
-  left_join(datos_sumaria_19, by = c("conglome","vivienda","hogar"))
+  inner_join(datos_sumaria_19, by = c("conglome","vivienda","hogar"))
 
 names(enaho1_2019)
+
 #View(datos_sumaria_19)
 #View(datos100_19)
 
@@ -132,41 +134,146 @@ enaho1_2019 <- enaho1_2019 %>%
            dpto_code == "25" ~ "Ucayali"
          ))
 
+## 2.4 Crear el diseño muestral ---------
+
 # primero se crea el factor de expansión
 enaho1_2019$factorpob <- round(enaho1_2019$factor07*enaho1_2019$mieperho, 1)
 
 # factor07 : factor de expansión a nivel hogar
 # factor07 es de modulo sumaria (factor de expansión a nivel hogar)
 
-# Se trato de hacer el diseño muestral de la encuesta pero no se puede
-
 # Forma 1
-# data_ind <- enaho1_2019  %>% 
-#  as_survey_design(ids = conglome, 
-#                   strata = estrato,
-#                   weight = factorpob) %>% 
-#  dplyr::group_by(dpto) %>% 
-#  summarise(
-#    neces_bas_insat_rate = survey_mean(neces_bas_insat, na.rm = T)*100
-#  )
 
-# Forma 2
-#design <- svydesign(
-#  data = enaho1_2019,
-#  ids = ~ conglome,
-#  strata = ~estrato,
-#  weights = ~ factorpob,
-#  nest = TRUE
-# )  
-
-
-enaho1_2019  %>%  group_by(dpto) %>% 
+ data_ind <- enaho1_2019  %>% 
+  as_survey_design(ids = conglome, 
+                   strata = estrato,
+                   weight = factorpob) %>% 
+  dplyr::group_by(dpto) %>% 
   summarise(
-    neces_bas_insat= mean(neces_bas_insat, na.rm = T)*100
-  ) %>% as.data.frame()
+    neces_bas_insat_rate = survey_mean(neces_bas_insat, na.rm = T)*100
+  )
 
-# 2.4. Crear un gráfico de barras ------
+ 
+# Diseño de la encuesta
+design <- svydesign(
+  data = enaho1_2019,
+  ids = ~ conglome,
+  strata = ~estrato,
+  weights = ~ factorpob,
+  nest = TRUE
+)
+
+# 2.5. Crear un gráfico de barras ------
+
+prop.table(svytable(~ dpto + neces_bas_insat, design = design), 1) %>%
+  as.data.frame() %>% 
+  filter(neces_bas_insat == 1) %>% 
+  mutate(neces_bas_insat_rate = Freq*100) %>% 
+  ggplot(aes(y = reorder( dpto, - neces_bas_insat_rate) , x =  neces_bas_insat_rate)) +
+  geom_col() +
+  scale_fill_identity(guide = "none") +
+  theme_minimal() +  #diseÃ±o 
+  xlab("") +
+  ylab("Department")
+
+### Parte 3 ----
+
+# Realice un append de los módulos sumaria desde 2015 - 2020 ----
+
+sumaria_15 <- read_dta("../../data/enaho/sumaria-2015.dta")
+sumaria_16 <- read_dta("../../data/enaho/sumaria-2016.dta")
+sumaria_17 <- read_dta("../../data/enaho/sumaria-2017.dta")
+sumaria_18 <- read_dta("../../data/enaho/sumaria-2018.dta")
+sumaria_19 <- read_dta("../../data/enaho/sumaria-2019.dta")
+sumaria_20 <- read_dta("../../data/enaho/sumaria-2020.dta")
+base_deflactores <- read_dta("../../data/enaho/deflactores_base2020_new.dta")
+
+# Append sumaria y merge con los deflactores anuales ----
+
+# El año base es 2020 
+
+append_enaho <- bind_rows(sumaria_15, sumaria_16, sumaria_17, sumaria_18, sumaria_19, sumaria_20) %>% 
+  mutate(  dpto = as.numeric( substr(ubigeo,1,2) ),
+           año = as.numeric(año)
+  ) 
 
 
+# Asignamos el código de Lima region  al Callao ----
 
 
+append_enaho$dpto[ append_enaho$dpto == 7 ] <- 15
+
+
+append_enaho <- left_join(append_enaho,
+                          base_deflactores, by = c("dpto", "año" = "aniorec"))
+
+
+# Factor de expansión a nivel persona ----
+
+append_enaho$factorpob <-  round(append_enaho$factor07*append_enaho$mieperho, 1) 
+
+# Uniendo con la base deflactores  ------
+
+append_enaho <- append_enaho %>% 
+  mutate(
+    area =  factor(case_when(
+      estrato <= 5 ~ 1,
+      estrato > 5 ~ 2  ), levels = c(1,2), labels = c("Urbano", "Rural")),
+    ingmpc = inghog1d/(mieperho*12*i00),
+    factorpob = round(factor07*mieperho, 1)
+  )
+
+
+income_years <- append_enaho %>% 
+  as_survey_design(ids = conglome, 
+                   strata = estrato,
+                   weight = factorpob,
+                   nest=TRUE) %>%   
+  group_by(año, area) %>% 
+  summarise(
+    ingmpc = survey_mean(ingmpc, na.rm = T)
+  )
+
+# Evolución del ingreso percápita mensual del hogar 2015-2020 -------
+
+income_years %>% ggplot( aes(x = año, y = ingmpc, group = area, colour = area) ) +
+  geom_line()+
+  geom_point(size = 1.5) +
+  theme_bw() + # diseÃ±o de fondo
+  scale_x_continuous(breaks = c(2015, 2016, 2017, 2018, 2019, 2020) ) +
+  ggtitle("Average monthly income percapita by area")+
+  xlab("")+
+  ylab("")
+
+## Evolución del gasto per capita mensual ---------------
+
+append_enaho <- append_enaho %>% 
+  mutate(
+    area =  factor(case_when(
+      estrato <= 5 ~ 1,
+      estrato > 5 ~ 2  ), levels = c(1,2), labels = c("Urbano", "Rural")),
+    gasmpc = gashog2d/(mieperho*12*i00),
+    factorpob = round(factor07*mieperho, 1)
+  )
+
+income_years <- append_enaho %>% 
+  as_survey_design(ids = conglome, 
+                   strata = estrato,
+                   weight = factorpob,
+                   nest=TRUE) %>%   
+  group_by(año, area) %>% 
+  summarise(
+    gasmpc = survey_mean(gasmpc, na.rm = T)
+  )
+
+income_years %>% ggplot( aes(x = año, y = gasmpc, group = area, colour = area) ) +
+  geom_line()+
+  geom_point(size = 1.5) +
+  theme_bw() + # diseño de fondo
+  scale_x_continuous(breaks = c(2015, 2016, 2017, 2018, 2019, 2020) ) +
+  ggtitle("Evolución del gasto per capita mensual por area")+
+  xlab("")+
+  ylab("")
+
+
+## Gracias -------------
