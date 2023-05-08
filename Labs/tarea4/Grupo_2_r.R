@@ -229,11 +229,11 @@ union_all <- union_all %>%
 
 
 # Se crea un dise?o de encuesta donde se usa factor07
-dise?o <- union_all %>% 
+disenio <- union_all %>% 
   as_survey_design(ids = conglome, strata = estrato, weight = factor07)
 
 # Se halla el porcentaje de hogares con NBI por departamento
-nbi_departamentos <- dise?o %>% 
+nbi_departamentos <- disenio %>% 
   group_by(dpto) %>% 
   summarise(pct_hogares_nbi = survey_mean(nbi_dummy) * 100)
 
@@ -258,7 +258,7 @@ base_deflactores <- read_dta("../../data/enaho/deflactores_base2020_new.dta")
 
 
 appendSumaria <- bind_rows(sumaria_2015, sumaria_2016, sumaria_2017, sumaria_2018, sumaria_2019, sumaria_2020) %>% 
-  rename(anio = a?o) %>% 
+  rename(anio = año) %>% 
   mutate(  dpto = as.numeric(substr(ubigeo, 1, 2)),
            anio = as.numeric(anio)
   )
