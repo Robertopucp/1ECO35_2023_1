@@ -21,16 +21,18 @@ options(scipen = 999)      # No scientific notation
 library(pacman) 
 
 
+# permite llamar a varias librerias de manera simultánea
+# Si la librería no está instalada, entonces lo instala y llama para su uso
+
+p_load(readxl, tidyverse, foreign,fastDummies, haven, survey,
+       srvyr, labelled) 
+
+# tidyverse es una recopilación de varias librerias (dply, ggplot, stringr, etc)
+# foreign, libreria que permite leer base de datos de diferentes extensiones
+# haven tambien permite la lectura de base de datos de diferentes extensiones (i.e stata)
+
+
 # Change working directory
 
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
-getwd()
-
-datos200_19 <- read_dta("../../data/enaho/enaho01-2019-200.dta")
-datos300_19 <- read_dta("../../data/enaho/enaho01a-2019-300.dta")
-
-enaho_2019 <- merge(datos200_19, datos300_19, by = "conglome")
-print (enaho_2019)
-
-datos_filtrados <- subset(datos, (p204==1 & p205==2) | (p204==2 & p206==1))
