@@ -3,7 +3,7 @@
 
 ## Curso: Laboratorio de R y Python ####
 ## Profesor: Roberto Mendoza  ####
-## Autor: Grupo 5 ####
+## Autor: Grupo 4 ####
 
 # clean environment variables
 rm(list = ls())
@@ -138,11 +138,32 @@ enaho1_2019$factorpob <- round(enaho1_2019$factor07*enaho1_2019$mieperho, 1)
 # factor07 : factor de expansión a nivel hogar
 # factor07 es de modulo sumaria (factor de expansión a nivel hogar)
 
+# Se trato de hacer el diseño muestral de la encuesta pero no se puede
+
+# Forma 1
+# data_ind <- enaho1_2019  %>% 
+#  as_survey_design(ids = conglome, 
+#                   strata = estrato,
+#                   weight = factorpob) %>% 
+#  dplyr::group_by(dpto) %>% 
+#  summarise(
+#    neces_bas_insat_rate = survey_mean(neces_bas_insat, na.rm = T)*100
+#  )
+
+# Forma 2
+#design <- svydesign(
+#  data = enaho1_2019,
+#  ids = ~ conglome,
+#  strata = ~estrato,
+#  weights = ~ factorpob,
+#  nest = TRUE
+# )  
+
+
 enaho1_2019  %>%  group_by(dpto) %>% 
   summarise(
     neces_bas_insat= mean(neces_bas_insat, na.rm = T)*100
   ) %>% as.data.frame()
-
 
 # 2.4. Crear un gráfico de barras ------
 
