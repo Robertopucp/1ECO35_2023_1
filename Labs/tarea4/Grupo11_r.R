@@ -79,7 +79,7 @@ enaho19 <- enaho19 %>%
 # Merge ENAHO 100 y sumaria del 2019 --------------------------------------------
 
 enaho19_sumaria <- enaho100_19 %>%
-  left_join(sumaria_19, by = c("conglome","vivienda","hogar"))
+  inner_join(sumaria_19, by = c("conglome","vivienda","hogar"))
 
 #Dummy necesidad basica insatisfecha
 ### Tener en cuenta que las nbi ya son variables dicotómicas.
@@ -117,29 +117,40 @@ enaho19_sumaria <- enaho19_sumaria %>%
 
 ### Factor de expansión
 enaho19_sumaria$factorpob <- round(enaho19_sumaria$factor07*enaho19_sumaria$mieperho, 1)
-
 #Creamos el porcentaje de hogares con nbi ajustado al factor de expansión.
 
 data_nbi <- enaho19_sumaria  %>% 
   as_survey_design(ids = conglome, 
                    strata = estrato,
-                   weight = factorpob) %>% 
+                   weight = factorpob, 
+                   nest = TRUE) %>% 
   dplyr::group_by(dpto) %>% 
   summarise(
     nbi_rate = survey_mean(dummy_nbi, na.rm = T)*100
   )
 
 
-### 
+### Gráfico nbi por departamento
 
+design <- svydesign(
+  data = enaho19_sumaria,
+  ids = ~ conglome,
+  strata = ~estrato,
+  weights = ~factorpob,
+  nest = TRUE
+)
 
-ggplot(data_nbi, aes(x = dpto, y = nbi_rate, fill = nbi_rate ) ) +
-  geom_bar(position = position_fill()) +
-  theme_bw() +
-  labs(title = "Necesidades Básicas Insatisfechas por departamento",
-       x = "Departamento", 
-       y = "Porcentaje (%)") + 
-  scale_fill_manual(values = c("darkolivegreen3", "firebrick2")) 
+prop.table(svytable(~ dpto + dummy_nbi, design = design), 1) %>%
+  as.data.frame() %>% 
+  filter(dummy_nbi == 1) %>% 
+  mutate(nbi_rate = Freq*100) %>% 
+  ggplot(aes(y = reorder( dpto, -nbi_rate) , x = nbi_rate   )) +
+  geom_col() +
+  scale_fill_identity(guide = "none") +
+  theme_minimal() +  
+  xlab("") +
+  ylab("Departmento")
+
 
 # Append sumaria y merge con los deflactores anuales. -------------------------
 
