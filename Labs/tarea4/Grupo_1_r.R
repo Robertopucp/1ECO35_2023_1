@@ -385,3 +385,4 @@ datos_unidos$d105e_dummy <- ifelse(datos_unidos$d105e %in% c(1, 2), 1, 0)
 
 #creamos una variable dummy physical
 datos_unidos$physical <- ifelse(rowSums(datos_unidos[, c("d105a_dummy", "d105b_dummy", "d105c_dummy", "d105d_dummy", "d105e_dummy")]) > 0, 1, 0)
+
