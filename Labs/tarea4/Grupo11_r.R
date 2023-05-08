@@ -4,6 +4,7 @@
 # Paola Aranda (20196052)
 # Maria Alejandra Colan (20190515)
 
+
 # Consideraciones previas: #####
 
 ## Borrando el environment ####
@@ -22,6 +23,82 @@ p_load(readxl, tidyverse, foreign,fastDummies, haven, survey,
 
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 getwd()
+
+#PREGUNTA 1: DATOS CVR 
+
+# Se carga la base de datos con etiquetas como datos
+
+datoscvr <- read.spss("../../data/actos_est.sav",use.value.labels = F, to.data.frame = TRUE, reencode = "UTF-8")
+
+#1.1 Mostrar las etiquetas de valor y las etiquetas de las variables
+# Etiqueta de variables
+
+attributes(datoscvr)$variable.labels
+#etiqueta de valores
+attributes(datoscvr)$label.table
+
+#1.2. Filtrar la base de datos según los siguientes tipos de eventos: 
+#     desaparición, secuestros, reclutamiento forzado y muertes en atentados.
+
+
+table(datoscvr$IDTIPOAC)
+
+datoscvr <- filter(datoscvr, IDTIPOAC == 
+                     c("LDS", "LSE", "LRC", "MAT"))
+#Comprobamos que se haya filtrado
+table(datoscvr$IDTIPOAC)
+
+#1.3 Borrar los duplicados de la columna (IDACTO). Esto pues la base de datos está a nivel individu
+
+datoscvr <- datoscvr[!duplicated(datoscvr$IDACTO), ]
+
+#1.4 Crear una base de datos con el total de eventos de violencia según su tipo a nivel departamento (DEPNAO). 
+# se procede a preparar los datos que se requeriran en las 3 bases de datos
+
+# Cambiamos nombre de etiqueta
+
+datoscvr <-rename(datoscvr, DEPARTAMENTO = DEPNA0, DISTRITO = UBIDIST)
+
+# Asignamos nombre a cada de dpto
+
+datoscvr$DEPARTAMENTO <- factor(datoscvr$DEPARTAMENTO, 
+                                levels = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 90),
+                                labels = c("Ayacucho", "Apurímac", "Huancavelica", "Cusco", "Huánuco", 
+                                           "Ucayali", "San Martín", "Puno", "Junín", "Lima-Callao", "Otros"))
+#etiqueta de cada periodo
+datoscvr$PERIODO <- factor(datoscvr$PERIODO, 
+                           levels = c(1, 2, 3, 4, 5),
+                           labels = c("1980 a 1982", "1983 a 1985", "1986 a 1988", "1989 a 1992", "1993 a 2000"))
+
+
+base1 <- datoscvr %>% group_by(DEPARTAMENTO) %>% 
+  summarise(Desaparición = sum(LDS_LDT),
+            Secuestros = sum(LSE),
+            Reclu_Forza = sum(LRC),
+            Mu_Atentados = sum(MAT))
+
+# 1.5. base de datos con el total de eventos de violencia según su tipo a nivel distrito (UBIDIST).
+#La base de datos debe tener tantas columnas por tipo de evento.
+
+base2 <- datoscvr %>% group_by(DISTRITO) %>% 
+  summarise(Desaparición = sum(LDS_LDT),
+            Secuestros = sum(LSE),
+            Reclu_Forza = sum(LRC),
+            Mu_Atentados = sum(MAT))
+
+# 1.6. Crear una base de datos con el total de eventos de violencia según su tipo a nivel departamento (DEPNAO) y periodo (PERIODO).
+#La base de datos debe contar con columnas según el tipo de evento.
+
+
+base3<- datoscvr %>% group_by(DEPARTAMENTO, PERIODO) %>% 
+  summarise(Desaparición = sum(LDS_LDT),
+            Secuestros = sum(LSE),
+            Reclu_Forza = sum(LRC),
+            Mu_Atentados = sum(MAT))
+
+
+#PREGUNTA 2 DE LA ENAHO
+
 
 #ENAHO
 
@@ -236,7 +313,7 @@ gmpc_years %>%
   scale_color_manual(values = c("#AA336A", "#448EE4"))
 
 
-#ENDES
+#PREGUNTA 3: ENDES
 
 #Unir los módulos RECH84DV, RECH0, RECH1 y RECH23. Crear una variable dummy de violencia física y sexual respectivamente.
 
