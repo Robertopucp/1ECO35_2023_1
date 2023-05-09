@@ -327,6 +327,11 @@ ggplot(economics) + aes(x = date, y = psavert) +
   scale_x_date( limits = as.Date(c("1975-01-01","2015-01-01")), expand = c(0, 0) ) +
   scale_y_continuous( breaks = c(5,10,15) )
 
+ggsave("../../output/plots/time_series_saving.png"
+       , height = 8  # alto
+       , width = 12  # ancho
+       , dpi = 320   # resolución (calidad de la imagen)
+)
 
 # Presente un gráfico que muestre la evolución del 
 # pbi por país de América
@@ -341,15 +346,17 @@ paises %>%
   geom_line(color = "steelblue", size = 0.6) + 
   geom_point(size = 1.5) +
   geom_text(aes(label = round(pbi_pc_media, 1)),
-            vjust = -2, size = 3) + ylim(3000,13000) +
+            vjust = -2, size = 3)  +
   labs(x= "Año",
        y="PBI per-cápita media") +
-  scale_x_continuous(breaks = seq(1952,2007,5)) + theme_classic()
+  scale_x_continuous(breaks = seq(1952,2007,5)) +
+  scale_y_continuous(breaks = seq(2500,15000,2500), limits = c(2500,12500)) + 
+  theme_classic(11)
   
 
 ggsave("../../output/plots/time_series_pbi.png"
-       , height = 8  # alto
-       , width = 12  # ancho
+       , height = 5  # alto
+       , width = 8  # ancho
        , dpi = 320   # resolución (calidad de la imagen)
 )
 
@@ -381,8 +388,8 @@ ggplot(NULL,aes(exp1,lwage)) +
   stat_summary_bin(data=data, fun='mean', bins=20,
                    color='red', size=3.5, geom='point') +
   theme_classic()+
-  labs(title= "",
-       x = "Experiencia laboral", y = "Salario (log)",
+  labs(title= "Wage and experience relationship \n for people who went to college",
+       x = "Years of experience", y = "Log of Wage",
   ) +
   theme(
     axis.title = element_text(size=12,color='black'),
