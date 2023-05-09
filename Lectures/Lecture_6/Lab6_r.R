@@ -252,7 +252,7 @@ datospss |>
 
 datospss |>
   ggplot() + aes(x = edad, fill = morosidad ) + 
-  geom_histogram( alpha = 0.5, color = "black") + # alpha: nivel de transparencia
+  geom_histogram( alpha = 0.4, color = "black") + # alpha: nivel de transparencia
   scale_fill_manual(values=c("#E69F00", "#56B4E9")) +
   theme(legend.position = c(0, 0) , 
         legend.title = element_blank()) + 
@@ -266,20 +266,28 @@ datospss |>
 ggplot(datospss) + aes(edad, fill = dpto) + 
   geom_histogram(alpha = 0.5, color = "azure4") 
 
+
 ggplot(datospss) + aes(edad, fill = dpto) + 
   geom_histogram(alpha = 0.5, color = "azure4") +
   facet_grid(dpto ~ .)  +   #  filas ~ columnas (por filas)
   theme(legend.position = "none")
+
 
 ggplot(datospss) + aes(edad, fill = dpto) + 
   geom_histogram(alpha = 0.5, color = "azure4") +
   facet_grid(. ~ dpto)  +   # por columnas
   theme(legend.position = "none")
 
+
 ggplot(datospss) + aes(edad, fill = dpto) + 
   geom_histogram(alpha = 0.5, color = "azure4") +
   facet_wrap(~ dpto)  +    # facet_wrap("dpto"), 
-  theme(legend.position = "none")  
+  theme_classic() +
+  theme(legend.position = "none",
+        strip.background = element_blank()
+        )  +
+  labs(x = "Edad", 
+       y = "")
 
 # Series de tiempo -------------------------
 
@@ -287,6 +295,8 @@ ggplot(datospss) + aes(edad, fill = dpto) +
 # usamos la base de datos economics de la libreria ggplot
 
 str(economics)
+
+write.csv(economics, "../../data/economics.csv", row.names = F)
 
 View(economics)
 
@@ -296,12 +306,16 @@ View(economics)
 # unemploy : number of unemployed in thousands
 
 ggplot(economics) + aes(x = date, y = unemploy) + 
-  geom_line(size = 0.5, color = "blue") +
-  theme_minimal() 
+  geom_line(size = 0.6, color = "#56B4E9") +
+  theme_minimal() +
+  labs(
+       x = "Years", y = "Unemployment",
+  ) 
+
 
 ggplot(economics) + aes(x = date, y = psavert) + 
-  geom_line(size = 0.5, color = "blue") +
-  theme_classic() +
+  geom_line(size = 0.5, color = "azure4") +
+  theme_few() +
   labs(title= "Saving rate (%)",
        x = "Years", y = "",
        ) +
@@ -310,12 +324,9 @@ ggplot(economics) + aes(x = date, y = psavert) +
     title =element_text(size=12),
     axis.title.x = element_text(size=10,color='black')
   ) +
-  scale_x_continuous( expand = c(0, 0) ) 
+  scale_x_date( limits = as.Date(c("1975-01-01","2015-01-01")), expand = c(0, 0) ) +
+  scale_y_continuous( breaks = c(5,10,15) )
 
-
-paises %>% filter(continente == "Américas") %>% 
-  ggplot() + aes(x= anio, y=pib_per_capita, color = pais) +
-  geom_line(show.legend = F) + facet_wrap(vars(pais))
 
 # Presente un gráfico que muestre la evolución del 
 # pbi por país de América
@@ -327,13 +338,13 @@ paises %>%
   group_by(anio) %>%
   summarise(pbi_pc_media = mean(pib_per_capita)) %>%
   ggplot()+ aes(x = anio, y = pbi_pc_media) + 
-  geom_line(color = "blue") + 
-  geom_point() +
+  geom_line(color = "steelblue", size = 0.6) + 
+  geom_point(size = 1.5) +
   geom_text(aes(label = round(pbi_pc_media, 1)),
             vjust = -2, size = 3) + ylim(3000,13000) +
   labs(x= "Año",
        y="PBI per-cápita media") +
-  scale_x_continuous(breaks = seq(1952,2007,5)) + theme_few()
+  scale_x_continuous(breaks = seq(1952,2007,5)) + theme_classic()
   
 
 ggsave("../../output/plots/time_series_pbi.png"
