@@ -153,7 +153,7 @@ ggplot(datospss) + aes(morosidad) +
        y = "Frecuencia absoluta") 
 
 
-# Stack barras ----------------
+# Stacked bar ----------------
 
 ggplot(datospss) + aes(x = tiporenta, fill = morosidad) +
   geom_bar(position = position_stack(), color = "black" ,
@@ -289,7 +289,7 @@ ggplot(datospss) + aes(edad, fill = dpto) +
   labs(x = "Edad", 
        y = "")
 
-# Series de tiempo -------------------------
+# Series de tiempo (line) -------------------------
 
 
 # usamos la base de datos economics de la libreria ggplot
@@ -360,9 +360,24 @@ ggsave("../../output/plots/time_series_pbi.png"
        , dpi = 320   # resolución (calidad de la imagen)
 )
 
+# Tipos de markers 
+
+paises %>%
+  group_by(anio) %>%
+  summarise(pbi_pc_media = mean(pib_per_capita)) %>%
+  ggplot()+ aes(x = anio, y = pbi_pc_media) + 
+  geom_line(color = "steelblue", size = 0.6) + 
+  geom_point(size = 1.5, shape = 2) +
+  geom_text(aes(label = round(pbi_pc_media, 1)),
+            vjust = -2, size = 3)  +
+  labs(x= "Año",
+       y="PBI per-cápita media") +
+  scale_x_continuous(breaks = seq(1952,2007,5)) +
+  scale_y_continuous(breaks = seq(2500,15000,2500), limits = c(2500,12500)) + 
+  theme_classic(11)
 
 
-# Diagrama de dispersión -----------------------
+# Diagrama de dispersión (Binsplot) -----------------------
 
 load("../../data/wage2015_subsample_inference.Rdata")
 
@@ -384,22 +399,26 @@ ggplot(data, aes(y = lwage, x = exp1)) + geom_line()
 
 options(repr.plot.width = 10, repr.plot.height =10)  # plot size
 
-ggplot(NULL,aes(exp1,lwage)) +
+data |> ggplot(aes(exp1,lwage)) +
   stat_summary_bin(data=data, fun='mean', bins=20,
                    color='red', size=3.5, geom='point') +
+  geom_smooth(method = "lm", se = FALSE, formula = y ~ poly(x, 2),
+              linetype = "dotdash", color = "steelblue") +
   theme_classic()+
   labs(title= "Wage and experience relationship \n for people who went to college",
        x = "Years of experience", y = "Log of Wage",
   ) +
   theme(
     axis.title = element_text(size=12,color='black'),
-    axis.text = element_text(size=10,color='black')
+    axis.text = element_text(size=10,color='black'),
+    plot.title = element_text(hjust = 0.5)
   )
-  
+
+# tipos de linea: twodash, solid, longdash, dotted, dotdash, dashed  
 
 ggsave("../../output/plots/wage_exp.jpg"
-       , height = 10  # alto
-       , width = 15  # ancho
+       , height = 7  # alto
+       , width = 9  # ancho
        , dpi = 320   # resolución (calidad de la imagen)
 )
 
@@ -423,7 +442,9 @@ browseURL("https://rkabacoff.github.io/datavis/")
 
 browseURL("https://worldbank.github.io/r-econ-visual-library/")
 
+# Type of markers 
 
+browseURL("http://www.sthda.com/english/wiki/ggplot2-point-shapes")
 
 
 
