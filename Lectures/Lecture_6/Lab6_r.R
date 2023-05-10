@@ -153,7 +153,7 @@ ggplot(datospss) + aes(morosidad) +
        y = "Frecuencia absoluta") 
 
 
-# Stack barras ----------------
+# Stacked bar ----------------
 
 ggplot(datospss) + aes(x = tiporenta, fill = morosidad) +
   geom_bar(position = position_stack(), color = "black" ,
@@ -252,7 +252,7 @@ datospss |>
 
 datospss |>
   ggplot() + aes(x = edad, fill = morosidad ) + 
-  geom_histogram( alpha = 0.5, color = "black") + # alpha: nivel de transparencia
+  geom_histogram( alpha = 0.4, color = "black") + # alpha: nivel de transparencia
   scale_fill_manual(values=c("#E69F00", "#56B4E9")) +
   theme(legend.position = c(0, 0) , 
         legend.title = element_blank()) + 
@@ -266,27 +266,37 @@ datospss |>
 ggplot(datospss) + aes(edad, fill = dpto) + 
   geom_histogram(alpha = 0.5, color = "azure4") 
 
+
 ggplot(datospss) + aes(edad, fill = dpto) + 
   geom_histogram(alpha = 0.5, color = "azure4") +
   facet_grid(dpto ~ .)  +   #  filas ~ columnas (por filas)
   theme(legend.position = "none")
+
 
 ggplot(datospss) + aes(edad, fill = dpto) + 
   geom_histogram(alpha = 0.5, color = "azure4") +
   facet_grid(. ~ dpto)  +   # por columnas
   theme(legend.position = "none")
 
+
 ggplot(datospss) + aes(edad, fill = dpto) + 
   geom_histogram(alpha = 0.5, color = "azure4") +
   facet_wrap(~ dpto)  +    # facet_wrap("dpto"), 
-  theme(legend.position = "none")  
+  theme_classic() +
+  theme(legend.position = "none",
+        strip.background = element_blank()
+        )  +
+  labs(x = "Edad", 
+       y = "")
 
-# Series de tiempo -------------------------
+# Series de tiempo (line) -------------------------
 
 
 # usamos la base de datos economics de la libreria ggplot
 
 str(economics)
+
+write.csv(economics, "../../data/economics.csv", row.names = F)
 
 View(economics)
 
@@ -296,12 +306,16 @@ View(economics)
 # unemploy : number of unemployed in thousands
 
 ggplot(economics) + aes(x = date, y = unemploy) + 
-  geom_line(size = 0.5, color = "blue") +
-  theme_minimal() 
+  geom_line(size = 0.6, color = "#56B4E9") +
+  theme_minimal() +
+  labs(
+       x = "Years", y = "Unemployment",
+  ) 
+
 
 ggplot(economics) + aes(x = date, y = psavert) + 
-  geom_line(size = 0.5, color = "blue") +
-  theme_classic() +
+  geom_line(size = 0.5, color = "azure4") +
+  theme_few() +
   labs(title= "Saving rate (%)",
        x = "Years", y = "",
        ) +
@@ -310,12 +324,14 @@ ggplot(economics) + aes(x = date, y = psavert) +
     title =element_text(size=12),
     axis.title.x = element_text(size=10,color='black')
   ) +
-  scale_x_continuous( expand = c(0, 0) ) 
+  scale_x_date( limits = as.Date(c("1975-01-01","2015-01-01")), expand = c(0, 0) ) +
+  scale_y_continuous( breaks = c(5,10,15) )
 
-
-paises %>% filter(continente == "Américas") %>% 
-  ggplot() + aes(x= anio, y=pib_per_capita, color = pais) +
-  geom_line(show.legend = F) + facet_wrap(vars(pais))
+ggsave("../../output/plots/time_series_saving.png"
+       , height = 8  # alto
+       , width = 12  # ancho
+       , dpi = 320   # resolución (calidad de la imagen)
+)
 
 # Presente un gráfico que muestre la evolución del 
 # pbi por país de América
@@ -327,24 +343,41 @@ paises %>%
   group_by(anio) %>%
   summarise(pbi_pc_media = mean(pib_per_capita)) %>%
   ggplot()+ aes(x = anio, y = pbi_pc_media) + 
-  geom_line(color = "blue") + 
-  geom_point() +
+  geom_line(color = "steelblue", size = 0.6) + 
+  geom_point(size = 1.5) +
   geom_text(aes(label = round(pbi_pc_media, 1)),
-            vjust = -2, size = 3) + ylim(3000,13000) +
+            vjust = -2, size = 3)  +
   labs(x= "Año",
        y="PBI per-cápita media") +
-  scale_x_continuous(breaks = seq(1952,2007,5)) + theme_few()
+  scale_x_continuous(breaks = seq(1952,2007,5)) +
+  scale_y_continuous(breaks = seq(2500,15000,2500), limits = c(2500,12500)) + 
+  theme_classic(11)
   
 
 ggsave("../../output/plots/time_series_pbi.png"
-       , height = 8  # alto
-       , width = 12  # ancho
+       , height = 5  # alto
+       , width = 8  # ancho
        , dpi = 320   # resolución (calidad de la imagen)
 )
 
+# Tipos de markers 
+
+paises %>%
+  group_by(anio) %>%
+  summarise(pbi_pc_media = mean(pib_per_capita)) %>%
+  ggplot()+ aes(x = anio, y = pbi_pc_media) + 
+  geom_line(color = "steelblue", size = 0.6) + 
+  geom_point(size = 1.5, shape = 2) +
+  geom_text(aes(label = round(pbi_pc_media, 1)),
+            vjust = -2, size = 3)  +
+  labs(x= "Año",
+       y="PBI per-cápita media") +
+  scale_x_continuous(breaks = seq(1952,2007,5)) +
+  scale_y_continuous(breaks = seq(2500,15000,2500), limits = c(2500,12500)) + 
+  theme_classic(11)
 
 
-# Diagrama de dispersión -----------------------
+# Diagrama de dispersión (Binsplot) -----------------------
 
 load("../../data/wage2015_subsample_inference.Rdata")
 
@@ -366,22 +399,26 @@ ggplot(data, aes(y = lwage, x = exp1)) + geom_line()
 
 options(repr.plot.width = 10, repr.plot.height =10)  # plot size
 
-ggplot(NULL,aes(exp1,lwage)) +
+data |> ggplot(aes(exp1,lwage)) +
   stat_summary_bin(data=data, fun='mean', bins=20,
                    color='red', size=3.5, geom='point') +
+  geom_smooth(method = "lm", se = FALSE, formula = y ~ poly(x, 2),
+              linetype = "dotdash", color = "steelblue") +
   theme_classic()+
-  labs(title= "",
-       x = "Experiencia laboral", y = "Salario (log)",
+  labs(title= "Wage and experience relationship \n for people who went to college",
+       x = "Years of experience", y = "Log of Wage",
   ) +
   theme(
     axis.title = element_text(size=12,color='black'),
-    axis.text = element_text(size=10,color='black')
+    axis.text = element_text(size=10,color='black'),
+    plot.title = element_text(hjust = 0.5)
   )
-  
+
+# tipos de linea: twodash, solid, longdash, dotted, dotdash, dashed  
 
 ggsave("../../output/plots/wage_exp.jpg"
-       , height = 10  # alto
-       , width = 15  # ancho
+       , height = 7  # alto
+       , width = 9  # ancho
        , dpi = 320   # resolución (calidad de la imagen)
 )
 
@@ -405,7 +442,9 @@ browseURL("https://rkabacoff.github.io/datavis/")
 
 browseURL("https://worldbank.github.io/r-econ-visual-library/")
 
+# Type of markers 
 
+browseURL("http://www.sthda.com/english/wiki/ggplot2-point-shapes")
 
 
 
