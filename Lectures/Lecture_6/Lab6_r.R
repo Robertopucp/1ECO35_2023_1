@@ -45,9 +45,6 @@ datospss <- read.spss("../../data/Riesgo_morosidad.sav",
 
 attributes(datospss)$variable.labels  # etiqueta de variable 
 
-# Generamos la figura
-
-ggplot(datospss) + aes(morosidad)
 
 # Generando variables categóricas
 
@@ -81,21 +78,31 @@ datospss$dpto      <- factor(datospss$dpto,
                                         "Cusco", "Ica", "Piura"))
 
 
+# Generamos la figura
+
+ggplot(datospss) + aes(morosidad)
+
+
+
 ## Gráfico de barras ----------------------------------------
 
-ggplot(datospss) + aes(morosidad) +
+ggplot(datospss) + aes(y = morosidad) +
   geom_bar(stat = "count")  # por default es count de contabilizar
+
+# ggplot(): objeto figura y aes: ejes
 
 # equivalencias
 
 ggplot(datospss) +  aes(x = morosidad) + geom_bar() # es equivalente
-ggplot(datospss, aes(morosidad)) + geom_bar()     # es equivalente
+
+
+ggplot(datospss, aes(y = morosidad)) + geom_bar()     # es equivalente
 
 # Cambio de orientación ( vertical )
 
 ggplot(datospss) +  aes(y = morosidad) + geom_bar()
 
-# usando coord_flip
+# usando coord_flip <> aes(y= morisidad)
 
 ggplot(datospss) + aes(morosidad) + geom_bar() + 
   coord_flip()
@@ -105,14 +112,18 @@ ggplot(datospss) + aes(morosidad) + geom_bar() +
 ggplot(datospss) + aes(morosidad) +
   geom_bar() + theme_test()
 
+ggplot(datospss) + aes(y = morosidad) +
+  geom_bar() + theme_classic()
+
+
 ggplot(datospss) + aes(morosidad)  +
   geom_bar() + 
-  theme_bw(12) 
+  theme_bw(10) 
 
 # Añadiendo titulo principal y titulo en ejes
 
 ggplot(datospss, aes(morosidad)) + geom_bar()+
-  labs(title = "Gráfico de Barras de morosidad", 
+  labs(title = "Gráfico de Barras \n de \n morosidad", 
        x = "Condición de la morosidad", 
        y = "Frecuencia absoluta") 
 
@@ -125,7 +136,7 @@ browseURL("http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf")
 # asignamos colores
 
 ggplot(datospss, aes(morosidad)) +
-  geom_bar(color = "blue", fill = "white")+
+  geom_bar(color = "blue", fill = "white")+ # color : birdes, fill: color del contenido
   theme_test() +
   labs(title = "Gráfico de Barras de morosidad",
        x = "Condición de la morosidad", 
@@ -156,12 +167,17 @@ ggplot(datospss) + aes(morosidad) +
 # Stacked bar ----------------
 
 ggplot(datospss) + aes(x = tiporenta, fill = morosidad) +
-  geom_bar(position = position_stack(), color = "black" ,
-           fill = c("#E69F00", "#56B4E9") , width = 0.6) +
+  geom_bar(position = position_stack(), color = "black" 
+            , width = 0.8) +
   theme_classic() +
   labs(title = "Situación de la Morosidad según Tipo de Renta", 
        x = "Tipo de Renta",
-       y = "Frecuencia") 
+       y = "Frecuencia")  + 
+  scale_fill_manual(values = c("darkolivegreen3", "firebrick2")) 
+
+
+  
+
 
 # width: ancho de la barra
 
@@ -192,21 +208,21 @@ ggplot(datospss) + aes(edad) + geom_histogram(color = "white")
 # borde balnco de la barra y ancho de barra igual a 20
 
 ggplot(datospss) + aes(edad) + geom_histogram(color = "white",
-                                           binwidth = 5)
+                                           binwidth = 10) #bindwith: ancho de base
 
 # bins: cantidad de intervalos
 
 ggplot(datospss) + aes(edad) + geom_histogram(color = "white",
-                                              bins = 50)
+                                              bins = 20)
 
 # theme_classic()
 
-ggplot(datospss) + aes(edad) + geom_histogram(color = "white",
+ggplot(datospss) + aes(edad) + geom_histogram(color = "black",
                                            fill = "deepskyblue3") + 
   labs(title = "Histograma de la Edad", 
        x = "Edad", 
        y = "Frecuencia absoluta") +
-  theme_classic() 
+  theme_classic() # tema clasico 
 
 
 # theme_test()
@@ -217,7 +233,8 @@ ggplot(datospss, aes(edad) )+ geom_histogram(color = "white",
        x = "Edad", 
        y = "Frecuencia absoluta") +
   theme_test() +
-  scale_y_continuous( expand = c(0, 0) )  
+  scale_y_continuous( expand = c(0, 0) ) # parte desde origen 
+  
 
 # borrar el espacio debajo del histograma
 
@@ -227,9 +244,10 @@ datospss |>
 ggplot() + aes(x = edad, fill = morosidad ) + 
   geom_histogram( alpha = 0.5, color = "black") + # alpha: nivel de transparencia
   scale_fill_manual(values=c("#E69F00", "#56B4E9")) +
-  theme(legend.position = "left") +# posición de la leyenda
+  theme(legend.position = "bottom") +# posición de la leyenda, posiciónd de titutlo
   labs(x = "Edad", 
-       y = "Frecuencia absoluta")
+       y = "Frecuencia absoluta") 
+
 
 # legend.position="right"
 # legend.position="left"
@@ -325,7 +343,7 @@ ggplot(economics) + aes(x = date, y = psavert) +
     axis.title.x = element_text(size=10,color='black')
   ) +
   scale_x_date( limits = as.Date(c("1975-01-01","2015-01-01")), expand = c(0, 0) ) +
-  scale_y_continuous( breaks = c(5,10,15) )
+  scale_y_continuous( breaks = seq(5,20,5) )
 
 ggsave("../../output/plots/time_series_saving.png"
        , height = 8  # alto
@@ -409,9 +427,9 @@ data |> ggplot(aes(exp1,lwage)) +
        x = "Years of experience", y = "Log of Wage",
   ) +
   theme(
-    axis.title = element_text(size=12,color='black'),
-    axis.text = element_text(size=10,color='black'),
-    plot.title = element_text(hjust = 0.5)
+    axis.title = element_text(size=12,color='black'), # tamaño de titulo
+    axis.text = element_text(size=10,color='black'), # tamaño de ttulo en ejes
+    plot.title = element_text(hjust = 0.5) # titulo centrato
   )
 
 # tipos de linea: twodash, solid, longdash, dotted, dotdash, dashed  
