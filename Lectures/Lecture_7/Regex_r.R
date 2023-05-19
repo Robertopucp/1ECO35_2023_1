@@ -53,7 +53,7 @@ colnames(data) <- tolower(colnames(data)) # capital letters to lower letters
 
 # \\\ , un \;  \\\\, para 2\
 
-# 2: patrones de texto
+# 2: patrones de texto 
 
 # \\d : identifica digitos
 # \\w : identifica caracteres alfanumericos (letras y numeros)
@@ -120,36 +120,36 @@ data$inst4 <- sapply(data$institución_ruc,
 # 2.0 Extraer numero ----
 
 
-data$ruc1 <- sapply(data['institución_ruc'],
+data$ruc1 <- sapply(data$institución_ruc,
                     function(x) gsub("[a-zA-Z]", '', x))
 
 
 # se extrae digitos de uno o mas ocurrencia
 
-data$ruc2 <- sapply(data['institución_ruc'],
+data$ruc2 <- sapply(data$institución_ruc,
                    function(x) str_extract(x,"[0-9]+"))
 
 # extraer solo 3 digitos del rango 0-9
 
-data$ruc3 <- sapply(data['institución_ruc'],
+data$ruc3 <- sapply(data$institución_ruc,
                    function(x) str_extract(x,"[0-9]{3}"))
 
 # {3} me permtie extraer 3 digitos
 
-data$ruc4 <- sapply(data['institución_ruc'],
+data$ruc4 <- sapply(data$institución_ruc,
                     function(x) str_extract(x,"[0-9]{1,}"))
 
 
 # usando [^0-9], lo que sea diferente de numero en el rango 0 a 9,
 # me reemplazas por nada.
 
-data$ruc5 <- sapply(data['institución_ruc'],
+data$ruc5 <- sapply(data$institución_ruc,
                    function(x) gsub("[^0-9]", '', x))
 
 
 # usando \\D, lo que sea diferentes de digitos, me reemplazas por nada ''
 
-data$ruc6 <- sapply(data['institución_ruc'],
+data$ruc6 <- sapply(data$institución_ruc,
                     function(x) gsub("\\D", '', x))
 
 
@@ -162,14 +162,14 @@ data$ruc6 <- sapply(data['institución_ruc'],
 
 # 3.0 str_ extract ----
 
-data$fecha_apertura <- sapply(data['fecha_apertura'],
+data$fecha_apertura <- sapply(data$fecha_apertura,
                    function(x) str_replace(x,"(:00:00)|(!%&)|(00/00/00)", ''))
 
 
 # Extraer las coordenadas de la variables GPS
 
 
-data$coordinates <- sapply(data['gps'],
+data$coordinates <- sapply(data$gps,
               function(x) str_extract(x,"-([0-9]{1,2}).([0-9]{1,3}),-([0-9]{2}).([0-9]{1,4})"))
 
 # [0-9]{1,2} uno o digitos
@@ -207,21 +207,29 @@ data$region <- apply(data['dirección'],
                      function(x) str_match(x,"\\.*+[D/d]istrito\\s([\\w*\\-\\s]*)\\s[R/r]egion\\s([\\w*\\s]*)")[3])
 
 
-View(data[,c('dirección','region')])
+data <- data |> rowwise() |>
+  mutate(distrito_var = str_match( dirección ,
+                  "[D/d]istrito ([\\w+\\s]+) [R/r]egion ([\\w+\\s]+)")[2],
+         region_var = str_match( dirección ,
+            "[D/d]istrito ([\\w+\\s]+) [R/r]egion ([\\w+\\s]+)")[3]
+         ) |> ungroup()
+
+
+View(data[,c('dirección','region_var')])
 
 #extraccion del numero telefonico
 
 #telf: 123-4559
 
-data$telefono_fijo <- sapply(data['telefono'],
+data$telefono_fijo <- sapply(data$telefono,
                      function(x) str_match(x,"\\.*(\\d+\\-\\d+)$")[2])
 
 
-data$telefono_fijo_2 <- sapply(data['telefono'],
+data$telefono_fijo_2 <- sapply(data$telefono,
                             function(x) str_match(x,"\\.*(...\\-\\d+)$")[2])
 
 
-data$telefono_fijo_3 <- sapply(data['telefono'],
+data$telefono_fijo_3 <- sapply(data$telefono,
                               function(x) str_match(x,"\\.*(\\d+.\\d+)$")[2])
 
 
@@ -310,9 +318,6 @@ View(data[,c("presupuesto","pre_soles1")])
 # retirar tildes
 
 data$presupuesto <- stri_trans_general(str = data$presupuesto, id = "Latin-ASCII")
-
-data$moneda <- data$presupuesto |> str_extract_all("\\b[A-Za-z]+\\B")
-
 
 # ---------------- Fechas en R -----------------
 
