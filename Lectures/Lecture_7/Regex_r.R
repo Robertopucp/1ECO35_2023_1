@@ -21,7 +21,7 @@ options(scipen = 999)      # No scientific notation
 library(pacman) 
 
 
-p_load(readxl, lubridate, tidyverse)
+p_load(readxl, lubridate, tidyverse, stringi)
 
 
 # Change working directory
@@ -348,7 +348,7 @@ data$year <- NULL
 
 # Select varias lineas de codigo (Ctrl + alt + cambios)
 
- junin_data = read_excel("../data/Region_Junin.xlsx")
+ junin_data = read_excel("../../data/Region_Junin.xlsx")
  newbase <- dplyr::filter(junin_data, grepl('AC', District))
  newbase <- dplyr::filter(junin_data, grepl('pacha', Place))
 
