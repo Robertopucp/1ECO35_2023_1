@@ -23,6 +23,8 @@ library(pacman)
 
 p_load(readxl, lubridate, tidyverse, stringi)
 
+#stringi : funciones regex 
+
 
 # Change working directory
 
@@ -168,9 +170,10 @@ data$fecha_apertura <- sapply(data$fecha_apertura,
 
 # Extraer las coordenadas de la variables GPS
 
+# findall <> str_extract
 
 data$coordinates <- sapply(data$gps,
-              function(x) str_extract(x,"-([0-9]{1,2}).([0-9]{1,3}),-([0-9]{2}).([0-9]{1,4})"))
+              function(x) str_extract(x,"-[0-9]+.[0-9]+,-[0-9]+.[0-9]+"))
 
 # [0-9]{1,2} uno o digitos
 
@@ -180,6 +183,9 @@ data$coordinates <- sapply(data$gps,
 #------ 4.0 str_match ---------
 
 # Extraer una seccion del texto sin especificar la forma completa del texto
+
+
+# python search <> str_match
 
 
 x <- "dada--dss kks. 12434 distrito  San damian   region Huarochiri"
@@ -198,39 +204,30 @@ str_match(x,"[D/d]istrito ([\\w+\\s]+) [R/r]egion ([\\w+\\s]+)")[2] # distrito
 str_match(x,"[D/d]istrito ([\\w+\\s]+) [R/r]egion ([\\w+\\s]+)")[3]  # region
 
 
-data$distrito <- apply(data['dirección'],
-                       1 ,
-                       function(x) str_match(x,"\\.*[D/d]istrito\\s([\\w*\\-\\s]*)\\s[R/r]egion\\s([\\w*\\s]*)")[2])
+# Usando dplyr
 
-data$region <- apply(data['dirección'],
-                     1 ,
-                     function(x) str_match(x,"\\.*+[D/d]istrito\\s([\\w*\\-\\s]*)\\s[R/r]egion\\s([\\w*\\s]*)")[3])
-
+# rowwise permite aplicar operaciones fila por fila 
 
 data <- data |> rowwise() |>
   mutate(distrito_var = str_match( dirección ,
-                  "[D/d]istrito ([\\w+\\s]+) [R/r]egion ([\\w+\\s]+)")[2],
+                  "[D/d]istrito ([\\w+\\s\\-]+) [R/r]egion ([\\w+\\s]+)")[2],
          region_var = str_match( dirección ,
             "[D/d]istrito ([\\w+\\s]+) [R/r]egion ([\\w+\\s]+)")[3]
          ) |> ungroup()
 
 
-View(data[,c('dirección','region_var')])
+# ungroup () desactiva el rowwise()
+
+
+View(data[,c('dirección','region_var',"distrito_var")])
 
 #extraccion del numero telefonico
 
 #telf: 123-4559
 
 data$telefono_fijo <- sapply(data$telefono,
-                     function(x) str_match(x,"\\.*(\\d+\\-\\d+)$")[2])
+                     function(x) str_match(x,"(\\d+\\-\\d+)")[2])
 
-
-data$telefono_fijo_2 <- sapply(data$telefono,
-                            function(x) str_match(x,"\\.*(...\\-\\d+)$")[2])
-
-
-data$telefono_fijo_3 <- sapply(data$telefono,
-                              function(x) str_match(x,"\\.*(\\d+.\\d+)$")[2])
 
 
 
@@ -238,7 +235,7 @@ data$telefono_fijo_3 <- sapply(data$telefono,
 
 
 match_output <- stringr::str_match(data$resolucion,
-                   'DS-(\\d+)-([0-9]+)\\s([A-Z]+)')
+                   '(\\d+)-([0-9]+)\\s([A-Z]+)')
 
 # DS-54-2015 PCM
 
@@ -331,7 +328,7 @@ data$month = as.numeric(format(data$fecha_apertura_format ,"%m"))
 data$day = as.numeric(format(data$fecha_apertura_format ,"%d"))
 
 
-# crear nueva variables de fecha
+# crear nueva variables de fecha (libreria Lubridate)
 
 data <- data |> dplyr::mutate(
   date = dmy( fecha_apertura  )
