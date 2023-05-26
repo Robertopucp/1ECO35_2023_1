@@ -4,28 +4,41 @@
 ## Clean dataset
 
 
-library(reshape)
-library(haven)
-library(dplyr)
+# clean environment variables
+
+rm(list = ls())
+
+# clean plots
+graphics.off()
+
+# clean console
+
+cat("\014")
+
+# additional options
+options(scipen = 999)      # No scientific notation
+
+# Library ####
+
+library(pacman) 
+
+
+p_load(reshape, tidyverse, haven)
+
+# Change working directory
+
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+
+
 
 #------- Reshape -----------
 
-"1.0 Set Directorio"
-
-user <- Sys.getenv("USERNAME")  # username
-
-setwd( paste0("C:/Users/",user,"/Documents/GitHub/1ECO35_2022_2/Lab8") ) # set directorio
-
-
 # load panel dataset
 
-panel <- read_dta("../../../datos/panel/743-Modulo1478/sumaria-2016-2020-panelf.dta", encoding = "latin1")
+panel <- read_dta("../../data/panel_2016_2018.dta", encoding = "latin1")
 
 
 
-# Filtro la variable hpanel1620 ==1, el hogar es entrevista seguidamente desde 2016-2020
-
-panel <- panel[panel$hpanel1620 == 1,]
 
 # nombre de las variables en minuscula
 
@@ -35,21 +48,21 @@ colnames(panel) <- tolower(colnames(panel))
 
 colnames(panel)
 
+# Filtramos algunas variables usando grepl (detecta patrones en cadena de caracteres)
 
 index =  grep("(año)|(conglome)|(vivienda)|(hogar)|(estrato)|(mieperho)|(gashog2d)|
               (inghog1d)|(pobreza)|(factor07)",
               colnames(panel))
 
-index =  grep("(año)|(^conglome)|(vivienda)|(hogar)|(estrato_)|(mieperho)|(gashog2d)|
-              (inghog1d)|(pobreza_)|(factor07)",
-              colnames(panel))
   
 print(colnames(panel)[index])
 
 # rename años
 
-panel <- panel  %>% dplyr::rename("year_16" = "año_16", "year_17" = "año_17", "year_18" = "año_18", "year_19" = "año_19",
+panel <- panel  |> dplyr::rename("year_16" = "año_16", "year_17" = "año_17", "year_18" = "año_18", "year_19" = "año_19",
                            "year_20" = "año_20", "cong"= "conglome", "viv" ="vivienda" )
+
+# Filtramos las columnas 
 
 panel <- panel[,index]
 
@@ -77,7 +90,8 @@ new_panel$cong <- NULL  # borrar columnas
 new_panel$viv <- NULL  # borrar columnas
 new_panel$hog <- NULL  # borrar columnas
 new_panel$time_var <- NULL  # borrar columnas
-
+new_panel$sub_conglome_20 <- NULL  # borrar columnas
+new_panel$pobrezav_20 <- NULL  # borrar columnas
 
 # ordenando para inspección visual de panel de datos
 
