@@ -42,7 +42,7 @@ class(a1)
 is.numeric(a1)
 
 # float to int 
-# as.interger es número entero
+# as.interger es n?mero entero
 
 a2 <- as.integer(a1)
 typeof(a2)
