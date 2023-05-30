@@ -20,9 +20,8 @@ options(scipen = 999)      # No scientific notation
 
 # Library ####
 
-library(pacman) 
 
-
+library(pacman)
 p_load(reshape, tidyverse, haven)
 
 # Usaremos funciones pivot de la libreria tidyr que está dentro de tidyverse
