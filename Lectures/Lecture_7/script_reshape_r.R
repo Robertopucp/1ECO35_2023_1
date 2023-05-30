@@ -25,6 +25,9 @@ library(pacman)
 
 p_load(reshape, tidyverse, haven)
 
+# Usaremos funciones pivot de la libreria tidyr que está dentro de tidyverse
+
+
 # Change working directory
 
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
@@ -96,6 +99,96 @@ new_panel$pobrezav_20 <- NULL  # borrar columnas
 # ordenando para inspección visual de panel de datos
 
 new_panel <- new_panel[order(new_panel$conglome, new_panel$vivienda, new_panel$hogar, new_panel$year),]
+
+# Pivot ---------------------
+
+
+# create example dataframe
+
+bdata <- data.frame(geo_id = c("01","01", "02", "02", "04", "04","05","05","06","06"),
+                    name = c("Alabama","Alabama", "Alaska", "Alaska", 
+                             "Arizona", "Arizona", "Arkansas","Arkansas",
+                             "California","California"),
+                    variable = c("income","rent","income","rent",
+                                 "income","rent", "income","rent",
+                                 "income","rent"),
+                    estimate = c(24476,747, 32940, 1200, 27517, 972,
+                                 23789, 709, 29454, 1358),
+                    moe = c(136,3, 508,13, 148,4, 165, 5,109,3)
+)
+
+### Pivot_wider  --------
+
+# Tantas columnas según cantidad de categorías
+
+# variable: income (median yearly income), rent (median monthly rent)
+# estimated value
+# moe: margen de error 
+
+  df1 <- bdata |> pivot_wider(id_cols = c(geo_id, name),
+                              names_from = variable,
+                              values_from = c(estimate, moe)
+  )
+  
+  
+  View(df1)
+
+# prefix and separate
+
+df2 <- bdata |> pivot_wider(id_cols = c(geo_id, name),
+                            names_from = variable,
+                            values_from = c(estimate, moe),
+                            names_sep = ".",names_prefix = "category_"
+)
+
+
+View(df2)
+
+### Pivot_longer  --------
+
+## Tantas filas por unidad de observación según categorias
+
+new_df <- df1 |> pivot_longer(cols = estimate_income:moe_rent,
+                              names_to = c(".value", "category"), names_sep = "_")
+
+
+View(new_df)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
