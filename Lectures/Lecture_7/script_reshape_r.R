@@ -26,6 +26,7 @@ p_load(reshape, tidyverse, haven)
 
 # Usaremos funciones pivot de la libreria tidyr que está dentro de tidyverse
 
+# tydir 
 
 # Change working directory
 
@@ -52,12 +53,17 @@ colnames(panel)
 
 # Filtramos algunas variables usando grepl (detecta patrones en cadena de caracteres)
 
-index =  grep("(año)|(conglome)|(vivienda)|(hogar)|(estrato)|(mieperho)|(gashog2d)|
+index =  grep("(año)|(^conglome)|(vivienda)|(hogar)|(estrato)|(mieperho)|(gashog2d)|
               (inghog1d)|(pobreza)|(factor07)",
               colnames(panel))
 
+
+
+# grep( condicion; lista, vector)
   
+
 print(colnames(panel)[index])
+
 
 # rename años
 
@@ -67,6 +73,10 @@ panel <- panel  |> dplyr::rename("year_16" = "año_16", "year_17" = "año_17", "
 # Filtramos las columnas 
 
 panel <- panel[,index]
+
+
+panel$pobrezav_20 <- NULL
+
 
 "Nos quedamos con 47 variables"
 
@@ -83,7 +93,8 @@ panel <- panel  %>%
 # Usando la libreria reshape
 
 
-new_panel <- reshape(data = panel, idvar = c("cong", "viv", "hog"), varying = 4:48, sep="_", timevar = "time_var", 
+new_panel <- reshape(data = panel, idvar = c("cong", "viv", "hog"), varying = 4:43, 
+                     sep="_", timevar = "time_var", 
                      times = c(16,17,18,19,20), direction = "long")
 
 
@@ -92,8 +103,7 @@ new_panel$cong <- NULL  # borrar columnas
 new_panel$viv <- NULL  # borrar columnas
 new_panel$hog <- NULL  # borrar columnas
 new_panel$time_var <- NULL  # borrar columnas
-new_panel$sub_conglome_20 <- NULL  # borrar columnas
-new_panel$pobrezav_20 <- NULL  # borrar columnas
+
 
 # ordenando para inspección visual de panel de datos
 
@@ -115,6 +125,7 @@ bdata <- data.frame(geo_id = c("01","01", "02", "02", "04", "04","05","05","06",
                                  23789, 709, 29454, 1358),
                     moe = c(136,3, 508,13, 148,4, 165, 5,109,3)
 )
+
 
 ### Pivot_wider  --------
 
@@ -150,6 +161,9 @@ View(df2)
 new_df <- df1 |> pivot_longer(cols = estimate_income:moe_rent,
                               names_to = c(".value", "category"), names_sep = "_")
 
+
+# estimate_income, moe_rent (.value: se crea columnas para estimate y moe)
+# la variable vcategory guardara las categorias income y rent 
 
 View(new_df)
 
