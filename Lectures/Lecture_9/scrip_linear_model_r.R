@@ -1,15 +1,29 @@
-################  Clase 10 linear models ############################
-## Curso: Laboratorio de R y Python #################################
-## @author: Roberto Mendoza
+################  Laboratorio 9 ############################
+## Curso: Laboratorio de R y Python ###########################
+## @author: Roberto Mendoza 
 
-# clear environment
+# clean environment variables
+rm(list = ls())
 
-rm(list=ls(all=TRUE))
+# clean plots
+graphics.off()
+
+# clean console
+
+cat("\014")
+
+# additional options
+options(scipen = 999)      # No scientific notation
+
+# Library ####
+
 
 # Load libraries ----
 
+library(pacman) 
 
-librarian::shelf(
+
+p_load(
     tidyverse  # dplyr, tidyr, stringr, ggplot2, etc in unique library
     , haven   # to read datset: .dta (stata), .spss, .dbf
     , fastDummies  # for dummies
@@ -25,10 +39,11 @@ librarian::shelf(
 
 
 
-user <- Sys.getenv("USERNAME")  # username
+# Change working directory
 
-setwd( paste0("C:/Users/",user,"/Documents/GitHub/1ECO35_2022_2/Lab10") ) # set directorio
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
+#------------------------------------------------------------------#
 
 repdata <- read_dta("../data/dataverse_files/mss_repdata.dta")
 
@@ -858,13 +873,13 @@ texreg(list(logit, probit, ols_model2, ols_model3, ols_model4,
 
 ## glmnet library para modelos de machine learning lineales
 
-"https://glmnet.stanford.edu/articles/glmnet.html"
+browseURL("https://glmnet.stanford.edu/articles/glmnet.html")
 
 ## Stagezer
 
-"chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/https://www.princeton.edu/~otorres/NiceOutputR.pdf"
+browseURL("chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/https://www.princeton.edu/~otorres/NiceOutputR.pdf")
 
-"chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/https://cran.r-project.org/web/packages/stargazer/stargazer.pdf"
+browseURL("chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/https://cran.r-project.org/web/packages/stargazer/stargazer.pdf")
 
 
 # Usando fle library -----------------------------------------
