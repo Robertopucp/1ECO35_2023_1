@@ -45,7 +45,7 @@ setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 #------------------------------------------------------------------#
 
-repdata <- read_dta("../data/dataverse_files/mss_repdata.dta")
+repdata <- read_dta("../../data/dataverse_files/mss_repdata.dta")
 
 
 str(repdata)
@@ -214,7 +214,7 @@ robust_model <- coeftest(ols_model,
                           type = "HC1",
                           cluster = ~ ccode)
 
-sd_robust <- robust_lm[,2]
+sd_robust <- robust_model[,2]
 
 #### Primer Modelo ----
 
@@ -275,7 +275,7 @@ model1_lower = coefci(m1, df = Inf,
 model1_upper = coefci(m1, df = Inf,
                       vcov. = vcovCL, cluster = ~ ccode, type = "HC1")[2,2]
 
-tidy(m1, conf.int = TRUE)
+
 
 #### Segundo Modelo ----
 # No efectos fijos (country), Si country-time trends
@@ -721,9 +721,6 @@ ols_model3 <- lm_robust(model3_formula, data = repdata,
 
 summary(ols_model3)
 
-glance(ols_model3)
-
-tidy(ols_model3)
 
 rmse3 <- round(RMSE(ols_model3$fitted.values, repdata$any_prio ), 2)
 
@@ -880,96 +877,3 @@ browseURL("https://glmnet.stanford.edu/articles/glmnet.html")
 browseURL("chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/https://www.princeton.edu/~otorres/NiceOutputR.pdf")
 
 browseURL("chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/https://cran.r-project.org/web/packages/stargazer/stargazer.pdf")
-
-
-# Usando fle library -----------------------------------------
-
-# Modelo 3 de TABLE 2
-
-model3_formula <- as.formula(
-    paste("gdp_g",
-          "~",
-          paste("GPCP_g","GPCP_g_l",
-                paste(country_time_trend, collapse = "+")
-                , sep="+")," |ccode|0| ccode"
-    )
-)
-
-
-
-# | ccode | 0 | ccode, primer ccode: efectos fijos
-# segundo ccode: cluster el termino de perturbación a nivel país
-
-ols_model3 <- felm( model3_formula, data = repdata )
-attributes(ols_model3)
-
-rmse3 <- RMSE(ols_model3$fitted.values, repdata$gdp_g ) # root mean squeare error
-
-summary(ols_model3)
-
-tidy(ols_model3)
-
-glance(ols_model3)
-
-ols_model3$rse  # just robust standar error no cluster terminos de perturbación
-
-
-# Modelo 5 de TABLE 4
-
-model5_formula <- as.formula(
-    paste(
-        paste("any_prio",
-              "~",
-              paste("gdp_g","gdp_g_l",
-                    paste(country_time_trend, collapse = "+")
-                    , paste(control_vars, collapse = "+")
-                    , sep="+")
-        )
-        , "|0|(gdp_g|gdp_g_l ~ GPCP_g + GPCP_g_l)| ccode"
-    )
-)
-
-ols_model5_fle <- felm( model5_formula, data = repdata )
-
-summary(ols_model5_fle)
-
-glance(ols_model5_fle)
-
-tidy(ols_model5_fle)
-
-rmse5_fle <- RMSE(ols_model5_fle$fitted.values, repdata$any_prio )
-
-# Modelo 6 de TABLE 4
-
-model6_formula <- as.formula(
-    paste(
-        paste("any_prio",
-              "~",
-              paste("gdp_g","gdp_g_l",
-                    paste(country_time_trend, collapse = "+")
-                    , sep="+")
-        )
-        , "|ccode|(gdp_g|gdp_g_l ~ GPCP_g + GPCP_g_l)| ccode"
-    )
-)
-
-ols_model6_fle <- felm( model6_formula, data = repdata )
-
-summary(ols_model6_fle)
-
-glance(ols_model6_fle)
-
-tidy(ols_model6_fle)
-
-rmse6_fle <- round( RMSE(ols_model6_fle$fitted.values, repdata$any_prio ), 2)
-
-
-
-
-
-
-
-
-
-
-
