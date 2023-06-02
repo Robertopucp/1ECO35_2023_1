@@ -1,0 +1,49 @@
+\begin{table}[]
+\caption{Rainfall and Economic Growth (First-Stage)}
+{
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\begin{tabular}{@{\extracolsep{2pt}}l*{5}{c}@{}}
+\hline\hline
+& \multicolumn{5}{c}{Ordinary Least Squares} \\
+\cline{2-6}
+ & (1) & (2) & (3) & (4) & (5) \\
+\hline
+Growth in rainfall, t & 0.055\sym{***} & 0.053\sym{***} & 0.049\sym{***} & 0.049\sym{***} & 0.053\sym{***} \\
+ & (0.016) & (0.017) & (0.017) & (0.018) & (0.018) \\
+Growth in rainfall, t-1 & 0.034\sym{***} & 0.032\sym{**} & 0.028\sym{**} & 0.028\sym{**} & 0.037\sym{**} \\
+ & (0.013) & (0.014) & (0.014) & (0.014) & (0.015) \\
+Growth in rainfall, t+1 &  &  &  & 0.001 &  \\
+ &  &  &  & (0.019) &  \\
+Growth in terms of trade, t &  &  &  &  & -0.002 \\
+ &  &  &  &  & (0.023) \\
+Log(GDP per capita), 1979 &  & -0.011 &  &  &  \\
+ &  & (0.007) &  &  &  \\
+Democracy (Polity IV), t-1 &  & 0.000 &  &  &  \\
+ &  & (0.001) &  &  &  \\
+Ethnolinguistic fractionalization &  & 0.006 &  &  &  \\
+ &  & (0.044) &  &  &  \\
+Religious fractionalization &  & 0.045 &  &  &  \\
+ &  & (0.044) &  &  &  \\
+Oil-exporting country &  & 0.007 &  &  &  \\
+ &  & (0.019) &  &  &  \\
+Log(mountainous) &  & 0.001 &  &  &  \\
+ &  & (0.005) &  &  &  \\
+Log(national population), t-1 &  & -0.009 &  &  &  \\
+ &  & (0.009) &  &  &  \\
+Country fixed effects & no & no & yes & yes & yes \\
+Country-specific time trends & no & yes & yes & yes & yes \\
+Root mean square error & 0.07 & 0.07 & 0.07 & 0.07 & 0.06 \\
+
+\hline
+Observarions & 743 & 743 & 743 & 743 & 661 \\
+R\sym{2} & 0.024 & 0.081 & 0.133 & 0.133 & 0.162 \\
+\hline\hline
+\multicolumn{6}{l}{\footnotesize Note.—Huber robust standard errors are in parentheses.}\vspace{-.25em} \\
+\multicolumn{6}{l}{\footnotesize Regression disturbance terms are clustered at the country level.}\vspace{-.25em} \\
+\multicolumn{6}{l}{\footnotesize A country-specific year time trend is included in all specifications (coefficient estimates not reported).}\vspace{-.25em} \\
+\multicolumn{6}{l}{\footnotesize * Significantly different from zero at 90 percent confidence.}\vspace{-.25em} \\
+\multicolumn{6}{l}{\footnotesize ** Significantly different from zero at 95 percent confidence.}\vspace{-.25em} \\
+\multicolumn{6}{l}{\footnotesize *** Significantly different from zero at 99 percent confidence.}
+\end{tabular}
+}
+\end{table}

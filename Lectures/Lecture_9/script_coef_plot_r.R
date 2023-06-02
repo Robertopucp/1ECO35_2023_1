@@ -1,32 +1,40 @@
-################  Clase 11 Coef Plot ############################
+################  Laboratorio 9 ############################
 ## Curso: Laboratorio de R y Python ###########################
-## @author: Roberto Mendoza
+## @author: Roberto Mendoza 
 
-# clear environment
+# clean environment variables
+rm(list = ls())
 
-rm(list=ls(all=TRUE))
+# clean plots
+graphics.off()
+
+# clean console
+
+cat("\014")
+
+# additional options
+options(scipen = 999)      # No scientific notation
+
+# Library ####
 
 
-# Cargamos librerias ----
+library(pacman) 
 
-#install.packages("librarian")
 
-# librarian::shelf
-
-librarian::shelf(tidyverse, sandwich, lmtest, xtable,haven)
+p_load(tidyverse, sandwich, lmtest, xtable,haven)
 
 # sandwich: libreria de modelos lineales.
 # lmtest: errores estandar robustos,
 # xtable: exportar matriz o datafrma, table a latex
 
-user <- Sys.getenv("USERNAME")  # username
+# Change working directory
 
-setwd( paste0("C:/Users/",user,"/Documents/GitHub/1ECO35_2022_2/Lab10") ) # set directorio
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 
 # ubimos la base de datos
 
-data <- read_dta("../data/Pesos/peso.dta")
+data <- read_dta("../../data/Pesos/peso.dta")
 
 # Typo de variables
 
@@ -42,68 +50,6 @@ data <- data %>%  mutate(Dummy = ifelse(cigs > 0 ,  1 , 0 ) ) %>%
 # bwghtlbs: peso del bebe en libras
 # fill: desagregar los grpaficos
 # Hitograma del peso del bebé ----
-
-data %>%  ggplot() + aes(x=bwghtlbs, fill = Dummy1) +
-    geom_histogram( color="black", alpha=0.6, size=0.5) +
-    scale_fill_manual(values=c("#69b3a2", "#404080"), name=NULL) +  # Set colores usando código
-    labs(x = " ", y = "Absolute frequency", title = "Smoking status and newborn weight (lbs)", size = 10) +
-    theme_classic()  +   # Fondo blanco
-    theme(text=element_text(size =15), plot.title = element_text(hjust = 0.5)) +
-    theme(legend.position = c(0.7,0.8)) +
-    scale_x_continuous(limits = c(0,18), expand = c(0, 0)) +
-    scale_y_continuous(limits = c(0,300), expand = c(0, 0))
-
-# fill permite desagregar según los valores de Dummy1
-# plot.title = element_text(hjust = 0.5) Permite centrar el título
-
-ggsave("../plots/hist_pesos.png"
-       , height = 8  # alto
-       , width = 12  # ancho
-       , dpi = 320   # resolución (calidad de la imagen)
-)
-
-
-
-# Histograma en frecuencia relativa ----
-
-data %>%  ggplot(aes(x=bwghtlbs, fill = Dummy1)) +
-    geom_histogram( aes(y = ..density..), color="black", alpha=0.3, position = 'identity', size=0.6) +
-    scale_fill_manual(values=c("blue", "red"), name=NULL) +  # for legend section
-    labs(x = " ", y = "Relative frequency", title = "Smoking status and newborn weight (lbs)", size = 15) +
-    theme_classic() +
-    theme(text=element_text(size =15), plot.title = element_text(hjust = 0.5)) +
-    theme(legend.position = c(0.85,0.9)) +
-    scale_x_continuous(limits = c(0,18), expand = c(0, 0)) +
-    scale_y_continuous(limits = c(0,0.4), expand = c(0, 0))
-
-
-
-#y = ..density.. (frecuencia relativa)
-
-ggsave("../plots/hist_relative_pesos.png"
-       , height = 8  # alto
-       , width = 12  # ancho
-       , dpi = 320   # resolución (calidad de la imagen)
-)
-
-# Densidad ----
-
-data %>% ggplot(aes(x=bwghtlbs, fill = Dummy1 , colour=Dummy1)) +
-    geom_density(alpha=0.5, color = "black", size=0.6) +
-    scale_fill_manual(values=c("blue", "red"), name=NULL) + # Color
-    ggtitle("Smoking status and newborn weight (lbs)") +
-    theme_classic() +
-    theme(text=element_text(size =15), plot.title = element_text(hjust = 0.5)) +
-    labs(x = "",
-         y = "Kernel Density") +
-    theme(legend.position = c(0.85,0.9)) +
-    scale_x_continuous(limits = c(0,18), expand = c(0, 0)) +
-    scale_y_continuous(limits = c(0,0.4), expand = c(0, 0))
-
-
-# scale limita el intervalo de los ejes
-
-# alpha : grado de transparencia
 
 # Linear regression -----
 
@@ -217,9 +163,9 @@ tab  %>% ggplot(aes(x=rownames(tab), y=Estimate)) +
     labs(x="", y="") + ggtitle("Smoking Coefficient (95% CI)")  +
     theme(text=element_text(size =15), plot.title = element_text(hjust = 0.5)) +
    geom_hline(yintercept=0, linetype="dashed", color = "black", size=1) +
-    scale_x_discrete(limits = c("OLS baseline","OLS with controls", "OLS interactive model")) + # order x - axis
-    theme(panel.grid.major = element_blank(), # borras las cuadrículas en el fondo
-          panel.grid.minor = element_blank())
+    scale_x_discrete(limits = c("OLS baseline",
+                                "OLS with controls", "OLS interactive model")) + 
+  theme_classic()
 
 # geom_errorbar solicita el limite inferior y superior
 # width  : ancho de la abrra superior
@@ -227,7 +173,7 @@ tab  %>% ggplot(aes(x=rownames(tab), y=Estimate)) +
 # geom_hline: añadir lines horizontal
 # panel.grid.major = element_blank(), panel.grid.minor = element_blank() borra las cuadrículas en el fondo
 
-ggsave("../plots/Coef_plot.png"
+ggsave("../../output/plots/Coef_plot.png"
        , height = 8  # alto
        , width = 12  # ancho
        , dpi = 320   # resolución (calidad de la imagen)
