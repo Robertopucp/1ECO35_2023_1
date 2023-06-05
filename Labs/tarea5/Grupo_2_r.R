@@ -165,7 +165,7 @@ ggplot() +
 
 # Guardar el gráfico
 ggsave(
-  filename = "../../output/plots/production_eradication_peru.jpg",
+  filename = "../../output/plots/production_eradication_peruRGrupo2.jpg",
   height = 7,  # alto
   width = 9,   # ancho
   dpi = 320    # resolución (calidad de la imagen)
