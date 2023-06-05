@@ -155,24 +155,38 @@ ggplot(peru, aes(x = Years)) +
 
 
 #REGEX: PARTE 1
+datos_metropolitano <- read_excel("../../data/metropolitano.xlsx")
 
+# Función para convertir las coordenadas
+convert_gps <- function(coordenadas) {
+  # Patrón regex para extraer los componentes de las coordenadas
+  patron_regex <- "([0-9.]+)[^0-9.]+([0-9.]+)"
+  
+  # Aplicar regex y formatear las coordenadas geográficas
+  coordenadas_geograficas <- gsub(patron_regex, "-\\1, -\\2", coordenadas)
+  
+  return(coordenadas_geograficas)
+}
+
+# Aplicar la función a la columna "sur_latitud"
+datos_metropolitano$latitud <- sapply(datos_metropolitano$sur_latitud, convert_gps)
+
+# Verificar los resultados
+datos_metropolitano$latitud
+
+View(datos_metropolitano)
 
 
 
 
 #REGEX: PARTE 2
 
-install.packages("tidyverse")
-install.packages("readxl")
-
 library(tidyverse)
 library(readxl)
 
 # Leer la base de datos desde el archivo Excel
-setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
-getwd()
 
-ruta_archivo <- "../..//data/estudiantes/base_students.xlsx"
+ruta_archivo <- "../../data/estudiantes/base_students.xlsx"
 datos_estudiantes <- read_excel(ruta_archivo)
 
 # Limpiar el nombre de los estudiantes
