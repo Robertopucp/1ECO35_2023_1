@@ -12,6 +12,18 @@ rm(list = ls())
 ##Borrando la consola ####
 cat("\014")
 
+#PLOT
+
+
+
+
+
+#REGEX: PARTE 1
+
+
+
+
+
 #REGEX: PARTE 2
 
 install.packages("tidyverse")
@@ -21,7 +33,10 @@ library(tidyverse)
 library(readxl)
 
 # Leer la base de datos desde el archivo Excel
-ruta_archivo <- "~/1ECO35_2023_1/data/estudiantes/base_students.xlsx"
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+getwd()
+
+ruta_archivo <- "../..//data/estudiantes/base_students.xlsx"
 datos_estudiantes <- read_excel(ruta_archivo)
 
 # Limpiar el nombre de los estudiantes
