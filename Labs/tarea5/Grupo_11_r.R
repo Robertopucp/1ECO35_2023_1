@@ -26,11 +26,7 @@ options(digits = 3)        # Número de decimales
 library(pacman)
 p_load(readxl, tidyverse, foreign, ggthemes, datos,dplyr)
 
-
-#PLOT
-
-
-##### PREGUNTA 1 #####
+##### PREGUNTA 1: PLOT #####
 #------------------------------------------------------------
 #Leer data producción hoja de coca por hectárea
 data <- read_excel("../../data/produccion_coca/6.1.1_-_Illicit_coca_bush_cultivation.xlsx")
@@ -150,9 +146,7 @@ ggplot(peru, aes(x = Years)) +
   annotate("text", x = 2010, y = 0, label = "Notes: This graph shows coca production per year in the Andean region using UNODC data.",
            color = "black", hjust = 0, vjust = 0)
 
-
-
-
+###################################################################################
 
 #REGEX: PARTE 1
 datos_metropolitano <- read_excel("../../data/metropolitano.xlsx")
@@ -174,17 +168,18 @@ datos_metropolitano$latitud <- sapply(datos_metropolitano$sur_latitud, convert_g
 # Verificar los resultados
 datos_metropolitano$latitud
 
+# Aplicar la función a la columna "oeste_longitud"
+datos_metropolitano$longitud <- sapply(datos_metropolitano$oeste_longitud, convert_gps)
+
+# Verificar los resultados
+datos_metropolitano$longitud
+
 View(datos_metropolitano)
 
 
 
-
 #REGEX: PARTE 2
-
-
-
 # Leer la base de datos desde el archivo Excel
-
 ruta_archivo <- "../../data/estudiantes/base_students.xlsx"
 datos_estudiantes <- read_excel(ruta_archivo)
 
