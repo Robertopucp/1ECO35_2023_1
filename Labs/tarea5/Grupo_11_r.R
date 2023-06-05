@@ -4,15 +4,151 @@
 # Paola Aranda (20196052)
 # Maria Alejandra Colan (20190515)
 
-# Consideraciones previas: #####
-
-## Borrando el environment ####
+# Para limpiar el workspace, por si hubiera algún dataset 
+# o información cargada
 rm(list = ls())
 
-##Borrando la consola ####
+# Para limpiar el área de gráficos
+graphics.off()
+
+# Limpiar la consola
 cat("\014")
 
+# Cambiar el directorio de trabajo
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+getwd()
+
+# Otras opciones
+options(scipen = 999)      # Eliminar la notación científica
+options(digits = 3)        # Número de decimales
+
+# Paquetes
+library(pacman)
+p_load(readxl, tidyverse, foreign, ggthemes, datos,dplyr)
+
+
 #PLOT
+
+
+##### PREGUNTA 1 #####
+#------------------------------------------------------------
+#Leer data producción hoja de coca por hectárea
+data <- read_excel("../../data/produccion_coca/6.1.1_-_Illicit_coca_bush_cultivation.xlsx")
+data <- data[ c(4:6), c(2:13)]
+data <- t(data)
+
+#Le damos nombres a las columnas
+colnames(data) <- c("Bolivia", "Colombia", "Peru")
+
+#Convertimos en dataframe
+data <- as.data.frame(data)
+
+#Añadimos los años
+data <- data %>%
+  mutate(year = 2009:2020)
+
+# Reordenar columnas
+data <- data[, c("year", "Bolivia", "Colombia", "Peru")]
+
+
+#Creamos el gráfico: Producción por hectárea de hoja de coca
+
+ggplot(data, aes(x = year)) +
+  geom_line(aes(y = Peru, color = "Peru"), linetype = "dashed", size = 1) +
+  geom_line(aes(y = Bolivia, color = "Bolivia"), linetype = "dashed", size = 1) +
+  geom_line(aes(y = Colombia, color = "Colombia"), size = 1) +
+  geom_point(aes(y = Peru, color = "Peru"), shape = 1, size = 3) +
+  geom_point(aes(y = Bolivia, color = "Bolivia"), shape = 15, size = 3) +
+  geom_point(aes(y = Colombia, color = "Colombia"), shape = 4, size = 3) +
+  labs(x = "Year", y = "Coca production", title = "Figure 1: Coca Production in the Andean Region") +
+  scale_y_continuous(limits = c(0, 200000), breaks = seq(0, 200000, 50000), expand = c(0, 0)) +
+  scale_color_manual(values = c(Peru = "#c10534", Bolivia = "#92a4b6", Colombia = "#26bb26"),
+                     labels = c("Peru", "Bolivia", "Colombia")) +
+  theme_bw() +
+  theme(
+    axis.title = element_text(size = 12, color = "black"),
+    axis.text = element_text(size = 10, color = "black"),
+    legend.position = "bottom",
+    plot.title = element_text(hjust = 0.5),
+    legend.title = element_blank(),
+    legend.box = "horizontal"
+  ) +
+  annotate("text", x = 2010, y = 0, label = "Notes: This graph shows coca production per year in the Andean region using UNODC data.",
+           color = "black", hjust = 0, vjust = 0)
+
+
+
+#---------------------------------------------------------------
+#Leer data erradicación hoja de coca por hectárea
+datos <- read_excel("../../data/produccion_coca/6.1.2_-_Eradication_of_coca_bush.xlsx")
+datos <- datos[ c(1:4), c(4:15)]
+datos <- t(datos)
+
+#Le damos nombres a las columnas
+colnames(datos) <- c("Years", "Bolivia", "Colombia", "Peru")
+
+#Convertimos en dataframe
+datos <- as.data.frame(datos)
+
+#Creamos el gráfico: Erradicación por hectárea de hoja de coca
+
+ggplot(datos, aes(x = Years)) +
+  geom_line(aes(y = Peru, color = "Peru"), linetype = "dashed", size = 1) +
+  geom_line(aes(y = Bolivia, color = "Bolivia"), linetype = "dashed", size = 1) +
+  geom_line(aes(y = Colombia, color = "Colombia"), size = 1) +
+  geom_point(aes(y = Peru, color = "Peru"), shape = 1, size = 3) +
+  geom_point(aes(y = Bolivia, color = "Bolivia"), shape = 15, size = 3) +
+  geom_point(aes(y = Colombia, color = "Colombia"), shape = 4, size = 3) +
+  labs(x = "Year", y = "Coca erradication", title = "Figure 2: Coca Erradication in the Andean Region") +
+  scale_y_continuous(limits = c(0, 200000), breaks = seq(0, 200000, 50000), expand = c(0, 0)) +
+  scale_color_manual(values = c(Peru = "#c10534", Bolivia = "#92a4b6", Colombia = "#26bb26"),
+                     labels = c("Peru", "Bolivia", "Colombia")) +
+  theme_bw() +
+  theme(
+    axis.title = element_text(size = 12, color = "black"),
+    axis.text = element_text(size = 10, color = "black"),
+    legend.position = "bottom",
+    plot.title = element_text(hjust = 0.5),
+    legend.title = element_blank(),
+    legend.box = "horizontal"
+  ) +
+  annotate("text", x = 2010, y = 0, label = "Notes: This graph shows coca production per year in the Andean region using UNODC data.",
+           color = "black", hjust = 0, vjust = 0)
+
+#---------------------------------------------------------------
+# Unimos data de producción y erradicación del Perú
+
+peru <- data[, c("year", "Peru")]
+peru <- as.data.frame(peru)
+peru <- peru %>% rename(Years = year, Production = Peru)
+
+peru <- cbind(peru[, c("Years", "Production")], datos["Peru"])
+peru <- as.data.frame(peru)
+
+peru <- peru %>% rename(Years = Years, Production = Production, Erradication = Peru)
+
+
+#Creamos el gráfico: Producción y erradicación de hoja de coca Perú
+
+ggplot(peru, aes(x = Years)) +
+  geom_line(aes(y = Production, color = "Production"), linetype = "dashed", size = 1) +
+  geom_line(aes(y = Erradication, color = "Erradication"), size = 1) +
+  geom_point(aes(y = Production, color = "Production"), shape = 1, size = 3) +
+  geom_point(aes(y = Erradication, color = "Erradication"), shape = 4, size = 3) +
+  labs(x = "Year", y = "Hectarea", title = "Figure 3: Coca Production and Eradication in Peru") +
+  scale_y_continuous(limits = c(0, 200000), breaks = seq(0, 200000, 50000), expand = c(0, 0)) +
+  scale_color_manual(values = c("#92a4b6", "#c10534"), labels = c("Erradication", "Production")) +
+  theme_bw() +
+  theme(
+    axis.title = element_text(size = 12, color = "black"),
+    axis.text = element_text(size = 10, color = "black"),
+    legend.position = "bottom",
+    plot.title = element_text(hjust = 0.5),
+    legend.title = element_blank(),
+    legend.box = "horizontal"
+  ) +
+  annotate("text", x = 2010, y = 0, label = "Notes: This graph shows coca production per year in the Andean region using UNODC data.",
+           color = "black", hjust = 0, vjust = 0)
 
 
 
