@@ -174,8 +174,8 @@ datos_metropolitano$longitud <- sapply(datos_metropolitano$oeste_longitud, conve
 # Verificar los resultados
 datos_metropolitano$longitud
 
+#Viendo el resultado final :c 
 View(datos_metropolitano)
-
 
 
 #REGEX: PARTE 2
