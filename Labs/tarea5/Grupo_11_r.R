@@ -181,8 +181,7 @@ View(datos_metropolitano)
 
 #REGEX: PARTE 2
 
-library(tidyverse)
-library(readxl)
+
 
 # Leer la base de datos desde el archivo Excel
 
