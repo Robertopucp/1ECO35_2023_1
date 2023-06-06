@@ -38,7 +38,6 @@ p_load(
 )
 
 
-
 # Change working directory
 
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
@@ -75,7 +74,7 @@ repdata  <- dummy_cols(repdata, select_columns = 'ccode')
 
 index <- grep("ccode_", colnames(repdata))
 
-# D*time_var 
+# Dummy*time_var 
 
 repdata$time_year <- repdata$year - 1978 # creando la variable temporal
 
@@ -88,7 +87,7 @@ i = 1
 while(i < 42){
 
     var <- paste0(list_vars[i],"_","time")
-    repdata[var]  <- repdata[list_vars[i]]*repdata["time_year"]
+    repdata[var]  <- repdata[list_vars[i]]*repdata$time_year
 
     i = i + 1
 }
@@ -169,7 +168,8 @@ stargazer(table1, title = "Descriptive Statistics", digits = 2, # decimales con 
           min.max = F, # borrar el estadístico de maximo y minimo
           notes = "Note.—The source of most characteristics is the World Bank’s World Development Indicators (WDI)."
           , notes.append = FALSE, # TRUE append the significance levels
-          notes.align = 'l')
+          notes.align = 'l'
+          , out = "../../output/tables/summary_r.tex")
 
 
 
@@ -254,7 +254,7 @@ tidy(ols_model1)[2,6] # limite inferior
 tidy(ols_model1)[2,7] # limite superior 
 
 
-"Usando LM y luego coestest para los error standar robusto"
+# Usando LM y luego coestest para los error standar robusto
 
 m1 <- lm(gdp_g ~ GPCP_g + GPCP_g_l, data = repdata)
 
@@ -272,9 +272,9 @@ sd_robust_model1 <- robust_model1[,2]
 model1_lower = coefci(m1, df = Inf, 
                       vcov. = vcovCL, cluster = ~ ccode, type = "HC1")[2,1]
 
+
 model1_upper = coefci(m1, df = Inf,
                       vcov. = vcovCL, cluster = ~ ccode, type = "HC1")[2,2]
-
 
 
 #### Segundo Modelo ----
@@ -299,8 +299,8 @@ model2_formula <- as.formula(
     paste("gdp_g",
           "~",
           paste("GPCP_g","GPCP_g_l", paste(country_time_trend, collapse = "+"),
-                paste(control_vars, collapse = "+")
-                ,sep="+")
+          paste(control_vars, collapse = "+")
+                ,  sep="+")
           )
     
     )
@@ -405,7 +405,6 @@ glance(ols_model3)
 
 rmse3 <- RMSE(ols_model3$fitted.values, repdata$gdp_g ) # root mean squeare error
 
-# !! Usar para el trabajo final 
 
 # 3. Usando ccode como una variable tipo factor (variable categórica)
 
@@ -615,7 +614,7 @@ stargazer( m1, m2, m3, m4, m5,
            keep.stat = c("rsq","n"),
            notes.append = FALSE, notes.align = "l",
             notes ="Huber robust standard errors are in parentheses", style = "qje"
-           )
+           , out = "../../output/tables/regression_table_r.tex")
 
 # qje: quataerly journal of economics
 
@@ -858,11 +857,15 @@ texreg(list(logit, probit, ols_model2, ols_model3, ols_model4,
                               "lpopl1" = "Log(national population), t-1"
 
        ), digits = 3,
+       ci.force = F,
        stars = c(0.01, 0.05, 0.1),
        custom.gof.rows = list("Country fixed effects" = c("no","no", "no","no", "yes", "no","yes", "yes"),
                               "Country-specific time trends" = c("no","no", "no","no", "yes", "yes","yes", "yes"),
                               "RMSE" = c("","",rmse2,rmse3,rmse4,rmse5,rmse6,rmse7)),
-       caption = "Economic Growth and Civil Conflict")
+       caption = "Economic Growth and Civil Conflict",
+        file = "../../output/tables/regression_table_2_r.tex")
+
+
 
 
 
