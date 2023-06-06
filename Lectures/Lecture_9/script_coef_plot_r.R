@@ -25,7 +25,7 @@ p_load(tidyverse, sandwich, lmtest, xtable,haven)
 
 # sandwich: libreria de modelos lineales.
 # lmtest: errores estandar robustos,
-# xtable: exportar matriz o datafrma, table a latex
+# xtable: exportar matriz o dataframe, table a latex
 
 # Change working directory
 
@@ -43,9 +43,9 @@ as.list(sapply(data, class))
 
 # Dummy variable
 
-data <- data %>%  mutate(Dummy = ifelse(cigs > 0 ,  1 , 0 ) ) %>%
-    mutate(Dummy1 = case_when(Dummy == 0 ~ "No smoking",
-                              Dummy == 1 ~ "Smoking"))
+
+data$Dummy <- ifelse(data$cigs > 0 ,  1 , 0 )
+
 
 # bwghtlbs: peso del bebe en libras
 # fill: desagregar los grpaficos
@@ -98,7 +98,7 @@ model2_upper = coefci(model2, df = Inf, vcov. = vcovHC, type = "HC1")[2,2]
 
 # Third Model
 
-model3 <- lm(lbwght ~ Dummy + motheduc + lfaminc + white + Dummy:(motheduc + lfaminc + white), data = data)
+model3 <- lm(lbwght ~ Dummy + motheduc + lfaminc + white , data = data)
 
 model3.tab <- coeftest(model3, vcov=vcovHC(model3, type='HC'))
 
@@ -108,11 +108,6 @@ model3_coef_se = model3.tab[2,2]
 
 model3_lower = coefci(model3, df = Inf, vcov. = vcovHC, type = "HC")[2,1]
 model3_upper = coefci(model3, df = Inf, vcov. = vcovHC, type = "HC")[2,2]
-
-# Model Matrix
-
-m <- lm(lbwght ~ -1 + Dummy:(motheduc + lfaminc + white) , data)
-X <- as.data.frame( model.matrix(m) )
 
 
 # Tabla de resultaods
@@ -139,7 +134,7 @@ table[3,3]<- model3_lower
 table[3,4]<- model3_upper
 
 colnames(table)<- c("Estimate","se","lower_bound","upper_bound")
-rownames(table)<- c("OLS baseline", "OLS with controls", "OLS interactive model")
+rownames(table)<- c("OLS baseline", "OLS with controls", "OLS with controls II")
 
 # Exportación a Latex
 xtable(table)
@@ -151,22 +146,22 @@ tab <- as.data.frame(table)
 
 # Coef-plot
 
-theme_set(theme_bw(20)) # tema con fondo blanco y cuadro con bordes en negro
-
-options(repr.plot.width = 8, repr.plot.height =5)  # tamaño del gráfico
+options(repr.plot.width = 8, repr.plot.height =5)  # dimensiones del gráfico
 
 # aes: ejes
 
 tab  %>% ggplot(aes(x=rownames(tab), y=Estimate)) +
     geom_point(size=2, color = 'black') +
-    geom_errorbar(aes(ymin=lower_bound, ymax=upper_bound) , width = 0.05,color="black", size = 0.8) +
+    geom_errorbar(aes(ymin=lower_bound, ymax=upper_bound) , width = 0.05,color="darkblue", linewidth = 0.8) +
     labs(x="", y="") + ggtitle("Smoking Coefficient (95% CI)")  +
     theme(text=element_text(size =15), plot.title = element_text(hjust = 0.5)) +
-   geom_hline(yintercept=0, linetype="dashed", color = "black", size=1) +
+   geom_hline(yintercept=0, linetype="dashed", color = "black", size=0.8) +
     scale_x_discrete(limits = c("OLS baseline",
-                                "OLS with controls", "OLS interactive model")) + 
-  theme_classic()
+                                "OLS with controls", "OLS with controls II")) +
+  scale_y_continuous(breaks = seq(-0.2,0.2,0.1) , limits = c(-0.2, 0.2)) +
+  theme_classic(14)
 
+  
 # geom_errorbar solicita el limite inferior y superior
 # width  : ancho de la abrra superior
 # scale_x_discrete: Nombre de modelos en eje inferior
@@ -180,6 +175,10 @@ ggsave("../../output/plots/Coef_plot.png"
 )
 
 
+# Model Matrix -----------------
+
+m <- lm(lbwght ~ -1 + Dummy:(motheduc + lfaminc + white) , data)
+X <- as.data.frame( model.matrix(m) )
 
 
 
