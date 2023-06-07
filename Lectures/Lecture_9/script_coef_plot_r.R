@@ -65,6 +65,8 @@ data$Dummy <- ifelse(data$cigs > 0 ,  1 , 0 )
 
 model1 <- lm(lbwght ~ Dummy, data = data)
 
+attributes(model1)
+
 # lmtest: coeftest
 
 model1.tab <- coeftest(model1, vcov=vcovHC(model1, type='HC1'))
@@ -79,6 +81,7 @@ model1_coef_se = model1.tab[2,2]
 
 # Intervalo de confianza
 # intervalo de cofianza ajsutado por heterocedasticidad
+
 model1_lower = coefci(model1, df = Inf, vcov. = vcovHC, type = "HC1")[2,1]
 
 model1_upper = coefci(model1, df = Inf, vcov. = vcovHC, type = "HC1")[2,2]
@@ -102,14 +105,14 @@ model2_upper = coefci(model2, df = Inf, vcov. = vcovHC, type = "HC1")[2,2]
 
 model3 <- lm(lbwght ~ Dummy + motheduc + lfaminc + white , data = data)
 
-model3.tab <- coeftest(model3, vcov=vcovHC(model3, type='HC'))
+model3.tab <- coeftest(model3, vcov=vcovHC(model3, type='HC1'))
 
 model3_coef <- model3.tab[2,1]
 
 model3_coef_se = model3.tab[2,2]
 
-model3_lower = coefci(model3, df = Inf, vcov. = vcovHC, type = "HC")[2,1]
-model3_upper = coefci(model3, df = Inf, vcov. = vcovHC, type = "HC")[2,2]
+model3_lower = coefci(model3, df = Inf, vcov. = vcovHC, type = "HC1")[2,1]
+model3_upper = coefci(model3, df = Inf, vcov. = vcovHC, type = "HC1")[2,2]
 
 
 # Tabla de resultaods
