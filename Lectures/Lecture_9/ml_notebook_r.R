@@ -35,7 +35,8 @@ p_load(
   gbm, #  boosting 
   rpart.plot,
   xtable,  # export table in altex format
-  tidyverse
+  tidyverse,
+  caret
 )
 
 
@@ -171,22 +172,29 @@ cat("The R^2 using the flexible model is equal to",R2.lasso.flex,"for lasso and"
 
 # Cross-validation
 
-# default arguments: nfolds = 10
+# default arguments: nfolds = 10, standarize = TRUE
+
+# By default cv.glmnet standarize predictors 
 
 fit.lasso.cv   <- cv.glmnet(model_X_basic_train, Y_train, family="gaussian",
-                            alpha=1) # alpha =1 for lasso
-fit.ridge   <- cv.glmnet(model_X_basic_train, Y_train, family="gaussian", 
-                         alpha=0) # alpha = 0 for ridge
-fit.elnet   <- cv.glmnet(model_X_basic_train, Y_train, family="gaussian",
-                         alpha=.5) # alpha = 0.5 fir elastic net
+                            alpha=1 ) # alpha =1 for lasso
 
-yhat.lasso.cv    <- predict(fit.lasso.cv, newx = model_X_basic_test)
+fit.ridge   <- cv.glmnet(model_X_basic_train, Y_train, family="gaussian", 
+                         alpha=0 ) # alpha = 0 for ridge
+
+fit.elnet   <- cv.glmnet(model_X_basic_train, Y_train, family="gaussian",
+                         alpha=.5 ) # alpha = 0.5 fir elastic net
+
+
+yhat.lasso.cv   <- predict( fit.lasso.cv , newx = model_X_basic_test)
 yhat.ridge   <- predict(fit.ridge, newx = model_X_basic_test)
 yhat.elnet   <- predict(fit.elnet, newx = model_X_basic_test)
+
 
 MSE.lasso.cv <- summary(lm((Y_test-yhat.lasso.cv)^2~1))$coef[1:2]
 MSE.ridge <- summary(lm((Y_test-yhat.ridge)^2~1))$coef[1:2]
 MSE.elnet <- summary(lm((Y_test-yhat.elnet)^2~1))$coef[1:2]
+
 
 R2.lasso.cv <- 1-MSE.lasso.cv[1]/var(Y_test)
 R2.ridge <- 1-MSE.ridge[1]/var(Y_test)
@@ -199,9 +207,12 @@ cat("R^2 using cross-validation for lasso, ridge and elastic net in the basic mo
 
 # ----------------------------------------------------------------- #
 
-fit.lasso.cv.flex   <- cv.glmnet(model_X_flex_train, Y_train, family="gaussian", alpha=1)
-fit.ridge.flex   <- cv.glmnet(model_X_flex_train, Y_train, family="gaussian", alpha=0)
-fit.elnet.flex   <- cv.glmnet(model_X_flex_train, Y_train, family="gaussian", alpha=.5)
+fit.lasso.cv.flex   <- cv.glmnet(model_X_flex_train, Y_train,
+                                 family="gaussian", alpha=1)
+fit.ridge.flex   <- cv.glmnet(model_X_flex_train, Y_train,
+                              family="gaussian", alpha=0)
+fit.elnet.flex   <- cv.glmnet(model_X_flex_train, Y_train, 
+                              family="gaussian", alpha=.5)
 
 yhat.lasso.cv.flex    <- predict(fit.lasso.cv.flex , newx = model_X_flex_test)
 yhat.ridge.flex    <- predict(fit.ridge.flex , newx = model_X_flex_test)
@@ -239,6 +250,8 @@ fit.trees <- rpart(formula_basic, data_train, cp = 0)
 prp(fit.trees, leaf.round=1, space=2, yspace=2,
     split.space=2, shadow.col = "gray", trace = 1) # plotting the tree
 
+# cp: complexity parameter for controlling the size of the tree
+
 # Add penalization to prune tree
 
 fit.trees <- rpart(formula_basic, data_train, cp = 0.001)
@@ -246,9 +259,7 @@ prp(fit.trees, leaf.round=1, space=2, yspace=2,
     split.space=2, shadow.col = "gray", trace = 1) # plotting the tree
 
 
-
 plotcp(fit.trees)
-
 
 fit.trees$cptable
 
@@ -265,12 +276,14 @@ bestcp
 fit.prunedtree <- prune(fit.trees, cp=bestcp)
 
 
-plot1 <- rpart.plot(fit.prunedtree,leaf.round=1, space=1, yspace=1.5, split.space=1,
+plot1 <- rpart.plot(fit.prunedtree,leaf.round=1, space=1, 
+                    yspace=1.5, split.space=1,
                     shadow.col = "gray", type =4,
                     branch = 1, box.palette="GnBu", cex = 0.7)
 
-fit.prunedtree <- prune(fit.trees, cp=bestcp)
-plot1 <- rpart.plot(fit.prunedtree,type =3, fallen = TRUE, leaf.round=1, 
+
+plot1 <- rpart.plot(fit.prunedtree,type =3, 
+                    fallen = TRUE, leaf.round=1, 
                     extra = 100, branch = 0.1, box.palette="RdBu",cex = 0.7)
 
 
@@ -289,17 +302,27 @@ cat("R^2 of the pruned tree:",R2.pt)
 
 ## Applying the methods
 # random forest
-fit.rf       <- randomForest(formula_basic, ntree=2000, nodesize=5, data=data_train, mtry = sqrt(p_basic))
+fit.rf       <- randomForest(formula_basic, ntree=2000, 
+                             nodesize=5, data=data_train, mtry = sqrt(p_basic))
 
 
 # ntree = number of tree
-# matry = number of covariable in each tree
+# matry = number of covariable randm¿omly selected in each tree
 
 # for tuning: adjust input "mtry" to change the number of variables randomly sampled as candidates at each split
 
 # boosting
-fit.boost   <- gbm(formula_basic, data=data_train, distribution= "gaussian", bag.fraction = .5, interaction.depth=2, n.trees=1000, shrinkage=.01)
-best.boost  <- gbm.perf(fit.boost, plot.it = FALSE) # cross-validation to determine when to stop
+fit.boost   <- gbm(formula_basic, data=data_train, 
+                   distribution= "gaussian", bag.fraction = .5, 
+                   interaction.depth=2, n.trees=1000, shrinkage=.01)
+
+# distribution: distribution of outcome variable
+# ntrees: fit total 1000 trees
+# shrinkage: learning rate to control overffiting 
+# bag.fraction: fraction of observation to use in each tree
+
+
+best.boost  <- gbm.perf(fit.boost, plot.it = FALSE) # cross-validation
 
 ## Evaluating the methods
 yhat.rf       <- predict(fit.rf, newdata=data_test) # prediction
