@@ -34,7 +34,7 @@ p_load(
   nnet,
   gbm, #  boosting 
   rpart.plot,
-  xtable,  # export table in altex format
+  xtable,  # export table in latex format
   tidyverse,
   caret
 )
