@@ -32,7 +32,7 @@ p_load(
   randomForest, # random forest
   rpart, # plot random trees
   nnet,
-  gbm,
+  gbm, #  boosting 
   rpart.plot,
   xtable,  # export table in altex format
   tidyverse
@@ -70,15 +70,21 @@ hist(data$wage, xlab= "hourly wage",
 set.seed(1234)
 training <- sample(nrow(data), nrow(data)*(3/4), replace=FALSE)
 
-data_train <- data[training,]
-data_test <- data[-training,]
+# sample without replacement 
+
+data_train <- data[training,]  # data trainning
+data_test <- data[-training,]  # data for test 
 
 # Models (basic and flexible) ----------------------
+
+# regression specificaction
 
 X_basic <-  "sex + exp1 + exp2+ shs + hsg+ scl + clg + mw + so + we + occ2+ ind2"
 X_flex <- "sex + exp1 + exp2 + shs+hsg+scl+clg+occ2+ind2+mw+so+we + (exp1+exp2+exp3+exp4)*(shs+hsg+scl+clg+occ2+ind2+mw+so+we)"
 formula_basic <- as.formula(paste("lwage", "~", X_basic))
 formula_flex <- as.formula(paste("lwage", "~", X_flex))
+
+# Model matrix
 
 model_X_basic_train <- model.matrix(formula_basic,data_train)
 model_X_basic_test <- model.matrix(formula_basic,data_test)
@@ -128,8 +134,10 @@ cat("The R^2 using the flexible model is equal to",
 
 ### Lasso, Ridge and Elastic Net ---------------
 
+# Basic model 
+
 fit.rlasso  <- rlasso(formula_basic, data_train, post=FALSE)
-fit.rlasso.post <- rlasso(formula_basic, data_train, post=TRUE)
+fit.rlasso.post <- rlasso(formula_basic, data_train, post=TRUE) # Post-lasso
 
 yhat.rlasso   <- predict(fit.rlasso, newdata=data_test)
 yhat.rlasso.post   <- predict(fit.rlasso.post, newdata=data_test)
@@ -143,6 +151,8 @@ cat("The R^2 using the basic model is equal to",R2.lasso,
     "for lasso and",R2.lasso.post,"for post-lasso") # R^2 lasso/post-lasso (basic model) 
 
 #---------------------------------------------------------------#
+
+# Flexible model 
 
 fit.rlasso.flex  <- rlasso(formula_flex, data_train, post=FALSE)
 fit.rlasso.post.flex <- rlasso(formula_flex, data_train, post=TRUE)
@@ -159,12 +169,16 @@ cat("The R^2 using the flexible model is equal to",R2.lasso.flex,"for lasso and"
 
 #-------------------------------------------------------------------------------#
 
+# Cross-validation
+
+# default arguments: nfolds = 10
+
 fit.lasso.cv   <- cv.glmnet(model_X_basic_train, Y_train, family="gaussian",
-                            alpha=1)
+                            alpha=1) # alpha =1 for lasso
 fit.ridge   <- cv.glmnet(model_X_basic_train, Y_train, family="gaussian", 
-                         alpha=0)
+                         alpha=0) # alpha = 0 for ridge
 fit.elnet   <- cv.glmnet(model_X_basic_train, Y_train, family="gaussian",
-                         alpha=.5)
+                         alpha=.5) # alpha = 0.5 fir elastic net
 
 yhat.lasso.cv    <- predict(fit.lasso.cv, newx = model_X_basic_test)
 yhat.ridge   <- predict(fit.ridge, newx = model_X_basic_test)
@@ -348,8 +362,9 @@ rownames(table)<- c("Least Squares (basic)","Least Squares (flexible)", "Lasso",
                     "Cross-Validated lasso", "Cross-Validated ridge","Cross-Validated elnet","Cross-Validated lasso (flexible)","Cross-Validated ridge (flexible)","Cross-Validated elnet (flexible)",  
                     "Random Forest","Boosted Trees", "Pruned Tree")
 tab <- xtable(table, digits =3)
+
 print(tab,type="latex") # set type="latex" for printing table in LaTeX
-tab
+
 
 
 
