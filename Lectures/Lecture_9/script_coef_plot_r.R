@@ -70,6 +70,7 @@ attributes(model1)
 # lmtest: coeftest
 
 model1.tab <- coeftest(model1, vcov=vcovHC(model1, type='HC1'))
+model1.tab
 
 # HC: heteerocedasticidad, HC1: matriz varianza y cov de Huber - White
 
