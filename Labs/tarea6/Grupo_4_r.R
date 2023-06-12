@@ -1,8 +1,11 @@
 
 
 # Grupo_4_r 
+# Integrantes: Mishell Delgado, Lisbeth Ccoyo y Steven Atoche
 
 rm(list = ls())
+
+# Llamamos las librerías 
 
 library(readxl)
 library(dplyr) 
@@ -28,8 +31,11 @@ cat("\014")
 
 ############################################################
 
+# Leemos el archivo data.dta
 
 ruta_archivo <- "C:/Users/ASUS/Documents/GitHub/1ECO35_2023_1/data/Juntos_program/data.dta"
+
+# Revisamos las columnas
 
 data <- haven::read_dta(ruta_archivo)
 colnames(data) <- tolower(colnames(data)) 
@@ -43,11 +49,15 @@ library(dplyr)
 library(tidyverse)
 library(foreign)
 
+# Leemos el archivo unidos.dta
+
 data_unidos <- read_dta("C:/Users/ASUS/Documents/GitHub/1ECO35_2023_1/data/Juntos_program/unidos.dta")
+
+# Realizamos el merged
 
 merged_data <- merge(data_long, data_unidos, by = "ubigeo")
 
-# para poner etiquetas a las variables p4022 y unidos
+# Colocamos etiquetas a las variables p4022 y unidos
 
 if (!require(sjlabelled)) {
   install.packages("sjlabelled")
