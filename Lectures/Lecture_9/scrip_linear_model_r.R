@@ -90,6 +90,7 @@ while(i < 42){
 
     var <- paste0(list_vars[i],"_","time") # nombre de la variable
     repdata[var]  <- repdata[list_vars[i]]*repdata$time_year
+    # multiplico dummy por país * la variable de tendencia por país 
 
     i = i + 1
 }
@@ -191,12 +192,12 @@ stargazer(table1, title = "Descriptive Statistics", digits = 2, # decimales con 
 m1 <- lm(gdp_g ~ GPCP_g + GPCP_g_l, data = repdata)
 
 
-robust_model <- coeftest(m1,
+robust_model <- coeftest(m1, # objeto modelo 
                          vcov = vcovCL,  # Matrix varianza-covarianza cluster (CL)
-                         type = "HC1",
-                         cluster = ~ ccode)
+                         type = "HC1", # ajuste errores estandar por heterocedasticidad
+                         cluster = ~ ccode) # ajuste errores estandar por autocorrelación
 
-sd_robust_model1 <- robust_model[,2]
+sd_robust_model1 <- robust_model[,2] # se extrae el vector de errores estándar
 
 lm_rmse1 <- RMSE(m1$fitted.values, repdata$gdp_g ) # root mean squeare error
 
@@ -244,9 +245,6 @@ robust_model2 <- coeftest(m2,
 
 sd_robust_model2 <- robust_model2[,2]
 
-coefci(m2, df = Inf, 
-       vcov. = vcovCL, cluster = ~ ccode, type = "HC1")
-
 
 #### Tercer Modelo ----
 # Si efectos fijos (country), Si country-time trends
@@ -272,10 +270,7 @@ model3_formula <- as.formula(
     )
 )
 
-
-
 "Usando LM y luego coestest para los error standar robusto"
-
 
 m3 <- lm(model3_formula, data = repdata)
 
@@ -289,7 +284,6 @@ robust_model3 <- coeftest(m3 ,
 
 
 sd_robust_model3 <- robust_model3[,2]
-
 
 #### Cuarto modelo ----
 # Si efectos fijos (country), Si country-time trends
@@ -306,14 +300,11 @@ model4_formula <- as.formula(
     )
 )
 
-
-
 "Usando LM y luego coestest para los error standar robusto"
 
 m4 <- lm(model4_formula, data = repdata)
 
 lm_rmse4 <- round(RMSE(m4$fitted.values, repdata$gdp_g ) ,2 )
-
 
 robust_model4 <- coeftest(m4,
                           vcov = vcovCL,
@@ -322,8 +313,6 @@ robust_model4 <- coeftest(m4,
 
 sd_robust_model4 <- robust_model4[,2]
 
-coefci(m4, df = Inf, 
-       vcov. = vcovCL, cluster = ~ ccode, type = "HC1")
 
 #### Quinto modelo ----
 # Si efectos fijos (country), Si country-time trends
@@ -352,12 +341,7 @@ robust_model5 <- coeftest(m5,
 
 sd_robust_model5 <- robust_model5[,2]
 
-coefci(m5, df = Inf, 
-       vcov. = vcovCL, cluster = ~ ccode, type = "HC1")
-
-
 # RMSE manual
-
 
 sq_resid <- m5$residuals**2
 lm_rmse5 <- round( mean(sq_resid)^0.5, 2)
@@ -454,7 +438,6 @@ summary(probit)
 
 texreg(list(logit, probit))
 
-htmlreg(list(logit, probit)) # export to html
 
 ###  Modelo 2 ----
 
@@ -515,6 +498,8 @@ model4_formula <- as.formula(
 
 ols_model4 <- lm_robust(model4_formula, data = repdata,
                         clusters = ccode, se_type = "stata", fixed_effects = ~ ccode)
+
+# efectos fijos por país
 
 summary(ols_model4)
 
