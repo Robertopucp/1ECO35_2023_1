@@ -84,13 +84,11 @@ list_vars[1]
 
 i = 1
 
-# la variable de endencia de cada pais 
-
+#La variable de tendencia de cada país
 while(i < 42){
 
-    var <- paste0(list_vars[i],"_","time") # nombre de la variable
+    var <- paste0(list_vars[i],"_","time") #nombre de la variable
     repdata[var]  <- repdata[list_vars[i]]*repdata$time_year
-    # multiplico dummy por país * la variable de tendencia por país 
 
     i = i + 1
 }
@@ -102,8 +100,7 @@ while(i < 42){
 table1 <- repdata %>% dplyr::select(any_prio, any_prio_on, any_prio_off,
                              war_prio, war_prio_on, war_prio_off, war_col, war_inc, war)
 
-# table1 : firmate tbl
-
+#forma 1: tabla formato table
 stargazer(table1)
 
 # No obtenemos resultado pues la libreria exige que la base de datos sea DataFrame
@@ -113,9 +110,7 @@ table1 <- repdata %>% dplyr::select(any_prio, any_prio_on, any_prio_off,
                              GPCP, GPCP_g, GPCP_g_l,gdp_g, gdp_g_l,
         y_0, polity2l, polity2l_6, ethfrac, relfrac, Oil, lmtnest, lpopl1, tot_100_g) %>% as.data.frame()
 
-
-# table1 : formato data.frame 
-
+#forma 2: tabla formato data frame
 stargazer(table1)
 
 
@@ -123,12 +118,12 @@ stargazer(table1)
 # Ajuste de algunos argumentos digits:
 
 
+
 stargazer(table1, title = "Descriptive Statistics", digits = 2,
           covariate.labels = c("Civil conflict with ≥25 deaths: (PRIO/
 Uppsala)","Onset","Offset","Civil conflict with ≥1,000 deaths:
 PRIO/Uppsala","Onset","Offset","Collier and Hoeffler (2002)",
                                "Doyle and Sambanis (2000)","Fearon and Laitin (2003)"))
-
 
 
 stargazer(table1, title = "Descriptive Statistics", digits = 2,
@@ -171,16 +166,58 @@ WDI)"
 stargazer(table1, title = "Descriptive Statistics", digits = 2, # decimales con 2 digitos
           covariate.labels = list_vars,  # Lista de etiquetas
           summary.stat = c("mean", "sd", "n"), # se especifica el orden de los estadísticos
-          min.max = F, # borrar el estadístico de maximo y minimo (default es True)
+          min.max = F, # borrar el estadístico de maximo y minimo
           notes = "Note.—The source of most characteristics is the World Bank’s World Development Indicators (WDI)."
           , notes.append = FALSE, # TRUE append the significance levels
-          notes.align = 'l' # left : pegado a la izquierda
+          notes.align = 'l'
           , out = "../../output/tables/summary_r.tex")
 
 
 
 
 # TABLE 2: First stage ----
+
+# OLS simple
+
+ols_model <- lm(gdp_g ~ GPCP_g + GPCP_g_l, data = repdata)
+
+attributes(ols_model)
+
+ols_model$coefficients  # coeficientes
+
+ols_model$fitted.values  # Y estimado
+
+# summary table como en stata
+
+#stata *** 1%, ** 5%, * 10%
+#R de summary *** 0.1%, ** 1%, * 5%, . 10%
+summary(ols_model)
+
+summary(ols_model)$call
+
+summary(ols_model)$coef
+
+# Test de significancia individual usando Huber robust standard errors
+
+coeftest(ols_model, vcov = vcovHC(ols_model, "HC")) # Clasical white robust
+coeftest(ols_model, vcov = vcovHC(ols_model, "HC0"))
+
+coeftest(ols_model, vcov = vcovHC(ols_model, "HC1")) # Huber-White robust (STATA)
+coeftest(ols_model, vcov = vcovHC(ols_model, "HC2")) # Eicker-Huber-White robust
+coeftest(ols_model, vcov = vcovHC(ols_model, "HC3"))
+coeftest(ols_model, vcov = vcovHC(ols_model, "HC4"))
+
+
+# vcovHC Matrix varianza-covarianza robusta ante heterocedasticidad
+
+# robust se and cluster
+
+robust_model <- coeftest(ols_model,
+                          vcov = vcovCL,  # Matrix varianza-covarianza cluster (CL)
+                          type = "HC1",
+                          cluster = ~ ccode)
+
+sd_robust <- robust_model[,2]
 
 #### Primer Modelo ----
 
@@ -189,19 +226,60 @@ stargazer(table1, title = "Descriptive Statistics", digits = 2, # decimales con 
 # Los residuos estan clusterizados (agrupados) a nivel país
 # Using cluster and robust standar error
 
+ols_model1 <- lm_robust(gdp_g ~ GPCP_g + GPCP_g_l, data = repdata,
+              clusters = ccode, se_type = "stata")
+
+
+summary(ols_model1)
+
+attributes(ols_model1)
+
+ols_model1$r.squared
+
+rmse1 <- RMSE(ols_model1$fitted.values, repdata$gdp_g ) # root mean squeare error
+
+# MSE= Suma cuadrado (y_predicho - y_verdadero)^2
+RMSE(ols_model1$fitted.values, repdata$gdp_g )^2 # mean square error
+
+
+# using tdyr functions
+
+
+glance(ols_model1)
+
+tidy(ols_model1)
+
+tidy(ols_model1)
+
+htmlreg(ols_model1)
+
+tidy(ols_model1)[2,2] # coeficiente
+tidy(ols_model1)[2,6] # limite inferior
+tidy(ols_model1)[2,7] # limite superior 
+
+
+# Usando LM y luego coestest para los error standar robusto
+
 m1 <- lm(gdp_g ~ GPCP_g + GPCP_g_l, data = repdata)
 
+lm_rmse1 <- round(RMSE(m1$fitted.values, repdata$gdp_g ) ,2 )
 
-robust_model <- coeftest(m1, # objeto modelo 
-                         vcov = vcovCL,  # Matrix varianza-covarianza cluster (CL)
-                         type = "HC1", # ajuste errores estandar por heterocedasticidad
-                         cluster = ~ ccode) # ajuste errores estandar por autocorrelación
+robust_model1 <- coeftest(m1,
+vcov = vcovCL,  # Matrix varianza-covarianza cluster (CL)
+type = "HC1",
+cluster = ~ ccode)
 
-sd_robust_model1 <- robust_model[,2] # se extrae el vector de errores estándar
+sd_robust_model1 <- robust_model1[,2]
 
-lm_rmse1 <- RMSE(m1$fitted.values, repdata$gdp_g ) # root mean squeare error
+# intervalo de confianza 
 
-# MSE = Suma cuadrado (y_predicho - y verdadero)^2
+model1_lower = coefci(m1, df = Inf, 
+                      vcov. = vcovCL, cluster = ~ ccode, type = "HC1")[2,1]
+
+
+model1_upper = coefci(m1, df = Inf,
+                      vcov. = vcovCL, cluster = ~ ccode, type = "HC1")[2,2]
+
 
 #### Segundo Modelo ----
 # No efectos fijos (country), Si country-time trends
@@ -226,10 +304,30 @@ model2_formula <- as.formula(
           "~",
           paste("GPCP_g","GPCP_g_l", paste(country_time_trend, collapse = "+"),
           paste(control_vars, collapse = "+")
-                ,  sep="+") # este ultimo sep = + collapsa instrumentos, tendencia país y variables de control
+                ,  sep="+")
           )
     
     )
+
+# Usando LM_robust 
+
+ols_model2 <- lm_robust(model2_formula, data = repdata,
+                        clusters = ccode, se_type = "stata")
+
+#cluster para corregir por correlación entre residuos del mismo país (autocorrelación)
+#se_type corrreción de errores estándar por heterocedasticidad
+summary(ols_model2)
+
+
+
+glance(ols_model2)
+
+tidy(ols_model2)
+
+rmse2 <- RMSE(ols_model2$fitted.values, repdata$gdp_g ) # root mean squeare error
+
+
+htmlreg(list(ols_model1,ols_model2))
 
 "Usando LM y luego coestest para error standar robusto"
 
@@ -244,6 +342,9 @@ robust_model2 <- coeftest(m2,
                           cluster = ~ ccode)
 
 sd_robust_model2 <- robust_model2[,2]
+
+coefci(m2, df = Inf, 
+       vcov. = vcovCL, cluster = ~ ccode, type = "HC1")
 
 
 #### Tercer Modelo ----
@@ -270,7 +371,74 @@ model3_formula <- as.formula(
     )
 )
 
+
+ols_model3 <- lm_robust(model3_formula, data = repdata,
+                        clusters = ccode, se_type = "stata")
+
+
+summary(ols_model3)
+
+glance(ols_model3)
+
+tidy(ols_model3)
+
+rmse3 <- RMSE(ols_model3$fitted.values, repdata$gdp_g ) # root mean squeare error
+
+
+
+rmse3 <- RMSE(ols_model3$fitted.values, repdata$gdp_g ) # root mean squeare error
+
+# 2. Incluyendo ccode como argumento de efectos fijos en LM_robust
+
+model3_formula <- as.formula(
+    paste("gdp_g",
+          "~",
+          paste("GPCP_g","GPCP_g_l",
+                paste(country_time_trend, collapse = "+")
+                , sep="+")
+    )
+)
+
+
+ols_model3 <- lm_robust(model3_formula, data = repdata,
+                        clusters = ccode, se_type = "stata", fixed_effects = ~ ccode)
+
+
+summary(ols_model3)
+tidy(ols_model3)
+glance(ols_model3)
+
+rmse3 <- RMSE(ols_model3$fitted.values, repdata$gdp_g ) # root mean squeare error
+
+
+# 3. Usando ccode como una variable tipo factor (variable categórica)
+
+repdata$ccode_factor <- as.factor(repdata$ccode)
+
+class(repdata$ccode_factor)
+
+class(repdata$ccode)
+
+
+model3_formula <- as.formula(
+    paste("gdp_g",
+          "~",
+          paste("GPCP_g","GPCP_g_l", "ccode_factor",
+                paste(country_time_trend, collapse = "+")
+                , sep="+")
+    )
+)
+
+
+ols_model3 <- lm_robust(model3_formula, data = repdata,
+                        clusters = ccode, se_type = "stata")
+
+summary(ols_model3)
+tidy(ols_model3)
+glance(ols_model3)
+
 "Usando LM y luego coestest para los error standar robusto"
+
 
 m3 <- lm(model3_formula, data = repdata)
 
@@ -284,6 +452,10 @@ robust_model3 <- coeftest(m3 ,
 
 
 sd_robust_model3 <- robust_model3[,2]
+#c.i : confidence interval 
+
+coefci(m3, df = Inf, 
+       vcov. = vcovCL, cluster = ~ ccode, type = "HC1")
 
 #### Cuarto modelo ----
 # Si efectos fijos (country), Si country-time trends
@@ -300,11 +472,33 @@ model4_formula <- as.formula(
     )
 )
 
+
+ols_model4 <- lm_robust(model4_formula, data = repdata,
+                        clusters = ccode, se_type = "stata", fixed_effects = ~ ccode)
+
+
+summary(ols_model4)
+tidy(ols_model4)
+glance(ols_model4)
+
+rmse4 <- RMSE(ols_model4$fitted.values, repdata$gdp_g ) # root mean squeare error
+
+
 "Usando LM y luego coestest para los error standar robusto"
+
+model4_formula <- as.formula(
+    paste("gdp_g",
+          "~",
+          paste("GPCP_g","GPCP_g_l","GPCP_g_fl","ccode_factor",
+                paste(country_time_trend, collapse = "+")
+                , sep="+")
+    )
+)
 
 m4 <- lm(model4_formula, data = repdata)
 
 lm_rmse4 <- round(RMSE(m4$fitted.values, repdata$gdp_g ) ,2 )
+
 
 robust_model4 <- coeftest(m4,
                           vcov = vcovCL,
@@ -313,6 +507,8 @@ robust_model4 <- coeftest(m4,
 
 sd_robust_model4 <- robust_model4[,2]
 
+coefci(m4, df = Inf, 
+       vcov. = vcovCL, cluster = ~ ccode, type = "HC1")
 
 #### Quinto modelo ----
 # Si efectos fijos (country), Si country-time trends
@@ -330,7 +526,27 @@ model5_formula <- as.formula(
 )
 
 
+ols_model5 <- lm_robust(model5_formula, data = repdata,
+                        clusters = ccode, se_type = "stata", fixed_effects = ~ ccode)
+
+
+summary(ols_model5)
+tidy(ols_model5)
+glance(ols_model5)
+
+rmse5 <- RMSE(ols_model5$fitted.values, repdata$gdp_g ) # root mean squeare error
+
+
 "Usando LM y luego coestest para los error standar robusto"
+
+model5_formula <- as.formula(
+    paste("gdp_g",
+          "~",
+          paste("GPCP_g","GPCP_g_l","tot_100_g","ccode_factor",
+                paste(country_time_trend, collapse = "+")
+                , sep="+")
+    )
+)
 
 m5 <- lm(model5_formula, data = repdata)
 
@@ -341,6 +557,9 @@ robust_model5 <- coeftest(m5,
 
 sd_robust_model5 <- robust_model5[,2]
 
+coefci(m5, df = Inf, 
+       vcov. = vcovCL, cluster = ~ ccode, type = "HC1")
+
 # RMSE manual
 
 sq_resid <- m5$residuals**2
@@ -348,6 +567,30 @@ lm_rmse5 <- round( mean(sq_resid)^0.5, 2)
 
 # Export tables ----
 
+#
+# stargazer::stargazer(ols_model1, ols_model2, ols_model3, ols_model4, ols_model5)
+#
+#
+# stargazer::stargazer(ols_model5, se = starprep(ols_model5))
+
+texreg(list(ols_model1, ols_model2, ols_model3, ols_model4, ols_model5),
+       custom.coef.map = list("GPCP_g"="Growth in rainfall, t",
+                              "GPCP_g_l"="Growth in rainfall, t-1",
+                              "GPCP_g_fl" = "Growth in rainfall,t+1",
+                              "tot_100_g" = "Growth in terms of trade, t" ,
+                              "y_0" = "Log(GDP per capita), 1979",
+                              "polity2l" = "Democracy (Polity IV), t-1",
+                              "ethfrac" = "Ethnolinguistic fractionalization",
+                              "relfrac" = "Religious fractionalization",
+                              "Oil" = "Oil-exporting country",
+                              "lmtnest" = "Log(mountainous)",
+                              "lpopl1" = "Log(national population), t-1"
+                              ), digits = 3,
+       stars = c(0.01, 0.05, 0.1),
+       custom.gof.rows = list("Country fixed effects" = c("no", "no", "yes", "yes", "yes"),
+                              "Country-specific time trends" = c("no", "yes", "yes", "yes", "yes"),
+                              "RMSE" = c(rmse1,rmse2,rmse3,rmse4,rmse5)),
+       caption = "Dependent Variable: Economic Growth Rate, t")
 
 # digits: 3 digitos
 # stars = c(0.01, 0.05, 0.1), *** 1%, ** 5%, ** 10%
@@ -438,6 +681,7 @@ summary(probit)
 
 texreg(list(logit, probit))
 
+htmlreg(list(logit, probit)) # export to html
 
 ###  Modelo 2 ----
 
@@ -499,8 +743,6 @@ model4_formula <- as.formula(
 ols_model4 <- lm_robust(model4_formula, data = repdata,
                         clusters = ccode, se_type = "stata", fixed_effects = ~ ccode)
 
-# efectos fijos por país
-
 summary(ols_model4)
 
 glance(ols_model4)
@@ -516,7 +758,7 @@ model5_formula <- as.formula(
     paste(
     paste("any_prio",
           "~",
-          paste("gdp_g","gdp_g_l", # gdp: activiada economica
+          paste("gdp_g","gdp_g_l",
                 paste(country_time_trend, collapse = "+")
                 , paste(control_vars, collapse = "+")
                 , sep="+")
@@ -620,7 +862,7 @@ texreg(list(logit, probit, ols_model2, ols_model3, ols_model4,
                               "lpopl1" = "Log(national population), t-1"
 
        ), digits = 3,
-       ci.force = F, # No intervalo de confianza
+       ci.force = F,
        stars = c(0.01, 0.05, 0.1),
        custom.gof.rows = list("Country fixed effects" = c("no","no", "no","no", "yes", "no","yes", "yes"),
                               "Country-specific time trends" = c("no","no", "no","no", "yes", "yes","yes", "yes"),
