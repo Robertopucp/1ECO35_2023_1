@@ -1,4 +1,4 @@
-################  Laboratorio 11 parte 1 ------------------------
+################  Laboratorio 11 parte 2 ------------------------
 ## Curso: Laboratorio de R y Python ###########################
 ## @author: Roberto Mendoza 
 
@@ -34,6 +34,10 @@ p_load(
  ,viridis
  ,gridExtra  # combine many plots 
 )
+
+# Change working directory
+
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 # Get data of labor
 
@@ -80,8 +84,12 @@ df3 <- dpt_shp |>
 
 # Plot the heatmap
 ggplot() +
-  geom_sf(data = df3, aes(fill = women_empl), linetype = "dotted",  color = "black") +
-  scale_fill_gradient(name = "Employment", low = "white", high = "red") + # mapa calor
+  geom_sf(data = df3, aes(fill = women_empl), 
+          linetype = "dotted", 
+          color = "black") +
+  scale_fill_gradient(name = "Employment", 
+                      low = "white", 
+                      high = "red") + # mapa calor
   theme_void() +
   theme(legend.position = "right")
 
@@ -247,7 +255,7 @@ ggplot() +
                                      include.lowest = TRUE)),  color = "black") +
   scale_fill_manual(
     values = my_palette, 
-                    name = "Women proportion",
+                    name = "Women proportion (%)",
                     breaks = levels(cut(df5$prop_wom, breaks = my_breaks,
                                         include.lowest = TRUE
                     )),
@@ -261,8 +269,11 @@ ggplot() +
   theme(legend.position = "right",
         legend.title = element_text(size = 10),
         legend.text = element_text(size = 8), 
+        legend.key.size = unit(0.4, "cm"),
         strip.background = element_blank()
   ) 
+
+
 
 ggsave("../../output/plots/map_pea_women.jpg"
        , height = 7  # alto

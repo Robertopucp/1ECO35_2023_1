@@ -244,6 +244,16 @@ cat("Area del polígono en kilómetros cuadrado: ",
     area_km2 
 )
 
+# Área en hectareas
+
+area_ha <- st_area(data_geo[1,"geometry"]) |>
+  set_units(ha)  # en unidades de kilómetro 2
+
+cat("Area del polígono en hectareas: ",
+    area_ha 
+)
+
+
 
 ## Buffers -----------------------
 
