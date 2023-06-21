@@ -84,9 +84,10 @@ list_vars[1]
 
 i = 1
 
+#La variable de tendencia de cada país
 while(i < 42){
 
-    var <- paste0(list_vars[i],"_","time")
+    var <- paste0(list_vars[i],"_","time") #nombre de la variable
     repdata[var]  <- repdata[list_vars[i]]*repdata$time_year
 
     i = i + 1
@@ -99,7 +100,7 @@ while(i < 42){
 table1 <- repdata %>% dplyr::select(any_prio, any_prio_on, any_prio_off,
                              war_prio, war_prio_on, war_prio_off, war_col, war_inc, war)
 
-
+#forma 1: tabla formato table
 stargazer(table1)
 
 # No obtenemos resultado pues la libreria exige que la base de datos sea DataFrame
@@ -109,7 +110,7 @@ table1 <- repdata %>% dplyr::select(any_prio, any_prio_on, any_prio_off,
                              GPCP, GPCP_g, GPCP_g_l,gdp_g, gdp_g_l,
         y_0, polity2l, polity2l_6, ethfrac, relfrac, Oil, lmtnest, lpopl1, tot_100_g) %>% as.data.frame()
 
-
+#forma 2: tabla formato data frame
 stargazer(table1)
 
 
@@ -188,6 +189,8 @@ ols_model$fitted.values  # Y estimado
 
 # summary table como en stata
 
+#stata *** 1%, ** 5%, * 10%
+#R de summary *** 0.1%, ** 1%, * 5%, . 10%
 summary(ols_model)
 
 summary(ols_model)$call
@@ -235,6 +238,7 @@ ols_model1$r.squared
 
 rmse1 <- RMSE(ols_model1$fitted.values, repdata$gdp_g ) # root mean squeare error
 
+# MSE= Suma cuadrado (y_predicho - y_verdadero)^2
 RMSE(ols_model1$fitted.values, repdata$gdp_g )^2 # mean square error
 
 
@@ -310,7 +314,8 @@ model2_formula <- as.formula(
 ols_model2 <- lm_robust(model2_formula, data = repdata,
                         clusters = ccode, se_type = "stata")
 
-
+#cluster para corregir por correlación entre residuos del mismo país (autocorrelación)
+#se_type corrreción de errores estándar por heterocedasticidad
 summary(ols_model2)
 
 
