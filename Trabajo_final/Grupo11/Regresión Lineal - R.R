@@ -83,7 +83,6 @@ ols_model1 <- lm_robust(model1_3_formula, data = datos,
 # Viendo los resultados
 summary(ols_model1)
 
-
 #- - - - - - - - - - - - MODELO 2 - - - - - - - - - - - -#
 # SI consideramos variables de control)
 # incuyendo las variables de control
@@ -99,6 +98,10 @@ ols_model2 <- lm_robust(model2_3_formula, data = datos,
                         clusters = class_fe2, se_type = "stata")
 # Viendo los resultados
 summary(ols_model2) 
+
+# Error estandar:
+lm_rmse2 <- round(RMSE(ols_model2$fitted.values, datos$took_year ) ,2 )
+
 
 
 #- - - - - - - - - - - - MODELO 3 - - - - - - - - - - - -#
@@ -125,7 +128,6 @@ ols_model4 <- lm_robust(model4_3_formula, data = datos,
 summary(ols_model4) 
 
 #- - - - - - - - - - EXPORTANDO A LATEX - - - - - - - - - -#
-
 
 #_____________________#
 ###### TABLA 4 ###### 
@@ -274,9 +276,28 @@ summary(ols_model4)
 
 
 #- - - - - - - - - - EXPORTANDO A LATEX - - - - - - - - - -#
+stargazer( m1, m2, m3, m4, 
+           se=list(sd_robust_model1, sd_robust_model2),
+           dep.var.labels = c(paste("Civil Conflict  25"), "Civil Conflict   1,000"), #nombres de columnas 2 y 3
+           title = "Rainfall and Civil Conflict (Reduced-Form)", #título de la tabla
+           column.labels = c("Death (OLS)", "Death (OLS)"), #para poner más información en referencia a dep.var.labels
+           keep = c("GPCP_g","GPCP_g_l"),
+           covariate.labels=c("Growth in rainfall, t","Growth in rainfall, t-1"), #etiquetas de las filas
+           align = T, no.space = F, #que este centrado y halla espacio entre las filas
+           add.lines=list(c("Country fixed effects","yes","yes"),
+                          c("Country-specific time trends","yes","yes"),
+                          c("Root mean square error",lm_rmse1,lm_rmse2)),
+           keep.stat = c("rsq","n"),  #mostrar el número de observaciones
+           notes.append = FALSE, notes.align = "l", #notes.append: TRUE append the significance levels, alineación a  la izquierda
+           notes ="Huber robust standard errors are in parentheses", style = "qje" 
+)
+
 
 
 #------------------------------------------------------------#
 ##### PREGUNTA 3: CREACIÓN DE UN COEFPLOT DE LA TABLA 4 #####
 #------------------------------------------------------------#
+
+
+
 
