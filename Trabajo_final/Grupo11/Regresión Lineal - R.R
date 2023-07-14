@@ -39,12 +39,33 @@ librarian::shelf(
 )
 
 #------------------------------------------------------------#
+##### CONSIDERACIONES PREVIAS #####
+#------------------------------------------------------------#
+
+# Leer data
+datos <- read_dta("../../data/trabajo_final/replicacion/SerraPorterAEJ.dta")
+
+#------------------------------------------------------------#
 ##### PREGUNTA 1: ESTADISTICAS DESCRIPTIVAS #####
 #------------------------------------------------------------#
-#Leer data producción hoja de coca por hectárea
-data <- read_excel("../../data/produccion_coca/6.1.1_-_Illicit_coca_bush_cultivation.xlsx")
-data <- data[ c(4:6), c(2:13)]
-data <- t(data)
+#Hacer tabla con las variables seleccionadas y convertirlas como data frame
+table1 <- datos %>% dplyr::select(american, instate, freshman,
+                                    ACumGPA, greek, econ_hs, varsity) %>% as.data.frame()
+
+
+#Generar las etiquetas de las variables
+list_vars <- c("Estudiante americano","Estudiante in-state","Estudiante es de primer año",
+               "GPA acumulado", "Estudiante pertenece a una fraternidad o sororidad",
+               "Estudiante llevó Economía en High School", "Estudiante es un atleta")
+
+#Generar la tabla con opciones personalizadas en formato de latex
+stargazer(table1, title = "Descriptive Statistics", digits = 2, # decimales con 2 digitos
+          covariate.labels = list_vars,  # Lista de etiquetas
+          notes = ""
+          , notes.append = FALSE, # TRUE append the significance levels
+          notes.align = 'r')
+
+
 
 #------------------------------------------------------------#
 ##### PREGUNTA 2: REPLICANDO TABLAS #####
