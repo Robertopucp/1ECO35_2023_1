@@ -600,5 +600,5 @@ tab  %>% ggplot(aes(x=rownames(tab), y=Estimate)) +
   theme(text=element_text(size =15), plot.title = element_text(hjust = 0.5)) +
   geom_hline(yintercept=0, linetype="dashed", color = "black", size=0.8) +
   scale_x_discrete(limits = c("Model 1", "Model 2", "Model 3", "Model 4")) +
-  scale_y_continuous(breaks = seq(-0.2,0.2,0.1) , limits = c(-0.2, 1.2)) +
+  scale_y_continuous(breaks = seq(-0.2,1.2,0.1) , limits = c(-0.2, 1.2)) +
   theme_classic(14)
