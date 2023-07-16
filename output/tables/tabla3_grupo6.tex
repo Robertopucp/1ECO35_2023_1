@@ -1,0 +1,35 @@
+\begin{table}[]
+\caption{Treatment Effects on Intermediate Outcomes}
+{
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\begin{tabular}{@{\extracolsep{2pt}}l*{4}{c}@{}}
+\hline\hline
+
+
+ & Took Micro within year & Took Micro within year & Took another econ class & Took another econ class \\
+\hline
+Treatment class × 2016 & 0.692 & 0.522 & 0.098\sym{**} & 0.080\sym{*} \\
+ & (0.431) & (0.428) & (0.048) & (0.048) \\
+Year 2016 & -0.173 & -0.189 & -0.023 & -0.028 \\
+ & (0.294) & (0.289) & (0.033) & (0.033) \\
+Treatment class (in 2015) & -0.129 & -0.206 & -0.023 & -0.030 \\
+ & (0.300) & (0.296) & (0.034) & (0.033) \\
+Constant & 1.026\sym{***} & 5.804\sym{***} & 0.103\sym{***} & 0.510\sym{***} \\
+ & (0.214) & (0.979) & (0.024) & (0.110) \\
+Controls & No & Yes & No & Yes \\
+
+\hline
+Observations & 627 & 627 & 627 & 627 \\
+\hline\hline
+\multicolumn{5}{l}{\footnotesize Notes: LPM regressions. We report wild bootstrap cluster p-values in parentheses and wild bootstrap cluster 95}\vspace{-.25em} \\
+\multicolumn{5}{l}{\footnotesize percent confidence intervals in square brackets, generated using boottest command in Stata 14 (Roodman et al.}\vspace{-.25em} \\
+\multicolumn{5}{l}{\footnotesize 2019) for standard errors clustered at the class level (12 clusters). In columns 1 and 2, the dependent variable is a}\vspace{-.25em} \\
+\multicolumn{5}{l}{\footnotesize dummy equal to one if the student took Intermediate Micro the year after the Principles class. In columns 3 and 4,}\vspace{-.25em} \\
+\multicolumn{5}{l}{\footnotesize the dependent variable is a dummy equal to one if the student enrolled in another economics class at any time after}\vspace{-.25em} \\
+\multicolumn{5}{l}{\footnotesize the Principles class (up to January 2019).}\vspace{-.25em} \\
+\multicolumn{5}{l}{\footnotesize * Significantly different from zero at 90 percent confidence.}\vspace{-.25em} \\
+\multicolumn{5}{l}{\footnotesize ** Significantly different from zero at 95 percent confidence.}\vspace{-.25em} \\
+\multicolumn{5}{l}{\footnotesize *** Significantly different from zero at 99 percent confidence.}
+\end{tabular}
+}
+\end{table}
