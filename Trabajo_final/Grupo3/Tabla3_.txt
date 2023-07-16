@@ -1,0 +1,12 @@
+Modelo 1:
+<statsmodels.regression.linear_model.RegressionResultsWrapper object at 0x0000022C3A2ED600>
+
+Modelo 2:
+<statsmodels.regression.linear_model.RegressionResultsWrapper object at 0x0000022C40116F50>
+
+Modelo 3:
+<statsmodels.regression.linear_model.RegressionResultsWrapper object at 0x0000022C400F58D0>
+
+Modelo 4:
+<statsmodels.regression.linear_model.RegressionResultsWrapper object at 0x0000022C400FB070>
+

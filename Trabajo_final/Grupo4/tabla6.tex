@@ -1,0 +1,30 @@
+\begin{table}[]
+\caption{Treatment Effects on Other High-Earning Majors}
+{
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\begin{tabular}{@{\extracolsep{2pt}}l*{4}{c}@{}}
+\hline\hline
+
+
+ & Major social sciences & Major arts & Major communication & Major humanities \\
+\hline
+Treatment class × 2016 & -0.006 & -0.031 & -0.012 & -0.141\sym{***} \\
+ & (0.049) & (0.037) & (0.038) & (0.045) \\
+Year 2016 & -0.023 & 0.018 & -0.008 & 0.067\sym{**} \\
+ & (0.033) & (0.025) & (0.026) & (0.030) \\
+Treatment class (in 2015) & -0.037 & 0.035 & -0.002 & 0.083\sym{***} \\
+ & (0.034) & (0.026) & (0.026) & (0.031) \\
+Constant & 0.624\sym{***} & 0.050 & 0.146\sym{*} & 0.140 \\
+ & (0.113) & (0.085) & (0.087) & (0.102) \\
+Controls & Yes & Yes & Yes & Yes \\
+
+\hline
+Observations & 627 & 627 & 627 & 627 \\
+\hline\hline
+\multicolumn{5}{l}{\footnotesize Notes: LPM regressions. We report wild bootstrap cluster p-values in parentheses and wild bootstrap cluster 95 per-        cent confidence intervals in square brackets, generated using boottest command in Stata 14 (Roodman et al. 2019)        for standard errors clustered at the class level (12 clusters). Dependent variables: dummy equal to one if the stu-        dent majored in (i) social science (other than economics), (ii) arts, (iii) communication studies, or (iv) humanities.}\vspace{-.25em} \\
+\multicolumn{5}{l}{\footnotesize * Significantly different from zero at 90 percent confidence.}\vspace{-.25em} \\
+\multicolumn{5}{l}{\footnotesize ** Significantly different from zero at 95 percent confidence.}\vspace{-.25em} \\
+\multicolumn{5}{l}{\footnotesize *** Significantly different from zero at 99 percent confidence.}
+\end{tabular}
+}
+\end{table}
