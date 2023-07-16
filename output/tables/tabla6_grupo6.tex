@@ -1,0 +1,35 @@
+\begin{table}[]
+\caption{Treatment Effects on Intermediate Outcomes}
+{
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\begin{tabular}{@{\extracolsep{2pt}}l*{4}{c}@{}}
+\hline\hline
+
+
+ & M. rsocial sciences & M. arts & M. communication & M. humanities \\
+\hline
+Treatment class × 2016 & 0.013 & -0.031 & -0.012 & -0.141\sym{***} \\
+ & (0.052) & (0.037) & (0.038) & (0.045) \\
+Year 2016 & 0.003 & 0.018 & -0.008 & 0.067\sym{**} \\
+ & (0.035) & (0.025) & (0.026) & (0.030) \\
+Treatment class (in 2015) & -0.005 & 0.035 & -0.002 & 0.083\sym{***} \\
+ & (0.036) & (0.026) & (0.026) & (0.031) \\
+Constant & 0.245\sym{**} & 0.050 & 0.146\sym{*} & 0.140 \\
+ & (0.118) & (0.085) & (0.087) & (0.102) \\
+Controls & No & Yes & No & Yes \\
+
+\hline
+Observations & 627 & 627 & 627 & 627 \\
+\hline\hline
+\multicolumn{5}{l}{\footnotesize Notes: LPM regressions. We report wild bootstrap cluster p-values in parentheses and wild bootstrap cluster 95}\vspace{-.25em} \\
+\multicolumn{5}{l}{\footnotesize percent confidence intervals in square brackets, generated using boottest command in Stata 14 (Roodman et al.}\vspace{-.25em} \\
+\multicolumn{5}{l}{\footnotesize 2019) for standard errors clustered at the class level (12 clusters). In columns 1 and 2, the dependent variable is a}\vspace{-.25em} \\
+\multicolumn{5}{l}{\footnotesize dummy equal to one if the student took Intermediate Micro the year after the Principles class. In columns 3 and 4,}\vspace{-.25em} \\
+\multicolumn{5}{l}{\footnotesize the dependent variable is a dummy equal to one if the student enrolled in another economics class at any time after}\vspace{-.25em} \\
+\multicolumn{5}{l}{\footnotesize the Principles class (up to January 2019).}\vspace{-.25em} \\
+\multicolumn{5}{l}{\footnotesize * Significantly different from zero at 90 percent confidence.}\vspace{-.25em} \\
+\multicolumn{5}{l}{\footnotesize ** Significantly different from zero at 95 percent confidence.}\vspace{-.25em} \\
+\multicolumn{5}{l}{\footnotesize *** Significantly different from zero at 99 percent confidence.}
+\end{tabular}
+}
+\end{table}
