@@ -1,0 +1,28 @@
+\begin{table}[]
+\caption{Table 5 - Treatment Effects on Other High-Earning Majors}
+{
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\begin{tabular}{@{\extracolsep{2pt}}l*{4}{c}@{}}
+\hline\hline
+
+
+ & Major STEM & Major finance & Major business & Major marketing \\
+\hline
+Treatment class x 2016 & 0.013 & 0.026 & 0.078 & -0.018 \\
+ & (0.074) & (0.066) & (0.050) & (0.066) \\
+Year 2016 & 0.003 & -0.005 & -0.057\sym{*} & 0.029 \\
+ & (0.044) & (0.057) & (0.032) & (0.030) \\
+Treatment class (in 2015) & -0.005 & -0.030 & -0.037 & 0.037 \\
+ & (0.038) & (0.034) & (0.043) & (0.031) \\
+Controls & Yes & Yes & Yes & Yes \\
+
+\hline
+Observartions & 627 & 627 & 627 & 627 \\
+\hline\hline
+\multicolumn{5}{l}{\footnotesize Notes: LPM regressions. We report wild bootstrap cluster p-values in parentheses and wild bootstrap cluster 95 percent                confidence intervals in square brackets, generated using boottest command in Stata 14 (Roodman et al. 2019)                for standard errors clustered at the class level (12 clusters). Dependent variables: dummy equal to one if the student                majored in (i) STEM subjects, (ii) finance, (iii) business, or (iv) marketing.}\vspace{-.25em} \\
+\multicolumn{5}{l}{\footnotesize * Significantly different from zero at 90 percent confidence.}\vspace{-.25em} \\
+\multicolumn{5}{l}{\footnotesize ** Significantly different from zero at 95 percent confidence.}\vspace{-.25em} \\
+\multicolumn{5}{l}{\footnotesize *** Significantly different from zero at 99 percent confidence.}
+\end{tabular}
+}
+\end{table}

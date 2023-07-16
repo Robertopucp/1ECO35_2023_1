@@ -1,0 +1,28 @@
+\begin{table}[]
+\caption{Table 4 - Treatment Effects on Final Outcomes}
+{
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\begin{tabular}{@{\extracolsep{2pt}}l*{4}{c}@{}}
+\hline\hline
+
+
+ & Number of econ classes taken & Number of econ classes taken & Major in economics & Major in economics \\
+\hline
+Treatment class x 2016 & 0.692\sym{***} & 0.522\sym{**} & 0.098\sym{***} & 0.080\sym{**} \\
+ & (0.220) & (0.256) & (0.029) & (0.036) \\
+Year 2016 & -0.173 & -0.189 & -0.023 & -0.028 \\
+ & (0.137) & (0.201) & (0.022) & (0.030) \\
+Treatment class (in 2015) & -0.129 & -0.206 & -0.023 & -0.030 \\
+ & (0.185) & (0.196) & (0.026) & (0.024) \\
+Controls & No & Yes & No & Yes \\
+
+\hline
+Observartions & 627 & 627 & 627 & 627 \\
+\hline\hline
+\multicolumn{5}{l}{\footnotesize Notes:Columns 1–2, OLS regressions; columns 3–4, LPM regressions. We report wild bootstrap cluster p-                values in parentheses and wild bootstrap cluster 95 percent confidence intervals in square brackets, generated using                boottest command in Stata 14 (Roodman et al. 2019) for standard errors clustered at the class level (12 clusters).                In columns 1 and 2, the dependent variable is the number of economics classes taken after the Principles class. In                columns 3 and 4, the dependent variable is a dummy equal to one if the student majored in economics (or declared                the economics major, if the student has not graduated yet).}\vspace{-.25em} \\
+\multicolumn{5}{l}{\footnotesize * Significantly different from zero at 90 percent confidence.}\vspace{-.25em} \\
+\multicolumn{5}{l}{\footnotesize ** Significantly different from zero at 95 percent confidence.}\vspace{-.25em} \\
+\multicolumn{5}{l}{\footnotesize *** Significantly different from zero at 99 percent confidence.}
+\end{tabular}
+}
+\end{table}
