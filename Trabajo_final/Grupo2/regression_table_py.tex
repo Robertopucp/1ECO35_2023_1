@@ -1,0 +1,30 @@
+\begin{table}[]
+\caption{TREATMENT EFFECTS ON INTERMEDIATE OUTCOMES}
+{
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\begin{tabular}{@{\extracolsep{2pt}}l*{4}{c}@{}}
+\hline\hline
+
+
+ & Took Micro within year & Took Micro within year & Took another econ class & Took another econ class \\
+\hline
+Treatment class x 2016 & 0.115\sym{***} & 0.112\sym{***} & 0.158\sym{***} & 0.139\sym{***} \\
+ & (0.038) & (0.041) & (0.046) & (0.052) \\
+Year 2016 & -0.040 & -0.049 & -0.062\sym{***} & -0.067\sym{***} \\
+ & (0.027) & (0.030) & (0.016) & (0.025) \\
+Treatment class (in 2015) & -0.038 & -0.047\sym{***} & -0.048\sym{**} & -0.061\sym{***} \\
+ & (0.025) & (0.016) & (0.019) & (0.020) \\
+Constant & 0.147\sym{***} & 0.372\sym{***} & 0.237\sym{***} & 0.803\sym{***} \\
+ & (0.014) & (0.099) & (0.018) & (0.176) \\
+Controls & No & Yes & No & Yes \\
+
+\hline
+Observations & 627 & 627 & 627 & 627 \\
+\hline\hline
+\multicolumn{5}{l}{\footnotesize Notes: LPM regressions. Standard errors are clustered at the class level (12 clusters). In columns 1 and 2, the dependent variable is a dummy equal to one if the student took Intermediate Micro the year after the Principles class. In columns 3 and 4, the dependent variable is a dummy equal to one if the student enrolled in another economics class at any time after the Principles class (up to January 2019).}\vspace{-.25em} \\
+\multicolumn{5}{l}{\footnotesize * Significantly different from zero at 90 percent confidence.}\vspace{-.25em} \\
+\multicolumn{5}{l}{\footnotesize ** Significantly different from zero at 95 percent confidence.}\vspace{-.25em} \\
+\multicolumn{5}{l}{\footnotesize *** Significantly different from zero at 99 percent confidence.}
+\end{tabular}
+}
+\end{table}
