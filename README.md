@@ -2,7 +2,7 @@
 
 ## Lectures Overview
 
-This repository contains the materials for a 12-lecture Python and R programming course I taught at the undergraduate level. The course was designed to give economics students the practical programming and data science skills used in industry: data wrangling, applied econometrics, machine learning, web scraping, and geospatial analysis in both Python and R.
+This repository contains the materials for a 12-lecture Python and R programming course I taught at the undergraduate level. The course was designed to give economics students the practical programming and data science skills used in applied economic research: data wrangling, applied econometrics, machine learning, web scraping, and geospatial analysis in both Python and R.
 
 Each `Lecture_N` folder contains the lecture materials in both languages: a Jupyter notebook for Python and an `.R` script for R, so students could compare the same workflow across both tools.
 
