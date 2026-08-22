@@ -1,4 +1,4 @@
-# Python and R for Applied Economics
+# Python and R 
 
 ## Lectures Overview
 
