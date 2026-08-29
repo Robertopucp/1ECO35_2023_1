@@ -1,9 +1,5 @@
-# -*- coding: utf-8 -*-
-"""
-Loop replacemnet
 
-@author: Roberto
-"""
+
 
 # para correr lienas de codigo
 # 1. seleccionar lineas de codigo
@@ -12,11 +8,11 @@ Loop replacemnet
 import numpy as np
 import pandas as pd
 from pandas import DataFrame, Series
-import re # Regex
+import re 
 import pyreadr  # Load R dataset
 import os # for usernanme y set direcotrio
 
-# pip install pyreadr  (correr linea esta linead e codigo en la consola)
+pip install pyreadr  (correr linea esta linead e codigo en la consola)
 
 # data.Rdata
 
